@@ -20,7 +20,6 @@ export interface PublicProfile {
 // editable profile data!
 export interface UpdateProfileInput {
     username?: string;
-    bio?: string;
     avatarUrl?: string;
 }
 
