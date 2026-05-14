@@ -14,7 +14,7 @@ export default function Dashboard() {
         <button className="btn-profile" onClick={() => console.log('Profile button clicked')}>
           Profile
         </button>
-        <button className="btn-practice" onClick={() => console.log('Practice button clicked')}>
+        <button className="btn-practice" onClick={() => router.push('/practice')}>
           Practice
         </button>
         <button className="btn-multiplayer" onClick={() => console.log('Multiplayer button clicked')}>
