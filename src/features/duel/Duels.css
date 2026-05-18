@@ -1,0 +1,66 @@
+/* The main battleground area */
+.duel-arena {
+  width: 100vw;        
+  height: 100vh;        
+  max-width: none;      
+  
+  background-color: #000000;
+  border: 6px double #00FF00; /* Keeps that sweet retro border on the screen edges */
+  padding: 30px;
+  box-sizing: border-box;
+  position: relative; 
+  overflow: hidden; 
+  font-family: 'Courier New', Courier, monospace;
+
+  /* Layout tweaks to keep the game elements organized in fullscreen */
+  display: flex;
+  flex-direction: column;
+  margin: 0; 
+}
+
+/* Status Bar holding both player windows */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 40px;
+  gap: 20px;
+}
+
+/* Generic layout for individual status boxes (Windows 98 layout style) */
+.player-status, .opponent-status {
+  flex: 1;
+  background-color: #000000;
+  padding: 15px;
+  border: 4px outset #C0C0C0; /* Chiseled 3D box look */
+}
+
+/* Give the local player a friendly neon lime color theme */
+.player-status h2 {
+  color: #00FF00; 
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #003300;
+}
+
+.player-status p {
+  color: #FFFFFF;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+/* Give the opponent a hostile neon cyan/magenta theme */
+.opponent-status h2 {
+  color: #00FFFF;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #003333;
+}
+
+.opponent-status p {
+  color: #FFFFFF;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 5px 0;
+}

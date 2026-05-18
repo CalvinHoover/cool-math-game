@@ -23,7 +23,7 @@ export default function Dashboard() {
         />
         <MenuButton 
           label="Multiplayer" 
-          onClick={() => console.log('Multiplayer clicked')} 
+          onClick={() => router.push('/duel')} 
           className="btn-multiplayer" 
         />
         <MenuButton 
