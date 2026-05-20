@@ -1,1 +1,5 @@
-// TODO: add SessionUser interface to check if user is logged in before they can see their UserProfile
+export interface SessionUser {
+  id: string;
+  username: string;
+  email: string;
+}
