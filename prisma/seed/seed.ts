@@ -41,7 +41,7 @@ export async function seed(
         join(process.cwd(), 'prisma', 'seed', 'questions.json'),
         'utf-8'
       )
-    ) as any);
+    ) as SeedTopic[]);
 
   for (const topicData of data) {
     const topic = await prisma.topic.upsert({

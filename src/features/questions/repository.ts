@@ -14,7 +14,7 @@ export const QuestionDBAccess = {
     const where: Record<string, unknown> = {};
 
     if (opts.topicId) {
-      if (opts.topicId == where.topicId) { where.topicId = opts.topicId; }
+      where.topicId = opts.topicId;
     }
     if (typeof opts.difficulty === 'number') {
       where.difficulty = opts.difficulty;
