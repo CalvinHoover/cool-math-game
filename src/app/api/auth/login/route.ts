@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import type { User } from '@prisma/client';
 import { AuthDBAccess } from "@/features/auth/repository";
 import { setSessionCookie } from "@/features/auth/session";
 

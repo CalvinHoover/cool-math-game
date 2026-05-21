@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   let existing;
   try {
-    existing = AuthDBAccess.findUserByEmailOrUsername(email, username);
+    existing = await AuthDBAccess.findUserByEmailOrUsername(email, username);
   } catch {
     return NextResponse.json({ error: "Database unavailable. Try again shortly." }, { status: 503 });
   }
