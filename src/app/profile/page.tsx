@@ -3,12 +3,26 @@
 // a "loading" message followed by a TestUser and "change username" button should appear
 // then the username should switch to TotallyNotMax after pressing the button
 // note that this change only happens once, so to see it in action again, rerun npm run dev
-import ProfileHeader from "@/features/profile/ProfileHeader";
+// import ProfileHeader from "@/features/profile/ProfileHeader";
 
-export default function Page() {
+// export default function Page() {
+//   return (
+//     <main>
+//       <ProfileHeader />
+//     </main>
+//   );
+// }
+
+// test for features/profile/components/ProfileHeader.tsx
+// test by visiting localhost:3000/profile
+import ProfileHeader from "@/features/profile/components/ProfileHeader";
+import { testPublicProfiles } from "@/features/profile/testData";
+
+export default function ProfilePage() {
   return (
-    <main>
-      <ProfileHeader />
+    <main className="p-6">
+      <ProfileHeader profile={testPublicProfiles[0]} />
+      <ProfileHeader profile={testPublicProfiles[1]} />
     </main>
   );
 }
