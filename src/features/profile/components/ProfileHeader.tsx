@@ -8,7 +8,7 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ profile }: ProfileHeaderProps) {
     return (
-        <section className="border p-5 shadow-sm">
+        <section className="border dark:border-gray-600 p-5 shadow-sm">
             <div className="flex items-center gap-4">
                 <img
                     src={profile.avatarUrl || "/default_avatar.png"}

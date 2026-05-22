@@ -13,16 +13,16 @@
 //   );
 // }
 
-// test for features/profile/components/ProfileHeader.tsx
+// test for features/profile/components/ProfileHeader.tsx and ThemeToggleWrapper.tsx
 // test by visiting localhost:3000/profile
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import { testPublicProfiles } from "@/features/profile/testData";
+import ThemeToggleWrapper from "@/features/profile/components/ThemeToggleWrapper";
 
 export default function ProfilePage() {
   return (
-    <main className="p-6">
+    <ThemeToggleWrapper>
       <ProfileHeader profile={testPublicProfiles[0]} />
-      <ProfileHeader profile={testPublicProfiles[1]} />
-    </main>
+    </ThemeToggleWrapper>
   );
 }
