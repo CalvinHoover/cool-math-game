@@ -7,7 +7,7 @@ export interface UserProfile {
     createdAt: string;
     updatedAt: string;
     email: string; // new addition, for contact info purposes / account creation
-  }
+}
 
 // how the user will see other profile pages
 export interface PublicProfile {
