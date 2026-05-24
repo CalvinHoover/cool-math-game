@@ -1,32 +1,23 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { getSession } from '@/features/auth/session';
+import { getDashboardStats, getRecentActivity } from '@/features/dashboard/actions';
+import DashboardClient from './DashboardClient';
 
-import { useRouter } from 'next/navigation';
-import './Dashboard.css';
+export default async function DashboardPage() {
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-export default function Dashboard() {
-  const router = useRouter();
+  const statsResult = await getDashboardStats();
+  const activityResult = await getRecentActivity();
+
+  const stats = statsResult.ok ? statsResult : null;
+  const activity = activityResult.ok ? activityResult.items : [];
 
   return (
-    <div className="app-container">
-      <h1 className="main-title">World of Math</h1>
-      
-      <div className="button-group">
-        <button className="btn-profile" onClick={() => console.log('Profile button clicked')}>
-          Profile
-        </button>
-        <button className="btn-practice" onClick={() => console.log('Practice button clicked')}>
-          Practice
-        </button>
-        <button className="btn-multiplayer" onClick={() => console.log('Multiplayer button clicked')}>
-          Multiplayer
-        </button>
-        <button className="btn-leaderboard" onClick={() => console.log('Leaderboard button clicked')}>
-          Leaderboard
-        </button>
-        <button className="btn-settings" onClick={() => router.push('/settings')}>
-          Settings
-        </button>
-      </div>
-    </div>
+    <DashboardClient
+      username={session.username}
+      stats={stats}
+      activity={activity}
+    />
   );
 }
