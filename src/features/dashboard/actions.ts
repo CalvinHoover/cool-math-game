@@ -18,7 +18,7 @@ type DashboardStatsResult =
       topicsStarted: number;
     };
 
-export async function getDashboardStats(): Promise<any> {
+export async function getDashboardStats(): Promise<DashboardStatsResult> {
   const session = await getSession();
   if (!session) {
     return { ok: false, error: 'unauthorized' };
