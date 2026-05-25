@@ -22,12 +22,12 @@ export function Navbar({ username }: NavbarProps) {
         <div className="flex items-center gap-6">
           <span
             className="cursor-pointer text-lg font-bold text-blue-600 dark:text-blue-400"
-            onClick={() => router.push('/dashbaord')}
+            onClick={() => router.push('/dashboard')}
           >
             World of Math
           </span>
           <div className="hidden gap-4 sm:flex">
-            <NavLink href="/dashbaord" label="Dashboard" />
+            <NavLink href="/dashboard" label="Dashboard" />
             <NavLink href="/practice" label="Practice" />
             <NavLink href="/profile" label="Profile" />
             <NavLink href="/friends" label="Friends" />
