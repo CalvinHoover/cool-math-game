@@ -48,7 +48,8 @@ describe('PracticeBox', () => {
       question({ id: 'q2', text: 'Q2', points: 4 }),
     ];
 
-    render(
+    // scope queries to this render to avoid leaked elements
+    const { getByRole, findByText } = render(
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
@@ -56,24 +57,24 @@ describe('PracticeBox', () => {
       />
     );
 
-    await user.type(screen.getByRole('textbox'), 'Paris');
-    await user.click(screen.getByRole('button', { name: 'Submit' }));
-    await screen.findByText(/Correct!/);
+    await user.type(getByRole('textbox'), 'Paris');
+    await user.click(getByRole('button', { name: 'Submit' }));
+    await findByText(/Correct!/);
 
-    await user.click(screen.getByRole('button', { name: 'Next Question' }));
-    await screen.findByText('Q2');
+    await user.click(getByRole('button', { name: 'Next Question' }));
+    await findByText('Q2');
 
-    await user.type(screen.getByRole('textbox'), 'London');
-    await user.click(screen.getByRole('button', { name: 'Submit' }));
-    await screen.findByText('Incorrect. Try again!');
+    await user.type(getByRole('textbox'), 'London');
+    await user.click(getByRole('button', { name: 'Submit' }));
+    await findByText('Incorrect. Try again!');
 
-    await user.clear(screen.getByRole('textbox'));
-    await user.type(screen.getByRole('textbox'), 'Rome');
-    await user.click(screen.getByRole('button', { name: 'Submit' }));
-    await screen.findByText(/The correct answer was Paris/);
+    await user.clear(getByRole('textbox'));
+    await user.type(getByRole('textbox'), 'Rome');
+    await user.click(getByRole('button', { name: 'Submit' }));
+    await findByText(/The correct answer was Paris/);
 
-    await user.click(screen.getByRole('button', { name: 'View Score' }));
-    await screen.findByText(/You scored 2\/6/);
+    await user.click(getByRole('button', { name: 'View Score' }));
+    await findByText(/You scored 2\/6/);
   });
 
   it('resumes at the first unanswered question', () => {
@@ -88,7 +89,8 @@ describe('PracticeBox', () => {
       question({ id: 'q3', text: 'Q3', correct: false, attempts: 0 }),
     ];
 
-    render(
+    // scope queries to this render to avoid leaked elements
+    const { getByText } = render(
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
@@ -96,7 +98,7 @@ describe('PracticeBox', () => {
       />
     );
 
-    expect(screen.getByText('Question 3 (2 pts)')).toBeInTheDocument();
+    expect(getByText('Question 3 (2 pts)')).toBeInTheDocument();
   });
 
   it('shows auth errors from actions', async () => {
@@ -106,7 +108,8 @@ describe('PracticeBox', () => {
       completePracticeSession: vi.fn(),
     };
 
-    render(
+    // scope queries to this render to avoid leaked elements
+    const { getByRole, findByText } = render(
       <PracticeBox
         sessionId="session-1"
         initialQuestions={[question({ text: 'Q1' })]}
@@ -114,10 +117,10 @@ describe('PracticeBox', () => {
       />
     );
 
-    await user.type(screen.getByRole('textbox'), 'Paris');
-    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    await user.type(getByRole('textbox'), 'Paris');
+    await user.click(getByRole('button', { name: 'Submit' }));
 
-    await screen.findByText('Please log in to continue.');
+    await findByText('Please log in to continue.');
   });
 
   it('completes the session when saving', async () => {
@@ -132,7 +135,8 @@ describe('PracticeBox', () => {
       question({ id: 'q2', correct: false, attempts: 2 }),
     ];
 
-    render(
+    // scope queries to this render to avoid leaked elements
+    const { getByRole, findByText } = render(
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
@@ -140,8 +144,8 @@ describe('PracticeBox', () => {
       />
     );
 
-    await user.click(screen.getByRole('button', { name: 'Save My Session' }));
-    await screen.findByText('Session saved.');
+    await user.click(getByRole('button', { name: 'Save My Session' }));
+    await findByText('Session saved.');
     expect(actions.completePracticeSession).toHaveBeenCalledWith({
       sessionId: 'session-1',
     });
