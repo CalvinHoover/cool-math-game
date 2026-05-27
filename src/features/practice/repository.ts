@@ -1,7 +1,17 @@
 import { prisma } from '@/lib/prisma';
+import type { PracticeSession, Question, SessionQuestion } from '@prisma/client';
+
+export type QuestionRecord = Question;
+export type SessionQuestionWithQuestion = SessionQuestion & { question: Question };
+export type PracticeSessionWithQuestions = PracticeSession & {
+  questions: SessionQuestionWithQuestion[];
+};
 
 export const PracticeRepository = {
-  async findActiveSession(userId: string, topicId: string) {
+  async findActiveSession(
+    userId: string,
+    topicId: string
+  ): Promise<PracticeSessionWithQuestions | null> {
     return prisma.practiceSession.findFirst({
       where: {
         userId,
@@ -30,7 +40,10 @@ export const PracticeRepository = {
     });
   },
 
-  async findQuestionsByTopic(topicId: string, count: number) {
+  async findQuestionsByTopic(
+    topicId: string,
+    count: number
+  ): Promise<QuestionRecord[]> {
     return prisma.question.findMany({
       where: {
         topicId,
@@ -42,7 +55,10 @@ export const PracticeRepository = {
     });
   },
 
-  async createSessionWithQuestions(userId: string, questionIds: string[]) {
+  async createSessionWithQuestions(
+    userId: string,
+    questionIds: string[]
+  ): Promise<PracticeSessionWithQuestions> {
     return prisma.practiceSession.create({
       data: {
         userId,
@@ -69,7 +85,7 @@ export const PracticeRepository = {
     sessionId: string,
     questionId: string,
     userId: string
-  ) {
+  ): Promise<SessionQuestionWithQuestion | null> {
     return prisma.sessionQuestion.findFirst({
       where: {
         sessionId,

@@ -1,7 +1,7 @@
 'use server';
 
 import { getSession } from '@/features/auth/session';
-import { PracticeRepository } from './repository';
+import { PracticeRepository, type SessionQuestionWithQuestion } from './repository';
 
 const DEFAULT_COUNT = 5;
 const MAX_COUNT = 5;
@@ -32,16 +32,6 @@ type VerifyResult =
 
 type CompleteResult = ActionError | { ok: true };
 
-type SessionQuestionRecord = {
-  attempts: number;
-  correct: boolean;
-  question: {
-    id: string;
-    text: string;
-    difficulty: number;
-  };
-};
-
 function calculatePoints(difficulty: number): number {
   const rounded = Number.isFinite(difficulty) ? Math.round(difficulty) : 1;
   return Math.min(5, Math.max(1, rounded));
@@ -60,7 +50,9 @@ function normalizeCount(count?: number): number {
   return Math.min(MAX_COUNT, Math.max(1, normalized));
 }
 
-function toPracticeQuestion(record: SessionQuestionRecord): PracticeQuestion {
+function toPracticeQuestion(
+  record: SessionQuestionWithQuestion
+): PracticeQuestion {
   return {
     id: record.question.id,
     text: record.question.text,
