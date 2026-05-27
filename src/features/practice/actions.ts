@@ -1,51 +1,217 @@
 'use server';
-// import prisma from '@/lib/prisma';
 
-// Hardcoded answers (kept strictly on the server)
-const ANSWERS = {
-  q1: ['Paris', 'Duh'],
-  q2: ['16', 'Duh'],
-  q3: ['Mars', 'Duh'],
-  q4: ['Au', 'Duh'],
-  q5: ['8', 'Duh'],
+import { getSession } from '@/features/auth/session';
+import { PracticeRepository } from './repository';
+
+const DEFAULT_COUNT = 5;
+const MAX_COUNT = 5;
+
+type ActionError = { ok: false; error: string };
+
+export type PracticeQuestion = {
+  id: string;
+  text: string;
+  points: number;
+  attempts: number;
+  correct: boolean;
 };
 
-export async function verifyAnswer(questionId: string, userAnswer: string, attempt: number) {
-  // Prisma placeholder:
-  // const question = await prisma.question.findUnique({ where: { id: questionId } });
-  // const actualAnswer = question.answer;
+type BootstrapResult =
+  | ActionError
+  | { ok: true; sessionId: string; questions: PracticeQuestion[] };
 
-  const actualAnswer = ANSWERS[questionId as keyof typeof ANSWERS];
-  const isCorrect = userAnswer.trim().toLowerCase() === actualAnswer[0].toLowerCase();
+type VerifyResult =
+  | ActionError
+  | {
+      ok: true;
+      correct: boolean;
+      attempts: number;
+      answer?: string;
+      explanation?: string;
+    };
 
-  if (isCorrect) {
-    return { correct: true, explanation: actualAnswer[1] };
-  } else {
-    // Only send the correct answer back if they failed their second attempt
-    if (attempt === 2) {
-      return { correct: false, answer: actualAnswer[0], explanation: actualAnswer[1] };
-    }
-    return { correct: false };
-  }
+type CompleteResult = ActionError | { ok: true };
+
+type SessionQuestionRecord = {
+  attempts: number;
+  correct: boolean;
+  question: {
+    id: string;
+    text: string;
+    difficulty: number;
+  };
+};
+
+function calculatePoints(difficulty: number): number {
+  const rounded = Number.isFinite(difficulty) ? Math.round(difficulty) : 1;
+  return Math.min(5, Math.max(1, rounded));
 }
 
-export async function saveUserScore(userId: string, score: number) {
-  try {
-    // Security check: validate the input before touching the database
-    if (typeof score !== 'number' || score < 0 || score > 5) {
-      throw new Error('Invalid score data');
-    }
+function orderQuestions<T>(questions: T[]): T[] {
+  return [...questions];
+}
 
-    // await prisma.gameSession.create({
-    //   data: {
-    //     userId: userId,
-    //     score: score,
-    //     completedAt: new Date(),
-    //   },
-    // });
-
-    return { success: true };
-  } catch (error) {
-    return { success: false, message: 'Failed to save score' };
+function normalizeCount(count?: number): number {
+  if (!Number.isFinite(count)) {
+    return DEFAULT_COUNT;
   }
+
+  const normalized = Math.floor(count ?? DEFAULT_COUNT);
+  return Math.min(MAX_COUNT, Math.max(1, normalized));
+}
+
+function toPracticeQuestion(record: SessionQuestionRecord): PracticeQuestion {
+  return {
+    id: record.question.id,
+    text: record.question.text,
+    points: calculatePoints(record.question.difficulty),
+    attempts: record.attempts,
+    correct: record.correct,
+  };
+}
+
+export async function bootstrapPracticeSession(input: {
+  topicId?: string;
+  count?: number;
+}): Promise<BootstrapResult> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, error: 'unauthorized' };
+  }
+
+  const topicId = typeof input.topicId === 'string' ? input.topicId.trim() : '';
+  if (!topicId) {
+    return { ok: false, error: 'invalid-topic' };
+  }
+
+  const count = normalizeCount(input.count);
+
+  const existingSession = await PracticeRepository.findActiveSession(
+    session.id,
+    topicId
+  );
+
+  if (existingSession) {
+    const ordered = orderQuestions(existingSession.questions);
+    return {
+      ok: true,
+      sessionId: existingSession.id,
+      questions: ordered.map(toPracticeQuestion),
+    };
+  }
+
+  const questions = await PracticeRepository.findQuestionsByTopic(topicId, count);
+  if (!questions.length) {
+    return { ok: false, error: 'no-questions' };
+  }
+
+  const orderedQuestions = orderQuestions(questions);
+  const createdSession = await PracticeRepository.createSessionWithQuestions(
+    session.id,
+    orderedQuestions.map((question) => question.id)
+  );
+
+  const orderedSessionQuestions = orderQuestions(createdSession.questions);
+
+  return {
+    ok: true,
+    sessionId: createdSession.id,
+    questions: orderedSessionQuestions.map(toPracticeQuestion),
+  };
+}
+
+export async function verifyAnswer(input: {
+  sessionId: string;
+  questionId: string;
+  userAnswer: string;
+}): Promise<VerifyResult> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, error: 'unauthorized' };
+  }
+
+  const sessionId = input.sessionId?.trim();
+  const questionId = input.questionId?.trim();
+  const userAnswer = input.userAnswer?.trim();
+
+  if (!sessionId || !questionId || !userAnswer) {
+    return { ok: false, error: 'invalid-input' };
+  }
+
+  const sessionQuestion = await PracticeRepository.findSessionQuestionForUser(
+    sessionId,
+    questionId,
+    session.id
+  );
+
+  if (!sessionQuestion) {
+    return { ok: false, error: 'not-found' };
+  }
+
+  if (sessionQuestion.correct) {
+    return { ok: false, error: 'already-correct' };
+  }
+
+  if (sessionQuestion.attempts >= 2) {
+    return { ok: false, error: 'max-attempts' };
+  }
+
+  const nextAttempts = sessionQuestion.attempts + 1;
+  const normalizedAnswer = userAnswer.toLowerCase();
+  const actualAnswer = sessionQuestion.question.answer.trim();
+  const isCorrect = normalizedAnswer === actualAnswer.toLowerCase();
+
+  await PracticeRepository.updateSessionQuestion(sessionQuestion.id, {
+    attempts: nextAttempts,
+    userAnswer,
+    correct: isCorrect,
+  });
+
+  const explanation = sessionQuestion.question.hint ?? undefined;
+
+  if (isCorrect) {
+    return {
+      ok: true,
+      correct: true,
+      attempts: nextAttempts,
+      explanation,
+    };
+  }
+
+  if (nextAttempts >= 2) {
+    return {
+      ok: true,
+      correct: false,
+      attempts: nextAttempts,
+      answer: actualAnswer,
+      explanation,
+    };
+  }
+
+  return {
+    ok: true,
+    correct: false,
+    attempts: nextAttempts,
+  };
+}
+
+export async function completePracticeSession(input: {
+  sessionId: string;
+}): Promise<CompleteResult> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, error: 'unauthorized' };
+  }
+
+  const sessionId = input.sessionId?.trim();
+  if (!sessionId) {
+    return { ok: false, error: 'invalid-input' };
+  }
+
+  const result = await PracticeRepository.completeSession(sessionId, session.id);
+  if (result.count === 0) {
+    return { ok: false, error: 'not-found' };
+  }
+
+  return { ok: true };
 }
