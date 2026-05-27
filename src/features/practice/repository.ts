@@ -7,6 +7,7 @@ export type PracticeSessionWithQuestions = PracticeSession & {
   questions: SessionQuestionWithQuestion[];
 };
 
+// repository wraps prisma calls to keep data access testable in isolation
 export const PracticeRepository = {
   async findActiveSession(
     userId: string,

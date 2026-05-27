@@ -2,19 +2,12 @@
 
 import { getSession } from '@/features/auth/session';
 import { PracticeRepository, type SessionQuestionWithQuestion } from './repository';
+import type { PracticeQuestion } from './practiceLogic';
 
 const DEFAULT_COUNT = 5;
 const MAX_COUNT = 5;
 
 type ActionError = { ok: false; error: string };
-
-export type PracticeQuestion = {
-  id: string;
-  text: string;
-  points: number;
-  attempts: number;
-  correct: boolean;
-};
 
 type BootstrapResult =
   | ActionError
@@ -78,13 +71,14 @@ export async function bootstrapPracticeSession(input: {
 
   const count = normalizeCount(input.count);
 
+  // repository isolates prisma access for easier mocking in tests
   const existingSession = await PracticeRepository.findActiveSession(
     session.id,
     topicId
   );
 
   if (existingSession) {
-    const ordered = orderQuestions(existingSession.questions);
+    const ordered = orderQuestions(existingSession.questions); // FIXME: preserve stored question order if it differs from current ordering
     return {
       ok: true,
       sessionId: existingSession.id,

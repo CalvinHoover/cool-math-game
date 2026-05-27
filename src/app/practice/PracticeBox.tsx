@@ -1,18 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { verifyAnswer, completePracticeSession } from '@/features/practice/actions';
-
-interface Question {
-  id: string;
-  text: string;
-  points: number;
-  attempts: number;
-  correct: boolean;
-}
+import { practiceActionClient, type PracticeActionClient } from '@/features/practice/practiceActionClient';
+import {
+  deriveInitialState,
+  getAttemptForQuestion,
+  getNextQuestionIndex,
+  type PracticeQuestion,
+} from '@/features/practice/practiceLogic';
 interface PracticeBoxProps {
   sessionId: string;
-  initialQuestions: Question[];
+  initialQuestions: PracticeQuestion[];
+  actions?: PracticeActionClient;
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -23,47 +22,17 @@ const ERROR_MESSAGES: Record<string, string> = {
   'max-attempts': 'No attempts remain for this question.',
 };
 
-function getEarnedPoints(question: Question): number {
-  if (!question.correct) {
-    return 0;
-  }
-
-  return question.attempts <= 1 ? question.points : question.points / 2;
-}
-
-function getNextQuestionIndex(questions: Question[], startIndex: number): number {
-  for (let index = startIndex; index < questions.length; index += 1) {
-    const question = questions[index];
-    if (!question.correct && question.attempts < 2) {
-      return index;
-    }
-  }
-
-  return questions.length;
-}
-
-function getAttemptForQuestion(question?: Question): number {
-  if (!question) {
-    return 1;
-  }
-
-  return Math.min(2, question.attempts + 1);
-}
-
-function deriveInitialState(questions: Question[]) {
-  const score = questions.reduce(
-    (total, question) => total + getEarnedPoints(question),
-    0
-  );
-  const currentIndex = getNextQuestionIndex(questions, 0);
-  const attempt = getAttemptForQuestion(questions[currentIndex]);
-
-  return { score, currentIndex, attempt };
-}
-
-export default function PracticeBox({ sessionId, initialQuestions }: PracticeBoxProps) {
+export default function PracticeBox({
+  sessionId,
+  initialQuestions,
+  actions,
+}: PracticeBoxProps) {
+  // allow injected actions for tests while keeping default production wiring
+  const actionClient = actions ?? practiceActionClient;
   const initialState = deriveInitialState(initialQuestions);
-  const [questions, setQuestions] = useState<Question[]>(() => initialQuestions);
+  const [questions, setQuestions] = useState<PracticeQuestion[]>(
+    () => initialQuestions
+  );
   const [currentIndex, setCurrentIndex] = useState(initialState.currentIndex);
   const [score, setScore] = useState(initialState.score);
   const [attempt, setAttempt] = useState(initialState.attempt);
@@ -86,7 +55,7 @@ export default function PracticeBox({ sessionId, initialQuestions }: PracticeBox
 
     setFeedback({ message: 'Checking...' });
 
-    const result = await verifyAnswer({
+    const result = await actionClient.verifyAnswer({
       sessionId,
       questionId: currentQuestion.id,
       userAnswer,
@@ -155,7 +124,7 @@ export default function PracticeBox({ sessionId, initialQuestions }: PracticeBox
     setIsSaving(true);
     setCompletionMessage(null);
 
-    const result = await completePracticeSession({ sessionId });
+    const result = await actionClient.completePracticeSession({ sessionId });
 
     if (!result.ok) {
       setCompletionMessage(
