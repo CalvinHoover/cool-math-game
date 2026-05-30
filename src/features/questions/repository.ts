@@ -36,6 +36,12 @@ export const QuestionDBAccess = {
     });
   },
 
+  async findAllTopics(): Promise<Topic[]> {
+    return prisma.topic.findMany({
+      orderBy: { name: 'asc' },
+    });
+  },
+
   async createTopic(name: string): Promise<Topic> {
     return prisma.topic.create({
       data: { name },
