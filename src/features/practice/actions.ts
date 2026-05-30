@@ -184,7 +184,7 @@ export async function verifyAnswer(input: {
     ok: true,
     correct: false,
     attempts: nextAttempts,
-    explanation: sessionQuestion.question.explanation ?? undefined,
+    explanation: sessionQuestion.question.hint ?? undefined,
   };
 }
 
