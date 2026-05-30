@@ -16,6 +16,13 @@
   margin-bottom: 30px;
 }
 
+.welcome-msg {
+  font-size: 1rem;
+  color: #00FFFF;
+  font-family: 'Courier New', Courier, monospace;
+  margin-bottom: 20px;
+}
+
 .button-group {
   display: flex;
   flex-direction: column;
@@ -78,4 +85,13 @@ button:hover {
 
 .btn-settings:hover {
   background-color: #999999;
+}
+
+.btn-logout {
+  background-color: #FF0000;
+  color: #FFFFFF;
+}
+
+.btn-logout:hover {
+  background-color: #CC0000;
 }
