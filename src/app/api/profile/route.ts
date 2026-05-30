@@ -1,6 +1,8 @@
 import {NextRequest, NextResponse} from "next/server";
 import type {UserProfile, UpdateProfileInput} from "@/features/profile/types";
 
+import { searchProfileByUsername } from "@/features/profile/testData";
+
 let testProfile: UserProfile = {
     id: "1",
     username: "Test User",
@@ -45,3 +47,5 @@ export async function PUT(request: NextRequest) {
         }
     );
 }
+
+
