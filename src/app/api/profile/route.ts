@@ -1,6 +1,8 @@
 import {NextRequest, NextResponse} from "next/server";
 import type {UserProfile, UpdateProfileInput} from "@/features/profile/types";
 
+import { searchProfileByUsername } from "@/features/profile/testData";
+
 let testProfile: UserProfile = {
     id: "1",
     username: "Test User",
@@ -13,6 +15,7 @@ let testProfile: UserProfile = {
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    email: "example.com" // had to add this here to run tests on testData.test.ts, not sure why
 };
 
 // just using npm run dev to test these for now, but we can consider using Jest for further testing? or Postman?
@@ -44,3 +47,5 @@ export async function PUT(request: NextRequest) {
         }
     );
 }
+
+
