@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { MenuButton } from '../../components/interface/MenuButton';
 import './Dashboard.css';
 
 export default function DashboardClient({ username }: { username: string }) {
@@ -17,24 +18,12 @@ export default function DashboardClient({ username }: { username: string }) {
       <p className="welcome-msg">Welcome, {username}!</p>
 
       <div className="button-group">
-        <button className="btn-profile" onClick={() => console.log('Profile button clicked')}>
-          Profile
-        </button>
-        <button className="btn-practice" onClick={() => console.log('Practice button clicked')}>
-          Practice
-        </button>
-        <button className="btn-multiplayer" onClick={() => console.log('Multiplayer button clicked')}>
-          Multiplayer
-        </button>
-        <button className="btn-leaderboard" onClick={() => console.log('Leaderboard button clicked')}>
-          Leaderboard
-        </button>
-        <button className="btn-settings" onClick={() => router.push('/settings')}>
-          Settings
-        </button>
-        <button className="btn-logout" onClick={handleLogout}>
-          Logout
-        </button>
+        <MenuButton label="Profile" className="btn-profile" onClick={() => console.log('Profile button clicked')} />
+        <MenuButton label="Practice" className="btn-practice" onClick={() => console.log('Practice button clicked')} />
+        <MenuButton label="Multiplayer" className="btn-multiplayer" onClick={() => console.log('Multiplayer button clicked')} />
+        <MenuButton label="Leaderboard" className="btn-leaderboard" onClick={() => console.log('Leaderboard button clicked')} />
+        <MenuButton label="Settings" className="btn-settings" onClick={() => router.push('/settings')} />
+        <MenuButton label="Logout" className="btn-logout" onClick={handleLogout} />
       </div>
     </div>
   );
