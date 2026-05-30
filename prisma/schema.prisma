@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  password     String
+  email        String   @unique
+  firstSession DateTime @default(now())
+  elo          Int      @default(1000)
+  storyLine    Int      @default(0)
+  sessions            PracticeSession[]
+  topics              UserTopic[]
+  userAchievements    UserAchievement[]
+  matches1            Match[]      @relation("player1")
+  matches2            Match[]      @relation("player2")
+  wonMatches          Match[]      @relation("winner")
+  sentFriendships     Friendship[] @relation("sent")
+  receivedFriendships Friendship[] @relation("received")
+}
+
+model Topic {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  userXp    UserTopic[]
+  questions Question[]
+}
+
+model UserTopic {
+  id      String @id @default(uuid())
+  userId  String
+  topicId String
+  xp      Int    @default(0)
+  level   Int    @default(1)
+  user    User   @relation(fields: [userId], references: [id])
+  topic   Topic  @relation(fields: [topicId], references: [id])
+  @@unique([userId, topicId])
+}
+
+model Question {
+  id         String   @id @default(uuid())
+  topicId    String
+  text       String
+  answer     String
+  hint       String?
+  difficulty Int      @default(1)
+  topic      Topic              @relation(fields: [topicId], references: [id])
+  sessions   SessionQuestion[]
+}
+
+model PracticeSession {
+  id          String    @id @default(uuid())
+  userId      String
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  completed   Boolean   @default(false)
+
+  user        User              @relation(fields: [userId], references: [id])
+  questions   SessionQuestion[]
+}
+
+model SessionQuestion {
+  id          String   @id @default(uuid())
+  sessionId   String
+  questionId  String
+  userAnswer  String?
+  correct     Boolean  @default(false)
+  attempts    Int      @default(0)
+
+  session     PracticeSession @relation(fields: [sessionId], references: [id])
+  question    Question        @relation(fields: [questionId], references: [id])
+}
+
+model Match {
+  id            String   @id @default(uuid())
+  player1Id     String
+  player2Id     String
+  winnerId      String?
+  player1Score  Int      @default(0)
+  player2Score  Int      @default(0)
+  status        String   @default("waiting")
+  startedAt     DateTime @default(now())
+  endedAt       DateTime?
+  player1       User     @relation("player1", fields: [player1Id], references: [id])
+  player2       User     @relation("player2", fields: [player2Id], references: [id])
+  winner        User?    @relation("winner", fields: [winnerId], references: [id])
+}
+
+model Friendship {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  status     String   @default("pending") 
+  createdAt  DateTime @default(now())
+
+  sender     User     @relation("sent", fields: [senderId], references: [id])
+  receiver   User     @relation("received", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  xpReward    Int      @default(0)
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime @default(now())
+  user          User        @relation(fields: [userId], references: [id])
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  @@unique([userId, achievementId])
+}
