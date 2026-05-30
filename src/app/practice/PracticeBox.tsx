@@ -3,7 +3,7 @@
 import React, { useEffect, useState, startTransition } from 'react';
 import { MathText } from '@/components/math/MathText';
 import PracticeSummary from './PracticeSummary';
-import { practiceActionClient, type PracticeActionClient } from '@/features/practice/practiceActionClient';
+import { actions, type PracticeActions } from '@/features/practice/actions';
 import { useToast } from '@/components/providers/ToastProvider';
 import {
   deriveInitialState,
@@ -15,7 +15,7 @@ interface PracticeBoxProps {
   sessionId: string;
   initialQuestions: PracticeQuestion[];
   timeLimit?: number;
-  actions?: PracticeActionClient;
+  actions?: PracticeActions;
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -33,7 +33,7 @@ export default function PracticeBox({
   actions,
 }: PracticeBoxProps) {
   // allow injected actions for tests while keeping default production wiring
-  const actionClient = actions ?? practiceActionClient;
+  const actionClient = actions ?? actions;
   const initialState = deriveInitialState(initialQuestions);
   const [questions, setQuestions] = useState<PracticeQuestion[]>(
     () => initialQuestions

@@ -1,14 +1,13 @@
 import { prisma } from '@/lib/prisma';
 import type { PracticeSession, Question, SessionQuestion } from '@prisma/client';
 
-export type QuestionRecord = Question;
 export type SessionQuestionWithQuestion = SessionQuestion & { question: Question };
 export type PracticeSessionWithQuestions = PracticeSession & {
   questions: SessionQuestionWithQuestion[];
 };
 
 // repository wraps prisma calls to keep data access testable in isolation
-export const PracticeRepository = {
+export const PracticeDBAccess = {
   async findActiveSession(
     userId: string,
     topicId: string
@@ -38,21 +37,6 @@ export const PracticeRepository = {
           },
         },
       },
-    });
-  },
-
-  async findQuestionsByTopic(
-    topicId: string,
-    count: number
-  ): Promise<QuestionRecord[]> {
-    return prisma.question.findMany({
-      where: {
-        topicId,
-      },
-      orderBy: {
-        id: 'asc',
-      },
-      take: count,
     });
   },
 

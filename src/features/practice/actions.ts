@@ -2,8 +2,8 @@
 
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/features/auth/session';
-import { QuestionRepository } from '@/features/questions/repository';
-import { PracticeRepository, type SessionQuestionWithQuestion } from './repository';
+import { QuestionDBAccess } from '@/features/questions/repository';
+import { PracticeDBAccess, type SessionQuestionWithQuestion } from './repository';
 import { getEarnedPoints } from './practiceLogic';
 import type { PracticeQuestion } from './practiceLogic';
 import { getLevel } from '@/features/xp/leveling';
@@ -77,7 +77,7 @@ export async function bootstrapPracticeSession(input: {
   const count = normalizeCount(input.count);
 
   // repository isolates prisma access for easier mocking in tests
-  const existingSession = await PracticeRepository.findActiveSession(
+  const existingSession = await PracticeDBAccess.findActiveSession(
     session.id,
     topicId
   );
@@ -92,13 +92,13 @@ export async function bootstrapPracticeSession(input: {
     };
   }
 
-  const questions = await QuestionRepository.findQuestions({ topicId, count });
+  const questions = await QuestionDBAccess.findQuestions({ topicId, count });
   if (!questions.length) {
     return { ok: false, error: 'no-questions' };
   }
 
   const orderedQuestions = orderQuestions(questions);
-  const createdSession = await PracticeRepository.createSessionWithQuestions(
+  const createdSession = await PracticeDBAccess.createSessionWithQuestions(
     session.id,
     orderedQuestions.map((question) => question.id),
     input.timeLimit
@@ -132,7 +132,7 @@ export async function verifyAnswer(input: {
     return { ok: false, error: 'invalid-input' };
   }
 
-  const sessionQuestion = await PracticeRepository.findSessionQuestionForUser(
+  const sessionQuestion = await PracticeDBAccess.findSessionQuestionForUser(
     sessionId,
     questionId,
     session.id
@@ -155,7 +155,7 @@ export async function verifyAnswer(input: {
   const actualAnswer = sessionQuestion.question.answer.trim();
   const isCorrect = normalizedAnswer === actualAnswer.toLowerCase();
 
-  await PracticeRepository.updateSessionQuestion(sessionQuestion.id, {
+  await PracticeDBAccess.updateSessionQuestion(sessionQuestion.id, {
     attempts: nextAttempts,
     userAnswer,
     correct: isCorrect,
@@ -184,7 +184,7 @@ export async function verifyAnswer(input: {
     ok: true,
     correct: false,
     attempts: nextAttempts,
-    explanation: sessionQuestion.question.hint ?? undefined,
+    explanation: sessionQuestion.question.explanation ?? undefined,
   };
 }
 
@@ -193,7 +193,7 @@ export async function getTopics() {
   if (!session) {
     return { ok: false, error: 'unauthorized' } as const;
   }
-  const topics = await QuestionRepository.findAllTopics();
+  const topics = await QuestionDBAccess.findAllTopics();
   return { ok: true, topics } as const;
 }
 
@@ -210,12 +210,12 @@ export async function completePracticeSession(input: {
     return { ok: false, error: 'invalid-input' };
   }
 
-  const result = await PracticeRepository.completeSession(sessionId, session.id);
+  const result = await PracticeDBAccess.completeSession(sessionId, session.id);
   if (result.count === 0) {
     return { ok: false, error: 'not-found' };
   }
 
-  const completedSession = await PracticeRepository.findSessionWithQuestions(
+  const completedSession = await PracticeDBAccess.findSessionWithQuestions(
     sessionId,
     session.id
   );
