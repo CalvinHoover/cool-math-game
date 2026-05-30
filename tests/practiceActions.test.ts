@@ -25,13 +25,16 @@ vi.mock('@/lib/prisma', () => ({
     },
   },
 }));
+const questionRepo = vi.hoisted(() => ({
+  findQuestions: vi.fn(),
+}));
 
 vi.mock('@/features/auth/session', () => ({
   getSession: mockGetSession,
 }));
 
 vi.mock('@/features/practice/repository', () => ({
-  PracticeRepository: repository,
+  PracticeDBAccess: repository,
 }));
 
 vi.mock('@/features/questions/repository', () => ({
