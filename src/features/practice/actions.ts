@@ -210,6 +210,10 @@ export async function completePracticeSession(input: {
     return { ok: false, error: 'invalid-input' };
   }
 
+  const elapsed = Date.now();
+  if (input.timeLimit && elapsed > input.timeLimit) {
+    return { ok: false, error: 'time-expired' };
+  }
   const result = await PracticeDBAccess.completeSession(sessionId, session.id);
   if (result.count === 0) {
     return { ok: false, error: 'not-found' };
