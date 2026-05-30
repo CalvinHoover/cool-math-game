@@ -42,11 +42,13 @@ export const PracticeDBAccess = {
 
   async createSessionWithQuestions(
     userId: string,
-    questionIds: string[]
+    questionIds: string[],
+    timeLimit?: number
   ): Promise<PracticeSessionWithQuestions> {
     return prisma.practiceSession.create({
       data: {
         userId,
+        timeLimit,
         questions: {
           create: questionIds.map((questionId) => ({
             questionId,
@@ -108,6 +110,28 @@ export const PracticeDBAccess = {
       data: {
         completed: true,
         endedAt: new Date(),
+      },
+    });
+  },
+
+  async findSessionWithQuestions(
+    sessionId: string,
+    userId: string
+  ): Promise<PracticeSessionWithQuestions | null> {
+    return prisma.practiceSession.findFirst({
+      where: {
+        id: sessionId,
+        userId,
+      },
+      include: {
+        questions: {
+          include: {
+            question: true,
+          },
+          orderBy: {
+            questionId: 'asc',
+          },
+        },
       },
     });
   },
