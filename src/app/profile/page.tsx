@@ -18,11 +18,37 @@
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import { testPublicProfiles } from "@/features/profile/testData";
 import ThemeToggleWrapper from "@/features/profile/components/ThemeToggleWrapper";
+import "./Profile.css"
 
 export default function ProfilePage() {
+  const profile = testPublicProfiles[0]; // using goober1 for now
+
   return (
     <ThemeToggleWrapper>
-      <ProfileHeader profile={testPublicProfiles[0]} />
+      <div className="mx-auto max-w-4xl space-y-6">
+        <ProfileHeader profile={profile} />
+
+        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+          <h2 className="text-xl font-bold">Recently Played</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
+            INSERT RECENT GAMES HERE
+          </p>
+        </section>
+
+        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+          <h2 className="text-xl font-bold">Achievements</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
+            INSERT ACHIEVEMENTS HERE
+          </p>
+        </section>
+
+        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+          <h2 className="text-xl font-bold">Friends</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
+            INSERT FRIEND LIST HERE
+          </p>
+        </section>
+      </div>
     </ThemeToggleWrapper>
   );
 }

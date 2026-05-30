@@ -6,6 +6,7 @@ export interface UserProfile {
     stats: ProfileStats;
     createdAt: string;
     updatedAt: string;
+    bio?: string; // added for frontend dev
     email: string; // new addition, for contact info purposes / account creation
 }
 
@@ -15,6 +16,7 @@ export interface PublicProfile {
     username: string;
     avatarUrl?: string;
     level: number;
+    bio?: string; // added for frontend dev
     // irrelevant: xp, createdAt, updatedAt
 }
 

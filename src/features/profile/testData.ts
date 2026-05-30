@@ -5,13 +5,15 @@ export const testPublicProfiles: PublicProfile[] = [
     {
         id: "test1",
         username: "goober1",
-        level: 10
+        level: 10,
+        bio: "Here for fun and games!"
     },
     {
         id: "test2",
         username: "goober2",
         avatarUrl: "/goobertest.png",
-        level: 29
+        level: 29,
+        bio: "Here for DEATH and DESTRUCTION!!"
     }
 ];
 

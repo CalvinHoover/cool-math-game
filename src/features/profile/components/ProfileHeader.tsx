@@ -17,6 +17,15 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
                 />
                 <div>
                     <h1 className="text-2xl font-bold">{profile.username}</h1>
+                    {profile.bio ? (
+                        <p className="mt-2 text-gray-700 dark:text-gray-300">
+                            {profile.bio}
+                        </p>
+                    ) : (
+                        <p className="mt-2 text-gray-700 dark:text-gray-300">
+                            User has no bio.
+                        </p>
+                    )}
                 </div>
             </div>
             <div className="mt-4 flex gap-4 text-sm">
