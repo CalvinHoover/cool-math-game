@@ -1,0 +1,89 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #000000;
+  font-family: 'Comic Sans MS', 'Trebuchet MS', cursive;
+}
+
+.main-title {
+  font-size: 3.5rem;
+  color: #FFFF00;
+  text-shadow: 4px 4px 0px #FF0000;
+  text-decoration: underline;
+  margin-bottom: 8px;
+}
+
+.sub-title {
+  font-size: 1.4rem;
+  color: #FF00FF;
+  margin-bottom: 28px;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 4px;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 300px;
+}
+
+.form-input {
+  padding: 10px 12px;
+  font-size: 1rem;
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 4px inset #CCCCCC;
+  border-radius: 0;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  background-color: #FFFFCC;
+}
+
+.btn-signup {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  border: 4px outset #CCCCCC;
+  border-radius: 0;
+  cursor: pointer;
+  background-color: #0000FF;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.btn-signup:hover {
+  background-color: #0000CC;
+  border: 4px inset #CCCCCC;
+}
+
+.error-msg {
+  color: #FF4444;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.login-link {
+  color: #00FFFF;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 10px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.login-link:hover {
+  color: #FFFF00;
+}

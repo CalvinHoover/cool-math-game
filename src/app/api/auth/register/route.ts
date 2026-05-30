@@ -8,11 +8,16 @@ export async function POST(req: NextRequest) {
 
   if (!username || !email || !password) {
     return NextResponse.json({ error: "Please complete all horses" }, { status: 400 });
-  }
+  }//next responses have to have errors and statuses
 
-  const existing = await prisma.user.findFirst({
-    where: { OR: [{ email }, { username }] },
-  });
+  let existing;
+  try {
+    existing = await prisma.user.findFirst({
+      where: { OR: [{ email }, { username }] },
+    });
+  } catch {
+    return NextResponse.json({ error: "Database unavailable. Try again shortly." }, { status: 503 });
+  }
 
   if (existing) {
     return NextResponse.json({ error: "Email or username already taken" }, { status: 409 });
@@ -20,9 +25,14 @@ export async function POST(req: NextRequest) {
 
   const hashed = await bcrypt.hash(password, 12);
 
-  const user = await prisma.user.create({
-    data: { username, email, password: hashed },
-  });
+  let user;
+  try {
+    user = await prisma.user.create({
+      data: { username, email, password: hashed },
+    });
+  } catch {
+    return NextResponse.json({ error: "Database unavailable. Try again shortly." }, { status: 503 });
+  }
 
   await setSessionCookie({ id: user.id, username: user.username, email: user.email });
 
