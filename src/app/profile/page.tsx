@@ -21,6 +21,8 @@ import ThemeToggleWrapper from "@/features/profile/components/ThemeToggleWrapper
 import "./Profile.css"
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import RecentWinCard from "@/features/profile/components/ProfileStats";
+import MatchHistoryList from "@/features/profile/components/MatchHistory";
+import { M_PLUS_1 } from "next/font/google";
 
 const testStats = {
   level: 5,
@@ -43,6 +45,23 @@ const testStats = {
     }
   ]
 }
+
+const testMatchHistory = [
+  {
+    id: 1,
+    topic: "Algebra",
+    level: 3,
+    result: "Won" as const,
+    completedOn: "May 1, 2026,"
+  },
+  {
+    id: 2,
+    topic: "Algebra",
+    level: 4,
+    result: "Won" as const,
+    completedOn: "May 2, 2026,"
+  }
+]
 export default function ProfilePage() {
   const profile = testPublicProfiles[0]; // using goober1 for now
 
@@ -53,6 +72,8 @@ export default function ProfilePage() {
 
         <ProfileStats stats={testStats} />
         
+        <MatchHistoryList matches={testMatchHistory} />
+
         {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <h2 className="text-xl font-bold">Recently Played</h2>
           <div className="mt-4 space-y-3">

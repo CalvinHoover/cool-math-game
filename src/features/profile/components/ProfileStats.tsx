@@ -9,7 +9,7 @@ type ProfileStatsProps = {
       <section className="border p-4">
         <h2 className="mb-4 text-xl font-semibold">Profile Stats</h2>
   
-        <div className="grid grid-cols-3 gap-4">
+        <div className="text-gray-900 grid grid-cols-3 gap-4">
           <Stat label="Level" value={stats.level} />
           <Stat label="XP" value={stats.xp} />
           <Stat label="Games Completed" value={stats.gamesCompleted} />

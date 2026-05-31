@@ -50,3 +50,12 @@ export interface ProfileSettings {
     displayName?: string; // different from username, which is hard-logged into the database
     bio?: string;
 }
+
+// for individual match history entries
+export interface PastMatch {
+    id: number;
+    level: number;
+    topic: string;
+    result: "Won" | "Lost";
+    completedOn: string;
+}
