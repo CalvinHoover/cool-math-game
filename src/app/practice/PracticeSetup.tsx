@@ -12,7 +12,6 @@ type Topic = {
 const SESSION_LENGTHS = [5, 10, 20];
 
 export default function PracticeSetup() {
-  console.log("PracticeSetup mounted");
   const router = useRouter();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
