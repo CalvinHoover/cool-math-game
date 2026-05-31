@@ -6,6 +6,7 @@ export interface UserProfile {
     stats: ProfileStats;
     createdAt: string;
     updatedAt: string;
+    level: number;
     bio?: string; // added for frontend dev
     email: string; // new addition, for contact info purposes / account creation
 }

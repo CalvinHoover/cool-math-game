@@ -15,14 +15,19 @@
 
 // test for features/profile/components/ProfileHeader.tsx and ThemeToggleWrapper.tsx
 // test by visiting localhost:3000/profile
+
+"use client";
+import { useState } from "react";
+
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
-import { testPublicProfiles } from "@/features/profile/testData";
+import { testPublicProfiles, testUserProfiles } from "@/features/profile/testData";
 import ThemeToggleWrapper from "@/features/profile/components/ThemeToggleWrapper";
 import "./Profile.css"
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import RecentWinCard from "@/features/profile/components/ProfileStats";
 import MatchHistoryList from "@/features/profile/components/MatchHistory";
 import { M_PLUS_1 } from "next/font/google";
+import EditProfile from "@/features/profile/components/EditProfile";
 
 const testStats = {
   level: 5,
@@ -66,7 +71,7 @@ const testMatchHistory = [
 ]
 
 export default function ProfilePage() {
-  const profile = testPublicProfiles[0]; // using goober1 for now
+  const [profile, setProfile] = useState(testUserProfiles[0]); // using goober1 for now
 
   return (
     <ThemeToggleWrapper>
@@ -77,6 +82,10 @@ export default function ProfilePage() {
         
         <MatchHistoryList matches={testMatchHistory} />
 
+        <EditProfile 
+          profile={profile}
+          onSave={(updatedProfile) => setProfile(updatedProfile)}
+        />
         {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <h2 className="text-xl font-bold">Recently Played</h2>
           <div className="mt-4 space-y-3">
