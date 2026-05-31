@@ -83,8 +83,9 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className={`space-y-6 ${fontSizeClasses[profile.settings.fontSize]}`}>
-      <div className="mx-auto max-w-4xl space-y-6">
+    <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
+      <div className="profile-inner">
+        <h1 className="profile-title">Player Profile</h1>
         <ProfileHeader profile={profile} />
 
         <ProfileStats stats={profile.stats} />
@@ -139,14 +140,14 @@ export default function ProfilePage() {
           </div>
         </section> */}
 
-        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <section className="profile-section">
           <h2 className="text-xl font-bold">Achievements</h2>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
             INSERT ACHIEVEMENTS HERE
           </p>
         </section>
 
-        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <section className="profile-section">
           <h2 className="text-xl font-bold">Friends</h2>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
             INSERT FRIEND LIST HERE

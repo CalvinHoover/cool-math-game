@@ -20,7 +20,7 @@ export default function EditProfile({
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="border px-4 py-2"
+                className="profile-button"
             > Edit Profile
             </button>
 
@@ -56,10 +56,10 @@ export default function EditProfile({
 
                             setIsOpen(false);
                         }}
-                        className="border px-4 py-2"> Save </button>
+                        className="profile-button"> Save </button>
                         <button 
                             onClick={() => setIsOpen(false)}
-                            className="border px-4 py-2"> Cancel </button>
+                            className="profile-button"> Cancel </button>
                     </div>
                 </div>
             )}

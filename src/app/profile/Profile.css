@@ -1,9 +1,99 @@
-.app-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #000000;
-    font-family: 'Comic Sans MS', 'Trebuchet MS', cursive;
-  }
+.profile-container {
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: "Comic Sans MS", "Trebuchet MS", cursive;
+  padding: 32px;
+}
+
+.profile-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-title {
+  font-size: 3rem;
+  color: #ffff00;
+  text-shadow: 4px 4px 0px #ff0000;
+  text-decoration: underline;
+  text-align: center;
+}
+
+.profile-section {
+  background-color: #111111;
+  border: 4px outset #cccccc;
+  padding: 24px;
+  color: #ffffff;
+}
+
+.profile-section h2 {
+  color: #00ffff;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.profile-card {
+  background-color: #000000;
+  border: 4px inset #cccccc;
+  padding: 16px;
+  margin-top: 12px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.profile-label {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+.profile-value {
+  color: #ffffff;
+}
+
+.profile-button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  border: 4px outset #cccccc;
+  border-radius: 0;
+  cursor: pointer;
+  background-color: #0000FF;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.profile-button:hover {
+  border: 4px inset #cccccc;
+  background-color: #0000CC;
+}
+
+.profile-danger-button {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+
+.profile-danger-button:hover {
+  background-color: #cc0000;
+}
+
+.profile-input {
+  padding: 10px 12px;
+  font-size: 1rem;
+  font-family: "Courier New", Courier, monospace;
+  background-color: #ffffff;
+  color: #000000;
+  border: 4px inset #cccccc;
+  border-radius: 0;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-input:focus {
+  background-color: #ffffcc;
+}
