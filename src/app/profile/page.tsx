@@ -16,70 +16,38 @@
 // test for features/profile/components/ProfileHeader.tsx and ThemeToggleWrapper.tsx
 // test by visiting localhost:3000/profile
 
-"use client";
-import { useState } from "react";
+'use client';
 
-import ProfileHeader from "@/features/profile/components/ProfileHeader";
-import { testPublicProfiles, testUserProfiles } from "@/features/profile/testData";
-import ThemeToggleWrapper from "@/features/profile/components/ThemeToggleWrapper";
-import "./Profile.css"
-import ProfileStats from "@/features/profile/components/ProfileStats";
-import RecentWinCard from "@/features/profile/components/ProfileStats";
-import MatchHistoryList from "@/features/profile/components/MatchHistory";
-import { M_PLUS_1 } from "next/font/google";
-import EditProfile from "@/features/profile/components/EditProfile";
-import SettingsPanel from "@/features/profile/components/SettingsPanel"
-import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
+import { useEffect, useState } from 'react';
 
-const testStats = {
-  level: 5,
-  xp: 1000,
-  gamesCompleted: 20,
-  recentWins: [
-    {
-      gameId: 1,
-      gameLevel: 1,
-      topic: "Algebra 1",
-      description: "This is a pretend game about Algebra.",
-      button: null,
-    },
-    {
-      gameId: 2,
-      gameLevel: 2,
-      topic: "Algebra 1",
-      description: "This is also a pretend game about Algebra.",
-      button: null,
-    }
-  ]
-}
-
-const testMatchHistory = [
-  {
-    id: 1,
-    topic: "Algebra",
-    level: 3,
-    opponent: "evilgoober1",
-    result: "Won" as const,
-    completedOn: "May 1, 2026,"
-  },
-  {
-    id: 2,
-    topic: "Algebra",
-    level: 4,
-    opponent: "evilgoober2",
-    result: "Won" as const,
-    completedOn: "May 2, 2026,"
-  }
-]
-
+import ProfileHeader from '@/features/profile/components/ProfileHeader';
+import { testUserProfiles } from '@/features/profile/testData';
+import './Profile.css';
+import ProfileStats from '@/features/profile/components/ProfileStats';
+import MatchHistoryList from '@/features/profile/components/MatchHistory';
+import EditProfile from '@/features/profile/components/EditProfile';
+import SettingsPanel from '@/features/profile/components/SettingsPanel';
+import FontSizeSelector from '@/features/profile/components/FontSizeSelector';
+import TopicProgress from '@/features/profile/components/TopicProgress';
+import { getProfileData } from '@/features/profile/actions';
+import type { ProfileData } from '@/features/profile/actions';
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState(testUserProfiles[0]); // using goober1 for now
+  const [profile, setProfile] = useState(testUserProfiles[0]);
+  const [realData, setRealData] = useState<ProfileData | null>(null);
+
+  useEffect(() => {
+    getProfileData().then((result) => {
+      if (result.ok) {
+        setRealData(result.data);
+      }
+    });
+  }, []);
 
   const fontSizeClasses = {
-    small: "text-sm",
-    medium: "text-base",
-    large: "text-lg",
+    small: 'text-sm',
+    medium: 'text-base',
+    large: 'text-lg',
   };
 
   return (
@@ -88,27 +56,45 @@ export default function ProfilePage() {
         <h1 className="profile-title">Player Profile</h1>
         <ProfileHeader profile={profile} />
 
-        <ProfileStats stats={profile.stats} />
-        
-        {profile.settings.showMatchHistory && (
-        <MatchHistoryList matches={profile.matchHistory} />
+        {realData ? (
+          <ProfileStats
+            totalXp={realData.totalXp}
+            globalLevel={realData.globalLevel}
+            currentLevelXp={realData.currentLevelXp}
+            nextLevelXp={realData.nextLevelXp}
+            practiceSessionsCompleted={realData.practiceSessionsCompleted}
+          />
+        ) : (
+          <ProfileStats
+            totalXp={profile.stats.xp}
+            globalLevel={profile.stats.level}
+            currentLevelXp={0}
+            nextLevelXp={100}
+            practiceSessionsCompleted={profile.stats.gamesCompleted}
+          />
         )}
 
-        <EditProfile 
+        {realData && <TopicProgress topics={realData.topics} />}
+
+        {profile.settings.showMatchHistory && (
+          <MatchHistoryList matches={profile.matchHistory} />
+        )}
+
+        <EditProfile
           profile={profile}
           onSave={(updatedProfile) => setProfile(updatedProfile)}
         />
 
-        <SettingsPanel 
+        <SettingsPanel
           settings={profile.settings}
-          onChange={(updatedSettings) => 
+          onChange={(updatedSettings) =>
             setProfile({
               ...profile,
               settings: updatedSettings,
             })
           }
-          />
-        <FontSizeSelector 
+        />
+        <FontSizeSelector
           fontSize={profile.settings.fontSize}
           onChange={(newFontSize) =>
             setProfile({
@@ -118,27 +104,8 @@ export default function ProfilePage() {
                 fontSize: newFontSize,
               },
             })
-          } 
+          }
         />
-        {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="text-xl font-bold">Recently Played</h2>
-          <div className="mt-4 space-y-3">
-            {testStats.recentWins.map((win) => (
-              <div
-                key={win.gameId}
-                className="rounded-md border p-4 dark:border-gray-700"
-              >
-                <p className="font-semibold">{win.topic}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Level {win.gameLevel}
-                </p>
-                <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">
-                  {win.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section> */}
 
         <section className="profile-section">
           <h2 className="text-xl font-bold">Achievements</h2>

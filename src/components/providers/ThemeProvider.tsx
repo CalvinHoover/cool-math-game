@@ -24,29 +24,30 @@ export function ThemeProvider({
   storageKey = 'theme',
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const stored = window.localStorage.getItem(storageKey) as Theme | null;
     if (stored) {
+      // Reading localStorage after mount avoids SSR hydration mismatch
+      // eslint-disable-next-line
       setThemeState(stored);
     }
   }, [storageKey]);
 
   const resolvedTheme: 'dark' | 'light' =
-    theme === 'system'
+    typeof window !== 'undefined' && theme === 'system'
       ? window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light'
-      : theme;
+      : theme === 'system'
+        ? 'light'
+        : theme;
 
   useEffect(() => {
-    if (!mounted) return;
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(resolvedTheme);
-  }, [resolvedTheme, mounted]);
+  }, [resolvedTheme]);
 
   const setTheme = (newTheme: Theme) => {
     window.localStorage.setItem(storageKey, newTheme);
@@ -55,7 +56,7 @@ export function ThemeProvider({
 
   const value = {
     theme,
-    resolvedTheme: mounted ? resolvedTheme : 'light',
+    resolvedTheme,
     setTheme,
   };
 
