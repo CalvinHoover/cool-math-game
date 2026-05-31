@@ -22,6 +22,7 @@ import { useState } from "react";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import { testPublicProfiles, testUserProfiles } from "@/features/profile/testData";
 import ThemeToggleWrapper from "@/features/profile/components/ThemeToggleWrapper";
+import ProfileFriendsList from "@/features/friends/components/ProfileFriendsList";
 import "./Profile.css"
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import RecentWinCard from "@/features/profile/components/ProfileStats";
@@ -146,11 +147,10 @@ export default function ProfilePage() {
             INSERT ACHIEVEMENTS HERE
           </p>
         </section>
-
         <section className="profile-section">
           <h2 className="text-xl font-bold">Friends</h2>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT FRIEND LIST HERE
+            <ProfileFriendsList />
           </p>
         </section>
       </div>

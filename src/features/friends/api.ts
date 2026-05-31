@@ -1,6 +1,18 @@
 // pretty much the same as profile/api.ts
 
+import type { PublicProfile } from "../profile/types";
 import type { Friend, FriendRequest, FriendStatus } from "./types";
+
+export async function searchUsers(query: string): Promise<PublicProfile[]> {
+  const response = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to search users :[");
+  }
+
+  const data = await response.json();
+  return data.users;
+}
 
 export async function getFriends(): Promise<Friend[]> {
   const response = await fetch("/api/friends");
