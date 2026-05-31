@@ -1,5 +1,5 @@
 // test profile data
-import type { PublicProfile, UserProfile, ProfileSettings } from "./types";
+import type { PublicProfile, UserProfile, UserSettings } from "./types";
 
 export const testPublicProfiles: PublicProfile[] = [
     {
@@ -45,7 +45,12 @@ export const testUserProfiles: UserProfile[] = [
         level: 10,
         createdAt: "January 1, 2026",
         updatedAt: "January 2, 2026",
-        email: "goober1@example.com"
+        email: "goober1@example.com",
+        settings: {
+            emailNotifications: true,
+            publicProfile: true,
+            showMatchHistory: true,
+        }
     },
     {
         id: "test2",
@@ -75,14 +80,19 @@ export const testUserProfiles: UserProfile[] = [
         level: 5,
         createdAt: "February 1, 2026",
         updatedAt: "February 2, 2026",
-        email: "goober2@example.com"
+        email: "goober2@example.com",
+        settings: {
+            emailNotifications: true,
+            publicProfile: true,
+            showMatchHistory: true,
+        }
     }
 ]
 
-// keep this constant across all test users for now
-export const testProfileSettings: ProfileSettings = {
-    theme: "light"
-}
+// // keep this constant across all test users for now
+// export const testProfileSettings: UserSettings = {
+//     theme: "light"
+// }
 
 // function to test whether we can search public profiles by username
 // either returns a PublicProfile object or undefined

@@ -28,6 +28,7 @@ import RecentWinCard from "@/features/profile/components/ProfileStats";
 import MatchHistoryList from "@/features/profile/components/MatchHistory";
 import { M_PLUS_1 } from "next/font/google";
 import EditProfile from "@/features/profile/components/EditProfile";
+import SettingsPanel from "@/features/profile/components/SettingsPanel"
 
 const testStats = {
   level: 5,
@@ -86,6 +87,8 @@ export default function ProfilePage() {
           profile={profile}
           onSave={(updatedProfile) => setProfile(updatedProfile)}
         />
+
+        <SettingsPanel settings={profile.settings} />
         {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <h2 className="text-xl font-bold">Recently Played</h2>
           <div className="mt-4 space-y-3">
