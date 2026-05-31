@@ -1,0 +1,78 @@
+/* ==========================================================================
+   FULL SCREEN LAYOUT
+   ========================================================================== */
+
+/* The absolute base component that holds everything */
+.duel-container {
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevents the whole browser tab from scrolling */
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* Status Bar holding both player windows */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px; /* Reduced slightly to give the arena more room */
+  gap: 20px;
+  flex-shrink: 0; /* Prevents the status bar from squishing if the screen gets small */
+}
+
+/* ==========================================================================
+   GAMEPLAY AREA
+   ========================================================================== */
+
+/* The isolated battleground where attacks spawn */
+.duel-arena {
+  flex: 1; /* Automatically stretches to fill all remaining vertical space */
+  width: 100%;
+  border: 6px double #00FF00;
+  position: relative; /* Crucial: Keeps absolute-positioned attacks trapped inside */
+  overflow: hidden; /* Clips attacks that slide off-screen */
+  box-sizing: border-box;
+}
+
+/* Generic layout for individual status boxes (Windows 98 layout style) */
+.player-status, .opponent-status {
+  flex: 1;
+  background-color: #000000;
+  padding: 15px;
+  border: 4px outset #C0C0C0; 
+}
+
+/* Give the local player a friendly neon lime color theme */
+.player-status h2 {
+  color: #00FF00; 
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #003300;
+}
+
+.player-status p {
+  color: #FFFFFF;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+/* Give the opponent a hostile neon cyan/magenta theme */
+.opponent-status h2 {
+  color: #00FFFF;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #003333;
+}
+
+.opponent-status p {
+  color: #FFFFFF;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 5px 0;
+}

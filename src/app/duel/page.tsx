@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { MenuButton } from '../../components/interface/MenuButton';
-import DuelBoard from '../../features/duel/DuelBoard';
+import DuelBoard from '../../features/duel/components/DuelBoard';
 import '../dashboard/Dashboard.css';
 import { useState } from 'react';
 
