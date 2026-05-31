@@ -19,7 +19,30 @@ import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import { testPublicProfiles } from "@/features/profile/testData";
 import ThemeToggleWrapper from "@/features/profile/components/ThemeToggleWrapper";
 import "./Profile.css"
+import ProfileStats from "@/features/profile/components/ProfileStats";
+import RecentWinCard from "@/features/profile/components/ProfileStats";
 
+const testStats = {
+  level: 5,
+  xp: 1000,
+  gamesCompleted: 20,
+  recentWins: [
+    {
+      gameId: 1,
+      gameLevel: 1,
+      topic: "Algebra 1",
+      description: "This is a pretend game about Algebra.",
+      button: null,
+    },
+    {
+      gameId: 2,
+      gameLevel: 2,
+      topic: "Algebra 1",
+      description: "This is also a pretend game about Algebra.",
+      button: null,
+    }
+  ]
+}
 export default function ProfilePage() {
   const profile = testPublicProfiles[0]; // using goober1 for now
 
@@ -28,12 +51,27 @@ export default function ProfilePage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <ProfileHeader profile={profile} />
 
-        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <ProfileStats stats={testStats} />
+        
+        {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <h2 className="text-xl font-bold">Recently Played</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT RECENT GAMES HERE
-          </p>
-        </section>
+          <div className="mt-4 space-y-3">
+            {testStats.recentWins.map((win) => (
+              <div
+                key={win.gameId}
+                className="rounded-md border p-4 dark:border-gray-700"
+              >
+                <p className="font-semibold">{win.topic}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Level {win.gameLevel}
+                </p>
+                <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">
+                  {win.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section> */}
 
         <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <h2 className="text-xl font-bold">Achievements</h2>
