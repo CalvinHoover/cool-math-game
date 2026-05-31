@@ -51,7 +51,16 @@ export const testUserProfiles: UserProfile[] = [
             publicProfile: true,
             showMatchHistory: true,
             fontSize: "medium",
-        }
+        },
+        matchHistory: [
+        {
+            id: 2,
+            level: 219,
+            topic: "Calculus",
+            opponent: "villaingoober2",
+            result: "Lost",
+            completedOn: "January 2, 2026",
+        }]
     },
     {
         id: "test2",
@@ -87,7 +96,17 @@ export const testUserProfiles: UserProfile[] = [
             publicProfile: true,
             showMatchHistory: true,
             fontSize: "large",
-        }
+        },
+        matchHistory: [
+            {
+                id: 1,
+                level: 10,
+                topic: "Calculus",
+                opponent: "villaingoober1",
+                result: "Won",
+                completedOn: "January 1, 2026",
+            }
+        ]
     }
 ]
 

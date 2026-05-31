@@ -72,25 +72,53 @@ const testMatchHistory = [
   }
 ]
 
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState(testUserProfiles[0]); // using goober1 for now
 
+  const fontSizeClasses = {
+    small: "text-sm",
+    medium: "text-base",
+    large: "text-lg",
+  };
+
   return (
-    <ThemeToggleWrapper>
+    <main className={`space-y-6 ${fontSizeClasses[profile.settings.fontSize]}`}>
       <div className="mx-auto max-w-4xl space-y-6">
         <ProfileHeader profile={profile} />
 
-        <ProfileStats stats={testStats} />
+        <ProfileStats stats={profile.stats} />
         
-        <MatchHistoryList matches={testMatchHistory} />
+        {profile.settings.showMatchHistory && (
+        <MatchHistoryList matches={profile.matchHistory} />
+        )}
 
         <EditProfile 
           profile={profile}
           onSave={(updatedProfile) => setProfile(updatedProfile)}
         />
 
-        <SettingsPanel settings={profile.settings} />
-        <FontSizeSelector fontSize={profile.settings.fontSize} />
+        <SettingsPanel 
+          settings={profile.settings}
+          onChange={(updatedSettings) => 
+            setProfile({
+              ...profile,
+              settings: updatedSettings,
+            })
+          }
+          />
+        <FontSizeSelector 
+          fontSize={profile.settings.fontSize}
+          onChange={(newFontSize) =>
+            setProfile({
+              ...profile,
+              settings: {
+                ...profile.settings,
+                fontSize: newFontSize,
+              },
+            })
+          } 
+        />
         {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <h2 className="text-xl font-bold">Recently Played</h2>
           <div className="mt-4 space-y-3">
@@ -125,6 +153,6 @@ export default function ProfilePage() {
           </p>
         </section>
       </div>
-    </ThemeToggleWrapper>
+    </main>
   );
 }

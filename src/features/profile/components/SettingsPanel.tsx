@@ -1,17 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { UserSettings } from "../types"
 
 type SettingsProps = {
-    settings: {
-        emailNotifications: boolean;
-        publicProfile: boolean;
-        showMatchHistory: boolean;
-    };
+    settings: UserSettings;
+    onChange: (updatedSettings: UserSettings) => void;
 };
 
 export default function SettingsPanel({
-    settings,
+    settings, onChange,
 }: SettingsProps) {
     const [emailNotifications, setEmailNotifications] = useState(settings.emailNotifications);
     const [publicProfile, setPublicProfile] = useState(settings.publicProfile);
@@ -36,8 +34,13 @@ export default function SettingsPanel({
                 <label className="flex gap-2">
                     <input
                         type="checkbox"
-                        checked={showMatchHistory}
-                        onChange={() => setShowMatchHistory(!showMatchHistory)} /> Show Match History
+                        checked={settings.showMatchHistory}
+                        onChange={() => 
+                            onChange({
+                                ...settings,
+                                showMatchHistory: !settings.showMatchHistory,
+                            })
+                        } /> Show Match History
                 </label>
             </div>
         </section>

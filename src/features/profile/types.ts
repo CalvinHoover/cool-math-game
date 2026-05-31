@@ -10,6 +10,7 @@ export interface UserProfile {
     bio?: string; // added for frontend dev
     email: string; // new addition, for contact info purposes / account creation
     settings: UserSettings;
+    matchHistory: PastMatch[];
 }
 
 // how the user will see other profile pages
