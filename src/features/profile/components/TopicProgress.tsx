@@ -26,11 +26,17 @@ export default function TopicProgress({ topics }: TopicProgressProps) {
                 </div>
               </CardHeader>
               <CardContent>
-                <ProgressBar
-                  value={topic.currentLevelXp}
-                  max={topic.nextLevelXp}
-                  label={`${topic.xp} XP`}
-                />
+                {(() => {
+                  const total = topic.nextLevelXp ?? 1;
+                  const percent = total ? Math.round((topic.currentLevelXp / total) * 100) : 0;
+                  return (
+                    <ProgressBar
+                      value={topic.currentLevelXp}
+                      max={topic.nextLevelXp}
+                      label={`${topic.xp} XP (${percent}%)`}
+                    />
+                  );
+                })()}
               </CardContent>
             </Card>
           ))}
