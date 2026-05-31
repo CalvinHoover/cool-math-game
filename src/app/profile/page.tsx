@@ -29,6 +29,7 @@ import MatchHistoryList from "@/features/profile/components/MatchHistory";
 import { M_PLUS_1 } from "next/font/google";
 import EditProfile from "@/features/profile/components/EditProfile";
 import SettingsPanel from "@/features/profile/components/SettingsPanel"
+import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
 
 const testStats = {
   level: 5,
@@ -89,6 +90,7 @@ export default function ProfilePage() {
         />
 
         <SettingsPanel settings={profile.settings} />
+        <FontSizeSelector fontSize={profile.settings.fontSize} />
         {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <h2 className="text-xl font-bold">Recently Played</h2>
           <div className="mt-4 space-y-3">

@@ -50,6 +50,7 @@ export const testUserProfiles: UserProfile[] = [
             emailNotifications: true,
             publicProfile: true,
             showMatchHistory: true,
+            fontSize: "medium",
         }
     },
     {
@@ -85,6 +86,7 @@ export const testUserProfiles: UserProfile[] = [
             emailNotifications: true,
             publicProfile: true,
             showMatchHistory: true,
+            fontSize: "large",
         }
     }
 ]

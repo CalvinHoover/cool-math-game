@@ -51,6 +51,7 @@ export interface UserSettings {
     emailNotifications: boolean;
     publicProfile: boolean;
     showMatchHistory: boolean;
+    fontSize: "small" | "medium" | "large";
 }
 
 // for individual match history entries
