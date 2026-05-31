@@ -13,10 +13,7 @@ export default function MatchHistoryList ({
 
             <div className="mt-4 space-y-3">
                 {matches.map((match) => (
-                    <div
-                        key={match.id}
-                        className="border p-4 dark:border-gray-700"
-                    >
+                    <div key={match.id} >
                         <p className="font-semibold">
                             {match.topic}
                         </p>
@@ -29,6 +26,10 @@ export default function MatchHistoryList ({
                             Result: {match.result}
                         </p>
 
+                        <p>
+                            {match.result === "Won" ? "Won" : "Lost"} vs {match.opponent}
+                        </p>
+                        
                         <p className="text-sm text-gray-500">
                             {match.completedOn}
                         </p>

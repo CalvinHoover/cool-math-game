@@ -51,6 +51,7 @@ const testMatchHistory = [
     id: 1,
     topic: "Algebra",
     level: 3,
+    opponent: "evilgoober1",
     result: "Won" as const,
     completedOn: "May 1, 2026,"
   },
@@ -58,10 +59,12 @@ const testMatchHistory = [
     id: 2,
     topic: "Algebra",
     level: 4,
+    opponent: "evilgoober2",
     result: "Won" as const,
     completedOn: "May 2, 2026,"
   }
 ]
+
 export default function ProfilePage() {
   const profile = testPublicProfiles[0]; // using goober1 for now
 

@@ -56,6 +56,7 @@ export interface PastMatch {
     id: number;
     level: number;
     topic: string;
+    opponent: string;
     result: "Won" | "Lost";
     completedOn: string;
 }
