@@ -1,19 +1,21 @@
 'use client';
 
+import { useState } from 'react';
 import { ActiveAttack } from '../types';
 
 interface DuelAttackProps {
-  questionToRender: ActiveAttack;
-  clickFunction: () => void;  
+  attackToRender: ActiveAttack;
+  clickFunction: () => void;
+  resolutionFunction: (thisAttack: ActiveAttack, userAnswer: string) => void; // Function to handle the form submission  
 }
 
-export default function QuestionWindow({ questionToRender, clickFunction }: DuelAttackProps) {
+export default function QuestionWindow({ attackToRender, clickFunction, resolutionFunction }: DuelAttackProps) {
+  const [currentInput, setCurrentInput] = useState(''); // User input in the answer box
 
-  // A temporary shell function to handle the form submission
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents the page from refreshing!
-    console.log("Answer submitted!");
-    // You'll eventually check the answer here and call clickFunction() to close it
+    e.preventDefault(); // Stops the page from refreshing, which is the default behavior of form submission
+    resolutionFunction(attackToRender, currentInput);
+    setCurrentInput(''); 
   };
 
   return (
@@ -26,15 +28,17 @@ export default function QuestionWindow({ questionToRender, clickFunction }: Duel
           
         <div className="window-body">
           <p>
-            {questionToRender.problem.body}
+            {attackToRender.problem.body}
           </p>
         </div>
 
         <form className="answer-area" onSubmit={handleSubmit}>
           <input 
-            type="string" 
+            type="text" 
             className="answer-input" 
-            autoFocus // Automatically puts the cursor in the box so they can type instantly
+            value={currentInput}
+            onChange={(event) => setCurrentInput(event.target.value)}
+            autoFocus // Automatically puts the cursor in the box so the player can type instantly
           />
           <button type="submit" className="answer-submit">
             FIRE

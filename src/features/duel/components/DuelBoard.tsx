@@ -11,7 +11,7 @@ import { ActiveAttack } from '../types';
 import QuestionWindow from './QuestionWindow';
 
 export default function DuelBoard() {
-  const { gameState, spawnAttack, setActiveQuestion } = useDuelGame();
+  const { gameState, spawnAttack, setActiveQuestion, resolveAttackResponse } = useDuelGame();
 
   return (
     <div className="duel-container">
@@ -59,7 +59,15 @@ export default function DuelBoard() {
       </div>
     </div>
 
-    {gameState.activeQuestion && <QuestionWindow questionToRender={gameState.activeQuestion} clickFunction={() => setActiveQuestion(null)} />}
+    {gameState.activeQuestion && 
+      <QuestionWindow 
+        attackToRender={gameState.activeQuestion} 
+        clickFunction={() => setActiveQuestion(null)} 
+        resolutionFunction={(attack, userAnswer) => {
+          resolveAttackResponse(attack, userAnswer);
+        }} 
+      />
+    }
   
   </div>
   );
