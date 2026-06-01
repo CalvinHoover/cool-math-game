@@ -6,6 +6,7 @@ export interface AchievementDefinition {
   iconName: string;
 }
 
+// hardcodes the five badge definitions so the engine and UI stay in sync
 export const ACHIEVEMENTS: AchievementDefinition[] = [
   {
     slug: 'first-steps',

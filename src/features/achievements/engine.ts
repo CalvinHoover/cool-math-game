@@ -24,7 +24,6 @@ function evaluateCondition(
 ): boolean {
   switch (def.slug) {
     case 'first-steps':
-      if (snapshot.totalCompletedSessions == 1) return true;
       return snapshot.totalCompletedSessions >= 1;
     case 'dedicated-learner':
       return snapshot.totalCompletedSessions >= 10;
