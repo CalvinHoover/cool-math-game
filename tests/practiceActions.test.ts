@@ -16,10 +16,19 @@ const questionRepo = vi.hoisted(() => ({
   findQuestions: vi.fn(),
   findAllTopics: vi.fn(),
 }));
+const mockAchievementRepo = vi.hoisted(() => ({
+  getUserAchievements: vi.fn(),
+  getAllAchievements: vi.fn(),
+  awardAchievement: vi.fn(),
+}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
+    practiceSession: {
+      count: vi.fn(),
+    },
     userTopic: {
+      findMany: vi.fn(),
       upsert: mockPrismaUserTopicUpsert,
       update: mockPrismaUserTopicUpdate,
     },
@@ -41,12 +50,19 @@ vi.mock('@/features/questions/repository', () => ({
   QuestionRepository: questionRepo,
 }));
 
+vi.mock('@/features/achievements/repository', () => ({
+  getUserAchievements: mockAchievementRepo.getUserAchievements,
+  getAllAchievements: mockAchievementRepo.getAllAchievements,
+  awardAchievement: mockAchievementRepo.awardAchievement,
+}));
+
 import {
   bootstrapPracticeSession,
   completePracticeSession,
   verifyAnswer,
   getTopics,
 } from '@/features/practice/actions';
+import { prisma } from '@/lib/prisma';
 
 const sessionUser = {
   id: 'user-1',
@@ -87,6 +103,11 @@ const sessionRecord = {
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetSession.mockResolvedValue(sessionUser);
+  mockAchievementRepo.getUserAchievements.mockResolvedValue([]);
+  mockAchievementRepo.getAllAchievements.mockResolvedValue([]);
+  mockAchievementRepo.awardAchievement.mockResolvedValue(true);
+  (prisma.practiceSession.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+  (prisma.userTopic.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 });
 
 describe('bootstrapPracticeSession', () => {
@@ -353,6 +374,26 @@ describe('completePracticeSession', () => {
     if (result.ok) {
       expect(result.totalXp).toBe(100);
       expect(result.newLevel).toBe(2);
+    }
+  });
+
+  it('returns newAchievements when achievement conditions are newly met', async () => {
+    repository.completeSession.mockResolvedValue({ count: 1 });
+    repository.findSessionWithQuestions.mockResolvedValue(sessionRecord);
+    mockPrismaUserTopicUpsert.mockResolvedValue({ id: 'ut1', userId: sessionUser.id, topicId: 'topic-1', xp: 2, level: 1 });
+    mockAchievementRepo.getUserAchievements.mockResolvedValue([]);
+    mockAchievementRepo.getAllAchievements.mockResolvedValue([
+      { id: 'a1', name: 'First Steps', description: '...', xpReward: 0 },
+    ]);
+    mockAchievementRepo.awardAchievement.mockResolvedValue(true);
+
+    const result = await completePracticeSession({ sessionId: 'session-1' });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.newAchievements).toBeDefined();
+      expect(result.newAchievements!.length).toBeGreaterThan(0);
+      expect(result.newAchievements![0].slug).toBe('first-steps');
     }
   });
 });

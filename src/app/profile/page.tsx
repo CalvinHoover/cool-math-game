@@ -31,6 +31,7 @@ import FontSizeSelector from '@/features/profile/components/FontSizeSelector';
 import TopicProgress from '@/features/profile/components/TopicProgress';
 import { getProfileData } from '@/features/profile/actions';
 import type { ProfileData } from '@/features/profile/actions';
+import { AchievementGrid } from '@/features/achievements/components/AchievementGrid';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(testUserProfiles[0]);
@@ -108,10 +109,12 @@ export default function ProfilePage() {
         />
 
         <section className="profile-section">
-          <h2 className="text-xl font-bold">Achievements</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT ACHIEVEMENTS HERE
-          </p>
+          <h2 className="text-xl font-bold mb-4">Achievements</h2>
+          {realData ? (
+            <AchievementGrid achievements={realData.achievements} />
+          ) : (
+            <p className="text-gray-600 dark:text-gray-300">Loading achievements...</p>
+          )}
         </section>
 
         <section className="profile-section">

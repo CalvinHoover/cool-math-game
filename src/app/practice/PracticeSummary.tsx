@@ -11,6 +11,7 @@ type PracticeSummaryProps = {
   questions: PracticeQuestion[];
   xpEarned?: number;
   newLevel?: number;
+  newAchievements?: { slug: string; name: string; color: string }[];
   onSave: () => void;
   isSaving: boolean;
   isSaved: boolean;
@@ -22,6 +23,7 @@ export default function PracticeSummary({
   questions,
   xpEarned,
   newLevel,
+  newAchievements,
   onSave,
   isSaving,
   isSaved,
@@ -43,6 +45,19 @@ export default function PracticeSummary({
           <p className="mt-2 text-yellow-900 font-bold text-lg">
             You are now Level {newLevel}
           </p>
+        </div>
+      )}
+
+      {newAchievements && newAchievements.length > 0 && (
+        <div className="space-y-2 mb-4">
+          {newAchievements.map((a) => (
+            <div
+              key={a.slug}
+              className={`${a.color} text-white p-3 rounded text-center font-semibold`}
+            >
+              New Achievement Unlocked: {a.name}
+            </div>
+          ))}
         </div>
       )}
 

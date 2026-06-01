@@ -12,6 +12,9 @@ type MockPrisma = {
     deleteMany: ReturnType<typeof vi.fn>;
     upsert: ReturnType<typeof vi.fn>;
   };
+  achievement: {
+    upsert: ReturnType<typeof vi.fn>;
+  };
 };
 
 describe('seed', () => {
@@ -23,6 +26,9 @@ describe('seed', () => {
     },
     topic: {
       deleteMany: vi.fn(),
+      upsert: vi.fn(),
+    },
+    achievement: {
       upsert: vi.fn(),
     },
   });

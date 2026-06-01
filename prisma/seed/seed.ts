@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { PrismaClient } from '@prisma/client';
+import { seedAchievements } from './achievements';
 
 export type SeedQuestion = {
   text: string;
@@ -71,4 +72,6 @@ export async function seed(
   console.log(
     `Seeded ${totalQuestions} questions across ${data.length} topics.`
   );
+
+  await seedAchievements(prisma);
 }
