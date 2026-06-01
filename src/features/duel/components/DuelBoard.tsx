@@ -46,6 +46,25 @@ export default function DuelBoard() {
           owner: 'player'
         });
       }}
+
+      // TODO this is bad, repeated placeholder code just so you can play as both sides for now.
+      // Right click to spawn attacks for the opponent.
+      onContextMenu={(eventData) => {
+        eventData.preventDefault();
+
+        if (eventData.target !== eventData.currentTarget) return;
+
+        // Get relative Y coordinate of the click within the arena
+        const rect = eventData.currentTarget.getBoundingClientRect();
+        const relativeY = eventData.clientY - rect.top;
+
+        spawnAttack({
+          id: Date.now(),
+          problem: sampleProblem,
+          positionY: relativeY,
+          owner: 'opponent'
+        });
+      }}
     >
         
       <div className="attack-container">
