@@ -5,13 +5,15 @@
 import { useDuelGame } from '../useDuelGame';
 import './Duels.css';
 import './QuestionOverlay.css';
-import { sampleProblem } from '../testData';
+import './IncomeQuestion.css';
+import { sampleQuestion } from '../testData';
 import DuelAttack from "./DuelAttack"
 import { ActiveAttack } from '../types';
 import QuestionWindow from './QuestionWindow';
+import IncomeQuestion from './IncomeQuestion';
 
 export default function DuelBoard() {
-  const { gameState, spawnAttack, setActiveQuestion, resolveAttackResponse, resolveAttackHit } = useDuelGame();
+  const { gameState, spawnAttack, setActiveQuestion, resolveQuestionResponse, resolveAttackHit } = useDuelGame();
 
   return (
     <div className="duel-container">
@@ -41,7 +43,7 @@ export default function DuelBoard() {
 
         spawnAttack({
           id: Date.now(),
-          problem: sampleProblem,
+          question: sampleQuestion,
           positionY: relativeY,
           owner: 'player'
         });
@@ -60,7 +62,7 @@ export default function DuelBoard() {
 
         spawnAttack({
           id: Date.now(),
-          problem: sampleProblem,
+          question: sampleQuestion,
           positionY: relativeY,
           owner: 'opponent'
         });
@@ -72,7 +74,9 @@ export default function DuelBoard() {
           <DuelAttack 
             key={attack.id} 
             attackData={attack}
-            clickFunction={() => setActiveQuestion(attack)}
+            clickFunction={() => setActiveQuestion(
+             { id: attack.id, question: attack.question, type: 'attack' }
+            )}
             hitFunction={() => resolveAttackHit(attack)}
           />
         ))}
@@ -81,14 +85,34 @@ export default function DuelBoard() {
 
     {gameState.activeQuestion && 
       <QuestionWindow 
-        attackToRender={gameState.activeQuestion} 
+        questionToRender={gameState.activeQuestion} 
         clickFunction={() => setActiveQuestion(null)} 
-        resolutionFunction={(attack, userAnswer) => {
-          resolveAttackResponse(attack, userAnswer);
+        resolutionFunction={(question, userAnswer) => {
+          resolveQuestionResponse(question, userAnswer);
         }} 
       />
     }
-  
+
+  {/* Income question area */}
+    <div className="income-question-space">
+      <div className="income-question-array">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <IncomeQuestion
+            key={i}
+            clickFunction={(myQuestion) => setActiveQuestion(
+              { id: i, 
+                question: myQuestion, 
+                type: 'income', 
+                onCorrect: () => console.log('This will generate a new problem'), // TODO implement
+                onIncorrect: () => console.log('This will force an automatic veto') // TODO implement
+              }
+            )} 
+          />
+        ))}
+      </div>
+    </div>
+
   </div>
+
   );
 }

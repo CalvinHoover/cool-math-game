@@ -1,6 +1,6 @@
 // Object types for the Duel game
 
-export interface MathProblem { // TODO: this should match the format of the database problems
+export interface MathQuestion { // TODO: this should match the format of the database questions
   body: string;
   correctAnswer: string;
 }
@@ -12,14 +12,17 @@ export interface PlayerState {
 
 export interface ActiveAttack {
   id: number;
-  problem: MathProblem;
-  positionY: number; // Height of the question on the screen
+  question: MathQuestion;
+  positionY: number;
   owner: 'player' | 'opponent';
 }
 
-export interface GameState {
-  player: PlayerState;
-  opponent: PlayerState;
-  incomingAttacks: ActiveAttack[]; 
-  activeQuestion: ActiveAttack | null; // Question currently being answered, if any
+// This type is used to identify a math question, along with its source (which attack or income game object it corresponds to)
+export interface QuestionWithSource {
+  id: number;
+  type: 'attack' | 'income';
+  question: MathQuestion;
+  
+  onCorrect?: () => void;
+  onIncorrect?: () => void;
 }

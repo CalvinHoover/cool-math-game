@@ -1,11 +1,18 @@
 // React hook bridging gameEngine.tsx and the UI
 
 import { useState, useCallback } from 'react';
-import { GameState, MathProblem, ActiveAttack} from './types';
+import { PlayerState, QuestionWithSource, ActiveAttack} from './types';
 import { checkAnswer, opponentOf } from './gameEngine';
 
+export interface GameState {
+  player: PlayerState;
+  opponent: PlayerState;
+  incomingAttacks: ActiveAttack[]; 
+  activeQuestion: QuestionWithSource | null; // Question currently being answered, if any
+}
+
 export const useDuelGame = () => {
-  const [gameState, setGameState] = useState<GameState>({player: { hp: 100, coins: 1000 },
+  const [gameState, setGameState] = useState<GameState>({player: { hp: 100, coins: 0 },
     opponent: { hp: 100, coins: 1000 },
     incomingAttacks: [],
     activeQuestion: null });
@@ -29,7 +36,9 @@ export const useDuelGame = () => {
       );
 
       const newActiveQuestion = 
-        prevState.activeQuestion && prevState.activeQuestion.id === attackID
+        prevState.activeQuestion &&
+        prevState.activeQuestion.type === 'attack' &&
+        prevState.activeQuestion.id === attackID
           ? null 
           : prevState.activeQuestion;
 
@@ -42,7 +51,7 @@ export const useDuelGame = () => {
   }, []);
 
   // Sets the active question to the passed parameter
-  const setActiveQuestion = useCallback((question: ActiveAttack | null) => { // FIXME should be a MathProblem, but this is easier for now
+  const setActiveQuestion = useCallback((question: QuestionWithSource | null) => { // FIXME should be a MathQuestion, but this is easier for now
     setGameState((prevState) => ({ ...prevState, activeQuestion: question }));
   }, []);
 
@@ -70,9 +79,9 @@ export const useDuelGame = () => {
     }));
   }, []);
 
-  // Checks the player's answer to an attack and updates the game state accordingly, deleting an attack if the answer was correct
+  // 
   const resolveAttackResponse = useCallback((attackToResolve: ActiveAttack, answerInputted: string) => {
-    if (checkAnswer(attackToResolve.problem, answerInputted)) {
+    if (checkAnswer(attackToResolve.question, answerInputted)) {
       deleteAttack(attackToResolve.id);
     }
     else {
@@ -80,6 +89,50 @@ export const useDuelGame = () => {
       addHP(-10, opponentOf(attackToResolve.owner)); // Temporary penalty for wrong answer: lose 10 HP
     }
   }, [deleteAttack, addHP]);
+
+
+  const resolveIncomeQuestionResponse = useCallback((questionToResolve: QuestionWithSource, answerInputted: string) => { //FIXME not implemented
+    if (checkAnswer(questionToResolve.question, answerInputted)) {
+      addCoins(10, 'player');
+      setActiveQuestion(null);
+      
+      // TODO this will call a function in useIncomeQuesiton that generates a new income question in that slot
+      if (questionToResolve.onCorrect) {
+        questionToResolve.onCorrect();
+      }
+      else {
+        console.error('No onCorrect callback defined when one was expected in resolveIncomeQuestionResponse');
+      }
+    }
+
+    else {
+      setActiveQuestion(null);
+      // TODO this will call a function in useIncomeQuesiton that forces a veto
+      if (questionToResolve.onIncorrect) {
+        questionToResolve.onIncorrect();
+      }
+      else {
+        console.error('No onIncorrect callback defined when one was expected in resolveIncomeQuestionResponse');
+      }
+    }
+  }, [deleteAttack, addHP]);
+
+  // 
+  const resolveQuestionResponse = useCallback((questionToResolve: QuestionWithSource, answerInputted: string) => {
+    if (questionToResolve.type === 'attack') {
+      const targetAttack = gameState.incomingAttacks.find(attack => attack.id === questionToResolve.id);
+      if (targetAttack) {
+        resolveAttackResponse(targetAttack, answerInputted);
+      }
+      else {
+        console.error('Could not find attack corresponding to active question in resolveQuestionResponse call');
+      }
+    }
+
+    else {
+      resolveIncomeQuestionResponse(questionToResolve, answerInputted);
+    }
+  }, [gameState.incomingAttacks, resolveAttackResponse, resolveIncomeQuestionResponse]);
 
   // Triggered when an attack reaches the end of the screen. Deals damage to the appropriate player and deletes the attack.
   const resolveAttackHit = useCallback((attack: ActiveAttack) => {
@@ -89,5 +142,5 @@ export const useDuelGame = () => {
 
 
 
-  return { gameState, spawnAttack, setActiveQuestion, resolveAttackResponse, resolveAttackHit };
+  return { gameState, spawnAttack, setActiveQuestion, resolveQuestionResponse, resolveAttackHit };
 };

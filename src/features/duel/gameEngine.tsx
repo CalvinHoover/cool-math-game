@@ -1,10 +1,10 @@
 // Functions implementing game logic for Duels
 
-import { MathProblem } from './types';
+import { MathQuestion } from './types';
 
-// Checks if the player's answer matches the correct answer for the given problem, returning true or false
-export const checkAnswer = (problem: MathProblem, playerAnswer: string): boolean => {
-  return problem.correctAnswer === playerAnswer;
+// Checks if the player's answer matches the correct answer for the given question, returning true or false
+export const checkAnswer = (question: MathQuestion, playerAnswer: string): boolean => {
+  return question.correctAnswer === playerAnswer;
 };
 
 // Returns the opponent of the given actor ('player' or 'opponent')

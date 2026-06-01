@@ -17,7 +17,7 @@
   text-transform: uppercase;
   cursor: crosshair; /* Adds to the targeting/defense aesthetic */
 
-  white-space: nowrap;   /* Prevents the math problem text from wrapping to a new line */
+  white-space: nowrap;   /* Prevents the math question text from wrapping to a new line */
   width: max-content;    /* Forces the box to always be exactly as wide as its contents */
 }
 
@@ -51,7 +51,7 @@
 }
 
 /* The actual math equation layout */
-.attack-problem {
+.attack-question {
   display: flex;
   align-items: center;
   gap: 10px;

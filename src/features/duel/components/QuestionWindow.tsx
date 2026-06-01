@@ -1,20 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { ActiveAttack } from '../types';
+import { QuestionWithSource } from '../types';
 
 interface DuelAttackProps {
-  attackToRender: ActiveAttack;
+  questionToRender: QuestionWithSource;
   clickFunction: () => void;
-  resolutionFunction: (thisAttack: ActiveAttack, userAnswer: string) => void; // Function to handle the form submission  
+  resolutionFunction: (question: QuestionWithSource, userAnswer: string) => void; // Function to handle the form submission  
 }
 
-export default function QuestionWindow({ attackToRender, clickFunction, resolutionFunction }: DuelAttackProps) {
+export default function QuestionWindow({ questionToRender, clickFunction, resolutionFunction }: DuelAttackProps) {
   const [currentInput, setCurrentInput] = useState(''); // User input in the answer box
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Stops the page from refreshing, which is the default behavior of form submission
-    resolutionFunction(attackToRender, currentInput);
+    resolutionFunction(questionToRender, currentInput);
     setCurrentInput(''); 
   };
 
@@ -22,13 +22,13 @@ export default function QuestionWindow({ attackToRender, clickFunction, resoluti
     <div className="modal-overlay">
       <div className="question-window">
         <div className="window-header">
-          <h3>INCOMING ATTACK</h3>
+          <h3>{questionToRender.type === 'attack' ? 'INCOMING ATTACK' : 'INCOME QUESTION'}</h3>
           <button onClick={() => clickFunction()}>X</button>
         </div>
           
         <div className="window-body">
           <p>
-            {attackToRender.problem.body}
+            {questionToRender.question.body}
           </p>
         </div>
 
