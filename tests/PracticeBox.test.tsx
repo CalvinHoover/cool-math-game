@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import PracticeBox from '@/app/practice/PracticeBox';
+import { ToastProvider } from '@/components/providers/ToastProvider';
 import type { PracticeQuestion } from '@/features/practice/practiceLogic';
 
 // inject action stubs to drive component behavior without server actions
@@ -50,11 +51,13 @@ describe('PracticeBox', () => {
 
     // scope queries to this render to avoid leaked elements
     const { getByRole, findByText } = render(
+      <ToastProvider>
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
         actions={actions}
       />
+    </ToastProvider>
     );
 
     await user.type(getByRole('textbox'), 'Paris');
@@ -91,11 +94,13 @@ describe('PracticeBox', () => {
 
     // scope queries to this render to avoid leaked elements
     const { getByText } = render(
+      <ToastProvider>
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
         actions={actions}
       />
+    </ToastProvider>
     );
 
     expect(getByText('Question 3 (2 pts)')).toBeInTheDocument();
@@ -110,11 +115,13 @@ describe('PracticeBox', () => {
 
     // scope queries to this render to avoid leaked elements
     const { getByRole, findByText } = render(
+      <ToastProvider>
       <PracticeBox
         sessionId="session-1"
         initialQuestions={[question({ text: 'Q1' })]}
         actions={actions}
       />
+    </ToastProvider>
     );
 
     await user.type(getByRole('textbox'), 'Paris');
@@ -137,11 +144,13 @@ describe('PracticeBox', () => {
 
     // scope queries to this render to avoid leaked elements
     const { getByRole, findByText } = render(
+      <ToastProvider>
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
         actions={actions}
       />
+    </ToastProvider>
     );
 
     await user.click(getByRole('button', { name: 'Save My Session' }));
