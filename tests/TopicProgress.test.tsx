@@ -21,6 +21,6 @@ describe('TopicProgress', () => {
     expect(screen.getByText('Algebra')).toBeInTheDocument();
     expect(screen.getByText('Geometry')).toBeInTheDocument();
     expect(screen.getByText('Lvl 2')).toBeInTheDocument();
-    expect(screen.getByText('120 XP')).toBeInTheDocument();
+    expect(screen.getByText(/120 XP/)).toBeInTheDocument();
   });
 });

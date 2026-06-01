@@ -34,10 +34,6 @@ vi.mock('@/lib/prisma', () => ({
     },
   },
 }));
-const questionRepo = vi.hoisted(() => ({
-  findQuestions: vi.fn(),
-}));
-
 vi.mock('@/features/auth/session', () => ({
   getSession: mockGetSession,
 }));
@@ -47,7 +43,7 @@ vi.mock('@/features/practice/repository', () => ({
 }));
 
 vi.mock('@/features/questions/repository', () => ({
-  QuestionRepository: questionRepo,
+  QuestionDBAccess: questionRepo,
 }));
 
 vi.mock('@/features/achievements/repository', () => ({
