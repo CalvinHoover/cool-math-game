@@ -5,10 +5,11 @@ import './DuelAttack.css';
 
 interface DuelAttackProps {
   attackData: ActiveAttack;
-  clickFunction: () => void;  
+  clickFunction: () => void; 
+  hitFunction: () => void;  
 }
 
-export default function DuelAttack({ attackData, clickFunction } : DuelAttackProps) {
+export default function DuelAttack({ attackData, clickFunction, hitFunction } : DuelAttackProps) {
   return (
     <div 
       className={`attack-box ${attackData.owner}`}
@@ -17,6 +18,10 @@ export default function DuelAttack({ attackData, clickFunction } : DuelAttackPro
       onClick={(event) => {
         event.stopPropagation(); // Stops click from also registering as a click on the arena
         clickFunction();           
+      }}
+
+      onAnimationEnd={() => {
+        hitFunction();
       }}
     >
       Incoming attack!

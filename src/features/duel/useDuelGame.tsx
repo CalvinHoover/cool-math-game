@@ -81,7 +81,13 @@ export const useDuelGame = () => {
     }
   }, [deleteAttack, addHP]);
 
+  // Triggered when an attack reaches the end of the screen. Deals damage to the appropriate player and deletes the attack.
+  const resolveAttackHit = useCallback((attack: ActiveAttack) => {
+    addHP(-10, opponentOf(attack.owner));
+    deleteAttack(attack.id);
+  }, [addHP, deleteAttack]);
 
 
-  return { gameState, spawnAttack, setActiveQuestion, resolveAttackResponse };
+
+  return { gameState, spawnAttack, setActiveQuestion, resolveAttackResponse, resolveAttackHit };
 };

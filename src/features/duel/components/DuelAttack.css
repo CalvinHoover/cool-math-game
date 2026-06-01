@@ -16,6 +16,9 @@
   font-weight: bold;
   text-transform: uppercase;
   cursor: crosshair; /* Adds to the targeting/defense aesthetic */
+
+  white-space: nowrap;   /* Prevents the math problem text from wrapping to a new line */
+  width: max-content;    /* Forces the box to always be exactly as wide as its contents */
 }
 
 /* ==========================================================================
@@ -26,14 +29,14 @@
 .attack-box.player {
   border: 4px outset #00FF00; /* Lime green for player */
   box-shadow: 4px 4px 0px rgba(0, 255, 0, 0.4);
-  animation: moveRight 30s linear forwards;
+  animation: moveRight 10s linear forwards;
 }
 
 /* Attacks the opponent spawns (move Right -> Left to hit you) */
 .attack-box.opponent {
   border: 4px outset #00FFFF; /* Cyan for opponent */
   box-shadow: -4px 4px 0px rgba(0, 255, 255, 0.4);
-  animation: moveLeft 30s linear forwards;
+  animation: moveLeft 10s linear forwards;
 }
 
 /* ==========================================================================
@@ -82,14 +85,26 @@
 
 /* Player's attack moves across the screen */
 @keyframes moveRight {
-  0% { left: 0px; }
-  100% { left: 100vw; }
+  0% { 
+    left: 0%; 
+    transform: translateX(0); 
+  }
+  100% { 
+    left: 100%; 
+    transform: translateX(-100%);
+  }
 }
 
 /* Opponent's attack moves across the screen */
 @keyframes moveLeft {
-  0% { right: 0px; }
-  100% { right: 100vw; }
+  0% { 
+    right: 0%; 
+    transform: translateX(0); 
+  }
+  100% { 
+    right: 100%; 
+    transform: translateX(100%);
+  }
 }
 
 /* Classic harsh arcade blink */
