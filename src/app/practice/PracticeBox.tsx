@@ -47,6 +47,9 @@ export default function PracticeBox({
   const [isSaved, setIsSaved] = useState(false);
   const [xpEarned, setXpEarned] = useState<number | undefined>(undefined);
   const [newLevel, setNewLevel] = useState<number | undefined>(undefined);
+  const [newAchievements, setNewAchievements] = useState<
+    { slug: string; name: string; color: string }[] | undefined
+  >(undefined);
   const [secondsLeft, setSecondsLeft] = useState<number | undefined>(
     timeLimit
   );
@@ -85,6 +88,7 @@ export default function PracticeBox({
       setIsSaved(true);
       setXpEarned(result.xpEarned);
       setNewLevel(result.newLevel);
+      setNewAchievements(result.newAchievements);
       toast({
         title: `+${result.xpEarned} XP`,
         variant: 'xp',
@@ -95,6 +99,15 @@ export default function PracticeBox({
           description: `You are now Level ${result.newLevel}`,
           variant: 'success',
         });
+      }
+      if (result.newAchievements) {
+        for (const achievement of result.newAchievements) {
+          toast({
+            title: 'Achievement Unlocked!',
+            description: achievement.name,
+            variant: 'success',
+          });
+        }
       }
     }
     setIsSaving(false);
@@ -207,6 +220,7 @@ export default function PracticeBox({
         questions={questions}
         xpEarned={xpEarned}
         newLevel={newLevel}
+        newAchievements={newAchievements}
         onSave={handleGameOver}
         isSaving={isSaving}
         isSaved={isSaved}

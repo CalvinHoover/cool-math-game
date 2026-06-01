@@ -7,6 +7,8 @@ import { PracticeDBAccess, type SessionQuestionWithQuestion } from './repository
 import { getEarnedPoints } from './practiceLogic';
 import type { PracticeQuestion } from './practiceLogic';
 import { getLevel } from '@/features/xp/leveling';
+import { checkAndAwardAchievements } from '@/features/achievements/engine';
+import type { UserProgressSnapshot } from '@/features/achievements/engine';
 
 const DEFAULT_COUNT = 5;
 const MAX_COUNT = 20;
@@ -27,7 +29,15 @@ type VerifyResult =
       explanation?: string;
     };
 
-type CompleteResult = ActionError | { ok: true; xpEarned: number; totalXp: number; newLevel?: number };
+type CompleteResult =
+  | ActionError
+  | {
+      ok: true;
+      xpEarned: number;
+      totalXp: number;
+      newLevel?: number;
+      newAchievements?: { slug: string; name: string; color: string }[];
+    };
 
 function calculatePoints(difficulty: number): number {
   const rounded = Number.isFinite(difficulty) ? Math.round(difficulty) : 1;
@@ -267,5 +277,32 @@ export async function completePracticeSession(input: {
     newLevel = levelInfo.level;
   }
 
-  return { ok: true, xpEarned: earnedXp, totalXp: userTopic.xp, newLevel };
+  const maxPoints = completedSession.questions.reduce((total, sq) => {
+    return total + calculatePoints(sq.question.difficulty);
+  }, 0);
+  const scorePercent = maxPoints > 0 ? Math.round((earnedXp / maxPoints) * 100) : 0;
+
+  const [totalCompletedSessions, userTopics] = await Promise.all([
+    prisma.practiceSession.count({ where: { userId: session.id, completed: true } }),
+    prisma.userTopic.findMany({
+      where: { userId: session.id },
+      select: { topicId: true, level: true },
+    }),
+  ]);
+
+  const snapshot: UserProgressSnapshot = {
+    totalCompletedSessions,
+    userTopics,
+    currentSessionScorePercent: scorePercent,
+  };
+
+  const { newlyUnlocked } = await checkAndAwardAchievements(session.id, snapshot);
+
+  return {
+    ok: true,
+    xpEarned: earnedXp,
+    totalXp: userTopic.xp,
+    newLevel,
+    newAchievements: newlyUnlocked.length > 0 ? newlyUnlocked : undefined,
+  };
 }
