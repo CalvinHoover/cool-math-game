@@ -1,13 +1,56 @@
 // Functions implementing game logic for Duels
 
-import { MathQuestion } from './types';
+import { allSampleQuestions } from './testData';
+import { Question } from './types';
 
 // Checks if the player's answer matches the correct answer for the given question, returning true or false
-export const checkAnswer = (question: MathQuestion, playerAnswer: string): boolean => {
-  return question.correctAnswer === playerAnswer;
+export const checkAnswer = (question: Question, playerAnswer: string): boolean => {
+  return question.answer === playerAnswer;
 };
 
 // Returns the opponent of the given actor ('player' or 'opponent')
 export const opponentOf = (actor: 'player' | 'opponent'): 'player' | 'opponent' => {
   return actor === 'player' ? 'opponent' : 'player';
+};
+
+// Returns a random question matching the given difficulty and/or topic, or any random question if no parameters are provided
+export const generateQuestion = (difficulty?: number, topic?: string): Question => {
+  let viableQuestions = allSampleQuestions;
+
+  if (difficulty !== undefined) {
+    viableQuestions = viableQuestions.filter(q => q.difficulty === difficulty);
+  }
+
+  if (topic !== undefined) {
+    viableQuestions = viableQuestions.filter(q => q.topic === topic);
+  }
+
+  return viableQuestions[Math.floor(Math.random() * viableQuestions.length)];
+};
+
+// Converts a difficulty number to a string label for display purposes
+export const getDifficultyLabel = (difficulty: number): string => {
+  switch (difficulty) {
+    case 0:
+      return 'Easy';
+    case 1:
+      return 'Medium';
+    case 2:
+      return 'Hard';
+    default:
+      return 'Unknown';
+  }
+};
+
+export const getDifficultyColor = (difficulty: number): string => {
+  switch (difficulty) {
+    case 0:
+      return '#00FF00'; // Lime green
+    case 1:
+      return '#FFFF00'; // Gold
+    case 2:
+      return '#FF3333'; // Red
+    default:
+      return '#FFFFFF'; // White
+  }
 };

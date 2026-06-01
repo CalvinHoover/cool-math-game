@@ -28,7 +28,7 @@ export default function QuestionWindow({ questionToRender, clickFunction, resolu
           
         <div className="window-body">
           <p>
-            {questionToRender.question.body}
+            {questionToRender.question.text}
           </p>
         </div>
 

@@ -1,8 +1,9 @@
 // Object types for the Duel game
-
-export interface MathQuestion { // TODO: this should match the format of the database questions
-  body: string;
-  correctAnswer: string;
+export interface Question {
+  text: string;
+  answer: string;
+  difficulty: number;
+  topic: string;
 }
 
 export interface PlayerState {
@@ -12,7 +13,7 @@ export interface PlayerState {
 
 export interface ActiveAttack {
   id: number;
-  question: MathQuestion;
+  question: Question;
   positionY: number;
   owner: 'player' | 'opponent';
 }
@@ -21,7 +22,7 @@ export interface ActiveAttack {
 export interface QuestionWithSource {
   id: number;
   type: 'attack' | 'income';
-  question: MathQuestion;
+  question: Question;
   
   onCorrect?: () => void;
   onIncorrect?: () => void;

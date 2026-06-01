@@ -2,24 +2,31 @@
 
 import { useIncomeQuestion } from "../useIncomeQuestion";
 import './IncomeQuestion.css';
-import { MathQuestion } from '../types';
+import { Question } from '../types';
+import { getDifficultyLabel, getDifficultyColor } from "../gameEngine";
 
 interface IncomeQuestionProps {
-  clickFunction: (myQuestion : MathQuestion) => void; 
+  clickFunction: (myQuestion: Question, onCorrect: () => void, onIncorrect: () => void) => void;
+  difficulty: number;
 }
 
-export default function IncomeQuestion({ clickFunction } : IncomeQuestionProps) {
-  const { incomeQuestionState } = useIncomeQuestion();
+export default function IncomeQuestion({ clickFunction, difficulty } : IncomeQuestionProps) {
+  const { incomeQuestionState, generateNewProblem, triggerVeto } = useIncomeQuestion(difficulty);
 
   return (
-    <div className="income-question"
-      onClick={() => clickFunction(incomeQuestionState.question)}
+    <div className={`income-question ${incomeQuestionState.isVetoed ? 'vetoed' : ''}`}
+      onClick={() => {
+        if (incomeQuestionState.isVetoed) return;
+        clickFunction(incomeQuestionState.question, generateNewProblem, triggerVeto);
+      }}
     >
     
       <button 
         className="veto-button"
-        onClick={() => {
-          console.log("Veto clicked!"); 
+        onClick={(event) => {
+          event.stopPropagation(); // Prevent the parent div's click handler from being triggered
+          if (incomeQuestionState.isVetoed) return; // If already vetoed, do nothing
+          triggerVeto();
         }}
       >
         VETO
@@ -27,7 +34,9 @@ export default function IncomeQuestion({ clickFunction } : IncomeQuestionProps) 
 
       <div className="income-content">
         <h3>INCOME QUESTION</h3>
-        <p>{incomeQuestionState.question.body}</p>
+        <p style={{ color: getDifficultyColor(difficulty) }}>
+          {incomeQuestionState.isVetoed ? 'VETOED...' : getDifficultyLabel(difficulty)}
+        </p>
       </div>
     </div>
   );

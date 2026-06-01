@@ -96,7 +96,7 @@ export const useDuelGame = () => {
       addCoins(10, 'player');
       setActiveQuestion(null);
       
-      // TODO this will call a function in useIncomeQuesiton that generates a new income question in that slot
+      // Generates a new income question
       if (questionToResolve.onCorrect) {
         questionToResolve.onCorrect();
       }
@@ -107,7 +107,7 @@ export const useDuelGame = () => {
 
     else {
       setActiveQuestion(null);
-      // TODO this will call a function in useIncomeQuesiton that forces a veto
+      // Forces a veto
       if (questionToResolve.onIncorrect) {
         questionToResolve.onIncorrect();
       }
@@ -115,7 +115,7 @@ export const useDuelGame = () => {
         console.error('No onIncorrect callback defined when one was expected in resolveIncomeQuestionResponse');
       }
     }
-  }, [deleteAttack, addHP]);
+  }, [addCoins, setActiveQuestion]);
 
   // 
   const resolveQuestionResponse = useCallback((questionToResolve: QuestionWithSource, answerInputted: string) => {

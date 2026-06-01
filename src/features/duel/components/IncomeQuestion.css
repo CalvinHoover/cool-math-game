@@ -76,3 +76,5 @@
   font-weight: bold;
   font-family: 'Courier New', Courier, monospace;
 }
+
+.income-question.vetoed { opacity: 0.5; cursor: not-allowed; }

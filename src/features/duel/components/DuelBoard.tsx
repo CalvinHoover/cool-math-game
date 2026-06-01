@@ -6,11 +6,11 @@ import { useDuelGame } from '../useDuelGame';
 import './Duels.css';
 import './QuestionOverlay.css';
 import './IncomeQuestion.css';
-import { sampleQuestion } from '../testData';
 import DuelAttack from "./DuelAttack"
 import { ActiveAttack } from '../types';
 import QuestionWindow from './QuestionWindow';
 import IncomeQuestion from './IncomeQuestion';
+import { generateQuestion } from '../gameEngine';
 
 export default function DuelBoard() {
   const { gameState, spawnAttack, setActiveQuestion, resolveQuestionResponse, resolveAttackHit } = useDuelGame();
@@ -43,7 +43,7 @@ export default function DuelBoard() {
 
         spawnAttack({
           id: Date.now(),
-          question: sampleQuestion,
+          question: generateQuestion(), // TODO replace with actual question generation logic
           positionY: relativeY,
           owner: 'player'
         });
@@ -62,7 +62,7 @@ export default function DuelBoard() {
 
         spawnAttack({
           id: Date.now(),
-          question: sampleQuestion,
+          question: generateQuestion(),
           positionY: relativeY,
           owner: 'opponent'
         });
@@ -99,12 +99,13 @@ export default function DuelBoard() {
         {Array.from({ length: 3 }).map((_, i) => (
           <IncomeQuestion
             key={i}
-            clickFunction={(myQuestion) => setActiveQuestion(
+            difficulty={i}
+            clickFunction={(myQuestion, handleCorrect, handleIncorrect) => setActiveQuestion(
               { id: i, 
                 question: myQuestion, 
                 type: 'income', 
-                onCorrect: () => console.log('This will generate a new problem'), // TODO implement
-                onIncorrect: () => console.log('This will force an automatic veto') // TODO implement
+                onCorrect: handleCorrect,
+                onIncorrect: handleIncorrect
               }
             )} 
           />

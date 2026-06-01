@@ -1,16 +1,31 @@
 // React hook bridging gameEngine.tsx and the UI
 
 import { useState, useCallback } from 'react';
-import { MathQuestion } from './types';
-import { sampleQuestion } from './testData';
+import { Question } from './types';
+import { generateQuestion } from './gameEngine';
 
 export interface IncomeQuestionState {
-  question: MathQuestion;
+  question: Question;
   isVetoed: boolean;
 }
 
-export const useIncomeQuestion = () => {
-  const [incomeQuestionState, setState] = useState<IncomeQuestionState>({question: sampleQuestion, isVetoed: false});
+export const useIncomeQuestion = (difficulty: number) => {
+  const [incomeQuestionState, setState] = useState<IncomeQuestionState>({question: generateQuestion(difficulty), isVetoed: false});
 
-  return { incomeQuestionState };
+  const generateNewProblem = useCallback(() => {
+    setState({
+      question: generateQuestion(difficulty),
+      isVetoed: false
+    });
+  }, [difficulty]);
+
+  const triggerVeto = useCallback(() => {
+    setState(prev => ({ ...prev, isVetoed: true }));
+
+    setTimeout(() => {
+      generateNewProblem();
+    }, 3000); // Vetoing means no new question for 3 seconds, after which a new question is generated and the veto state is reset. 
+  }, [generateNewProblem]);
+
+  return { incomeQuestionState, generateNewProblem, triggerVeto };
 };
