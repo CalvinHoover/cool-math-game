@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { MenuButton } from '../../components/interface/MenuButton';
 import DashboardStats from './DashboardStats';
 import RecentActivity from './RecentActivity';
+import AchievementSummary from './AchievementSummary';
 import type { ActivityItem } from '@/features/dashboard/actions';
 import './Dashboard.css';
 
@@ -18,9 +19,14 @@ interface DashboardClientProps {
     topicsStarted: number;
   } | null;
   activity: ActivityItem[];
+  achievements: {
+    totalEarned: number;
+    total: number;
+    recentlyUnlocked: { name: string; color: string; earnedAt: Date }[];
+  } | null;
 }
 
-export default function DashboardClient({ username, stats, activity }: DashboardClientProps) {
+export default function DashboardClient({ username, stats, activity, achievements }: DashboardClientProps) {
   const router = useRouter();
 
   async function handleLogout() {
@@ -44,6 +50,13 @@ export default function DashboardClient({ username, stats, activity }: Dashboard
         <MenuButton label="Logout" className="btn-logout" onClick={handleLogout} />
       </div>
 
+      {achievements && (
+        <AchievementSummary
+          totalEarned={achievements.totalEarned}
+          total={achievements.total}
+          recentlyUnlocked={achievements.recentlyUnlocked}
+        />
+      )}
       <RecentActivity items={activity} />
     </div>
   );

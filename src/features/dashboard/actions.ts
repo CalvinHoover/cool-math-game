@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/features/auth/session';
 import { getGlobalLevel } from '@/features/xp/leveling';
+import { getUserAchievements } from '@/features/achievements/repository';
+import { ACHIEVEMENTS } from '@/features/achievements/definitions';
 
 type ActionError = { ok: false; error: string };
 
@@ -100,4 +102,42 @@ export async function getRecentActivity(
   });
 
   return { ok: true, items };
+}
+
+export interface AchievementSummaryItem {
+  name: string;
+  color: string;
+  earnedAt: Date;
+}
+
+type AchievementSummaryResult =
+  | ActionError
+  | {
+      ok: true;
+      totalEarned: number;
+      total: number;
+      recentlyUnlocked: AchievementSummaryItem[];
+    };
+
+export async function getAchievementSummary(): Promise<AchievementSummaryResult> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, error: 'unauthorized' };
+  }
+
+  const userAchievements = await getUserAchievements(session.id);
+  const totalEarned = userAchievements.length;
+  const total = 5;
+
+  const colorMap = new Map(ACHIEVEMENTS.map((a) => [a.name, a.color]));
+
+  const recentlyUnlocked: AchievementSummaryItem[] = userAchievements
+    .slice(0, 3)
+    .map((ua) => ({
+      name: ua.achievement.name,
+      color: colorMap.get(ua.achievement.name) ?? 'bg-gray-500',
+      earnedAt: ua.earnedAt,
+    }));
+
+  return { ok: true, totalEarned, total, recentlyUnlocked };
 }
