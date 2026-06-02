@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from 'react';
 import { PlayerState, QuestionWithSource, ActiveAttack} from './types';
-import { checkAnswer, opponentOf } from './gameEngine';
-import { INITIAL_HP, INITIAL_COINS, ATTACK_DAMAGE, INCOME_QUESTION_REWARDS } from './constants';
+import { canAffordAttack, checkAnswer, generateQuestion, opponentOf } from './gameEngine';
+import { INITIAL_HP, INITIAL_COINS, ATTACK_DAMAGE, INCOME_QUESTION_REWARDS, QUESTION_PRICES } from './constants';
 
 export interface GameState {
   player: PlayerState;
@@ -14,7 +14,7 @@ export interface GameState {
 
 export const useDuelGame = () => {
   const [gameState, setGameState] = useState<GameState>({player: { hp: INITIAL_HP, coins: INITIAL_COINS },
-    opponent: { hp: INITIAL_HP, coins: INITIAL_COINS },
+    opponent: { hp: INITIAL_HP, coins: 10000 }, // Opponent starts with a lot of coins for testing purposes, since they don't have a way to earn coins right now
     incomingAttacks: [],
     activeQuestion: null });
 
@@ -80,7 +80,7 @@ export const useDuelGame = () => {
     }));
   }, []);
 
-  // 
+  // Resolves the player's response to an attack question, either deleting the attack or applying a penalty.
   const resolveAttackResponse = useCallback((attackToResolve: ActiveAttack, answerInputted: string) => {
     if (checkAnswer(attackToResolve.question, answerInputted)) {
       deleteAttack(attackToResolve.id);
@@ -91,7 +91,7 @@ export const useDuelGame = () => {
     }
   }, [deleteAttack, addHP]);
 
-
+  // Resolves the player's response to an income question, either awarding coins or forcing a veto.
   const resolveIncomeQuestionResponse = useCallback((questionToResolve: QuestionWithSource, answerInputted: string) => { //FIXME not implemented
     if (checkAnswer(questionToResolve.question, answerInputted)) {
       addCoins(INCOME_QUESTION_REWARDS[questionToResolve.question.difficulty], 'player');
@@ -118,7 +118,8 @@ export const useDuelGame = () => {
     }
   }, [addCoins, setActiveQuestion]);
 
-  // 
+  // Resolves the player's response to the active question, whether it's an attack question or an income question. 
+  // The logic for these two types of questions is different, so the function checks the type of the question and then delegates to the appropriate helper function.
   const resolveQuestionResponse = useCallback((questionToResolve: QuestionWithSource, answerInputted: string) => {
     if (questionToResolve.type === 'attack') {
       const targetAttack = gameState.incomingAttacks.find(attack => attack.id === questionToResolve.id);
@@ -135,13 +136,33 @@ export const useDuelGame = () => {
     }
   }, [gameState.incomingAttacks, resolveAttackResponse, resolveIncomeQuestionResponse]);
 
+  // Triggered when the player clicks on the arena to spawn an attack. Checks if the player can afford the attack, and if so spawns it and deducts coins.
+  const resolveAttackPurchase = useCallback((
+    buyer: 'player' | 'opponent',
+    clickHeight: number,
+    selectedDifficulty: number,
+    selectedTopic: string
+  ) => {
+    if (!canAffordAttack(gameState[buyer].coins, selectedDifficulty)) {
+      alert("Not enough coins for that attack!");
+      return;
+    }
+
+    spawnAttack({
+      id: Date.now(),
+      question: generateQuestion(selectedDifficulty, selectedTopic),
+      positionY: clickHeight,
+      owner: buyer
+    });
+
+    addCoins(-QUESTION_PRICES[selectedDifficulty], buyer);
+  }, [gameState.player.coins, spawnAttack, addCoins]);
+
   // Triggered when an attack reaches the end of the screen. Deals damage to the appropriate player and deletes the attack.
   const resolveAttackHit = useCallback((attack: ActiveAttack) => {
     addHP(-ATTACK_DAMAGE, opponentOf(attack.owner));
     deleteAttack(attack.id);
   }, [addHP, deleteAttack]);
 
-
-
-  return { gameState, spawnAttack, setActiveQuestion, resolveQuestionResponse, resolveAttackHit };
+  return { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit };
 };

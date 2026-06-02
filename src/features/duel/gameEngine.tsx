@@ -1,6 +1,6 @@
 // Helper functions for duels
 
-import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, TOPIC_COLORS } from './constants';
+import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, QUESTION_PRICES, TOPIC_COLORS } from './constants';
 import { Question } from './types';
 
 // Checks if the player's answer matches the correct answer for the given question, returning true or false
@@ -26,6 +26,11 @@ export const generateQuestion = (difficulty?: number, topic?: string): Question 
   }
 
   return viableQuestions[Math.floor(Math.random() * viableQuestions.length)];
+};
+
+// Checks if a player with playerBalance coins can afford an attack of the given difficulty
+export const canAffordAttack = (playerBalance: number, difficultyRequested: number): boolean => {
+  return playerBalance >= QUESTION_PRICES[difficultyRequested];
 };
 
 // Converts a difficulty number to a string label for display purposes

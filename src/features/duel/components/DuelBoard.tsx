@@ -10,13 +10,13 @@ import './Toolbar.css';
 import DuelAttack from "./DuelAttack"
 import QuestionWindow from './QuestionWindow';
 import IncomeQuestion from './IncomeQuestion';
-import { generateQuestion, getDifficultyColor, getDifficultyLabel, getTopicColor } from '../gameEngine';
+import { canAffordAttack, generateQuestion, getDifficultyColor, getDifficultyLabel, getTopicColor } from '../gameEngine';
 import { allDifficulties, allTopics } from '../constants';
 
 export default function DuelBoard() {
   const [selectedTopic, setSelectedTopic] = useState<string>(allTopics[0]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(allDifficulties[0]);
-  const { gameState, spawnAttack, setActiveQuestion, resolveQuestionResponse, resolveAttackHit } = useDuelGame();
+  const { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit } = useDuelGame();
 
   return (
     <div className="duel-container">
@@ -44,31 +44,20 @@ export default function DuelBoard() {
           const rect = eventData.currentTarget.getBoundingClientRect();
           const relativeY = eventData.clientY - rect.top;
 
-          spawnAttack({
-            id: Date.now(),
-            question: generateQuestion(selectedDifficulty, selectedTopic),
-            positionY: relativeY,
-            owner: 'player'
-          });
+          resolveAttackPurchase('player', relativeY, selectedDifficulty, selectedTopic);
         }}
 
         // TODO this is bad, repeated placeholder code just so you can play as both sides for now.
-        // Right click to spawn attacks for the opponent.
+        // Right click to spawn attacks for the opponent. These are free.
         onContextMenu={(eventData) => {
           eventData.preventDefault();
-
           if (eventData.target !== eventData.currentTarget) return;
 
           // Get relative Y coordinate of the click within the arena
           const rect = eventData.currentTarget.getBoundingClientRect();
           const relativeY = eventData.clientY - rect.top;
 
-          spawnAttack({
-            id: Date.now(),
-            question: generateQuestion(selectedDifficulty, selectedTopic),
-            positionY: relativeY,
-            owner: 'opponent'
-          });
+          resolveAttackPurchase('opponent', relativeY, selectedDifficulty, selectedTopic);
         }}
       >
           

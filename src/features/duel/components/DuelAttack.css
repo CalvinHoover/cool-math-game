@@ -29,14 +29,14 @@
 .attack-box.player {
   border: 4px outset #00FF00; /* Lime green for player */
   box-shadow: 4px 4px 0px rgba(0, 255, 0, 0.4);
-  animation: moveRight 10s linear forwards;
+  animation: moveRight 30s linear forwards;
 }
 
 /* Attacks the opponent spawns (move Right -> Left to hit you) */
 .attack-box.opponent {
   border: 4px outset #00FFFF; /* Cyan for opponent */
   box-shadow: -4px 4px 0px rgba(0, 255, 255, 0.4);
-  animation: moveLeft 10s linear forwards;
+  animation: moveLeft 30s linear forwards;
 }
 
 /* ==========================================================================

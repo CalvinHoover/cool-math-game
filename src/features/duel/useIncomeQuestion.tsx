@@ -25,7 +25,7 @@ export const useIncomeQuestion = (difficulty: number) => {
 
     setTimeout(() => {
       generateNewProblem();
-    }, VETO_COOLDOWN_MS); // Vetoing means no new question for 3 seconds, after which a new question is generated and the veto state is reset. 
+    }, VETO_COOLDOWN_MS); // Vetoing means no new question for a penalty period, after which a new question is generated and the veto state is reset. 
   }, [generateNewProblem]);
 
   return { incomeQuestionState, generateNewProblem, triggerVeto };
