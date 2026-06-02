@@ -54,6 +54,8 @@ model Question {
   difficulty   Int      @default(1)
   topic        Topic    @relation(fields: [topicId], references: [id])
   sessions     SessionQuestion[]
+
+  @@unique([topicId, text])
 }
 
 model PracticeSession {
