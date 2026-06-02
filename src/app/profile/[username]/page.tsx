@@ -54,29 +54,39 @@ export default function PublicProfilePage({
 
   return (
     <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
-      <div className="profile-inner">
-        <h1 className="profile-title">Player Profile</h1>
-
-        <ProfileHeader
-          profile={profile}
-          isOwnProfile={false}
-        />
-
-        <ProfileStats stats={profile.stats} />
-
-        {profile.settings.showMatchHistory && (
-          <MatchHistoryList matches={profile.matchHistory} />
-        )}
-
-        <section className="profile-section">
-          <h2>Achievements</h2>
-          <p>INSERT ACHIEVEMENTS HERE</p>
-        </section>
-
-        <section className="profile-section">
-          <h2>Friends</h2>
-          <p>INSERT FRIEND LIST HERE</p>
-        </section>
+      <div className="profile-topbar">
+        <h1 className="profile-title">PROFILE</h1>
+      </div>
+  
+      <div className="profile-layout">
+        <div className="profile-left-column">
+          <ProfileHeader
+            profile={profile}
+            isOwnProfile={false}
+          />
+  
+          <section className="profile-section">
+            <h2>Achievements</h2>
+            <p>INSERT ACHIEVEMENTS HERE</p>
+          </section>
+  
+          <section className="profile-section">
+            <h2>Friends</h2>
+            <p>INSERT FRIEND LIST HERE</p>
+          </section>
+        </div>
+  
+        <div className="profile-right-column">
+          <div className="profile-level-box">
+            {profile.username} has completed {profile.level} levels!
+          </div>
+  
+          <ProfileStats stats={profile.stats} />
+  
+          {profile.settings.showMatchHistory && (
+            <MatchHistoryList matches={profile.matchHistory} />
+          )}
+        </div>
       </div>
     </main>
   );

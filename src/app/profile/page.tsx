@@ -75,6 +75,7 @@ const testMatchHistory = [
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(testUserProfiles[0]); // using goober1 for now
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const fontSizeClasses = {
     small: "text-sm",
@@ -84,78 +85,128 @@ export default function ProfilePage() {
 
   return (
     <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
-      <div className="profile-inner">
-        <h1 className="profile-title">Player Profile</h1>
-        <ProfileHeader 
-          profile={profile} 
-          isOwnProfile={true}
-        />
-
-        <ProfileStats stats={profile.stats} />
-        
-        {profile.settings.showMatchHistory && (
-        <MatchHistoryList matches={profile.matchHistory} />
-        )}
-
-        <EditProfile 
-          profile={profile}
-          onSave={(updatedProfile) => setProfile(updatedProfile)}
-        />
-
-        <SettingsPanel 
-          settings={profile.settings}
-          onChange={(updatedSettings) => 
-            setProfile({
-              ...profile,
-              settings: updatedSettings,
-            })
-          }
+      <div className="profile-topbar">
+        <h1 className="profile-title">PROFILE</h1>
+      </div>
+  
+      <div className="profile-layout">
+        <div className="profile-left-column">
+          <ProfileHeader
+            profile={profile}
+            isOwnProfile={true}
+            onEditProfile={() => setIsEditingProfile(true)}
           />
-        <FontSizeSelector 
-          fontSize={profile.settings.fontSize}
-          onChange={(newFontSize) =>
-            setProfile({
-              ...profile,
-              settings: {
-                ...profile.settings,
-                fontSize: newFontSize,
-              },
-            })
-          } 
-        />
-        {/* <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="text-xl font-bold">Recently Played</h2>
-          <div className="mt-4 space-y-3">
-            {testStats.recentWins.map((win) => (
-              <div
-                key={win.gameId}
-                className="rounded-md border p-4 dark:border-gray-700"
-              >
-                <p className="font-semibold">{win.topic}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Level {win.gameLevel}
-                </p>
-                <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">
-                  {win.description}
-                </p>
-              </div>
-            ))}
+
+          {isEditingProfile && (
+              <>
+                <EditProfile
+                  profile={profile}
+                  onSave={(updatedProfile) => {
+                    setProfile(updatedProfile);
+                    setIsEditingProfile(false);
+                  }}
+                  onCancel={() => setIsEditingProfile(false)}
+                />
+
+                <SettingsPanel
+                  settings={profile.settings}
+                  onChange={(updatedSettings) =>
+                    setProfile({
+                      ...profile,
+                      settings: updatedSettings,
+                    })
+                  }
+                />
+
+                <FontSizeSelector
+                  fontSize={profile.settings.fontSize}
+                  onChange={(newFontSize) =>
+                    setProfile({
+                      ...profile,
+                      settings: {
+                        ...profile.settings,
+                        fontSize: newFontSize,
+                      },
+                    })
+                  }
+                />
+              <div className="profile-edit-controls">
+                <button
+                  className="profile-button profile-danger-button"
+                  onClick={() => setIsEditingProfile(false)}
+                >
+                  Cancel Edit
+                </button>
+                </div>
+              </>
+            )}
+  
+          <section className="profile-section">
+            <h2>Achievements</h2>
+            <p>INSERT ACHIEVEMENTS HERE</p>
+          </section>
+  
+          <section className="profile-section">
+            <h2>Friends</h2>
+            <p>INSERT FRIEND LIST HERE</p>
+          </section>
+        </div>
+  
+        <div className="profile-right-column">
+          <div className="profile-level-box">
+            {profile.username} has completed {profile.level} levels!
           </div>
-        </section> */}
+  
+          <ProfileStats stats={profile.stats} />
+  
+          {profile.settings.showMatchHistory && (
+            <MatchHistoryList matches={profile.matchHistory} />
+          )}
+  
+          {/* {isEditingProfile && (
+              <>
+                <EditProfile
+                  profile={profile}
+                  onSave={(updatedProfile) => {
+                    setProfile(updatedProfile);
+                    setIsEditingProfile(false);
+                  }}
+                  onCancel={() => setIsEditingProfile(false)}
+                />
 
-        <section className="profile-section">
-          <h2 className="text-xl font-bold">Achievements</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT ACHIEVEMENTS HERE
-          </p>
-        </section>
+                <SettingsPanel
+                  settings={profile.settings}
+                  onChange={(updatedSettings) =>
+                    setProfile({
+                      ...profile,
+                      settings: updatedSettings,
+                    })
+                  }
+                />
 
-        <section className="profile-section">
-          <h2 className="text-xl font-bold">Friends</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT FRIEND LIST HERE
-          </p>
-        </section>
+                <FontSizeSelector
+                  fontSize={profile.settings.fontSize}
+                  onChange={(newFontSize) =>
+                    setProfile({
+                      ...profile,
+                      settings: {
+                        ...profile.settings,
+                        fontSize: newFontSize,
+                      },
+                    })
+                  }
+                />
+
+                <button
+                  className="profile-button profile-danger-button"
+                  onClick={() => setIsEditingProfile(false)}
+                >
+                  Close Edit Mode
+                </button>
+              </>
+            )} */}
+          
+        </div>
       </div>
     </main>
   );
