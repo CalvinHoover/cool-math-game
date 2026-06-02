@@ -7,7 +7,13 @@
 
 import FriendsTester from "@/features/friends/FriendsTester";
 import FriendsList from "@/features/friends/FriendsList";
+import FriendSearch from "@/features/friends/FriendSearch";
 
 export default function FriendsPage() {
-  return <FriendsList />;
+  return (
+    <main>
+      <FriendSearch />
+      <FriendsList />
+    </main>
+  );
 }
