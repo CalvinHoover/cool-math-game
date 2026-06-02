@@ -104,3 +104,17 @@
   border: 4px outset #cccccc;
   object-fit: cover;
 }
+
+.profile-bio {
+  margin: 12px 0;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.profile-bio .profile-label {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+.profile-bio .profile-value {
+  color: #ffffff;
+}

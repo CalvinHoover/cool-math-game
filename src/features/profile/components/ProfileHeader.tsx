@@ -5,6 +5,7 @@ import FriendRequestButton from "@/features/friends/FriendRequestButton";
 
 interface ProfileHeaderProps {
     profile: PublicProfile;
+    isOwnProfile: boolean;
 }
 
 // export default function ProfileHeader({ profile }: ProfileHeaderProps) {
@@ -38,18 +39,21 @@ interface ProfileHeaderProps {
 //     );
 // }
 
-export default function ProfileHeader({ profile }: ProfileHeaderProps) {
-  return (
-    <div className="profile-card">
-      <h2>{profile.username}</h2>
-      <p>@{profile.id}</p>
-      <p>{profile.bio}</p>
-      <img
-        src={profile.avatarUrl}
-        alt={`${profile.id}'s avatar`}
-        className="profile-avatar"
-    />
 
+export default function ProfileHeader({
+  profile,
+  isOwnProfile,
+}: ProfileHeaderProps) {
+  let profileAction;
+
+  if (isOwnProfile) {
+    profileAction = (
+      <button className="profile-button">
+        Edit Profile
+      </button>
+    );
+  } else {
+    profileAction = (
       <FriendRequestButton
         status={{
           isFriend: false,
@@ -57,6 +61,32 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
           outgoingRequest: false,
         }}
       />
+    );
+  }
+  
+  console.log("Profile passed into ProfileHeader:", profile);
+  console.log("profile.bio:", profile.bio);
+
+  return (
+    <div className="profile-card">
+      {profile.avatarUrl && (
+        <img
+          src={profile.avatarUrl}
+          alt={`${profile.username}'s avatar`}
+          className="profile-avatar"
+        />
+    )}
+    
+    <h2>@{profile.username}</h2>
+
+    <div className="profile-bio">
+        <span className="profile-label">Bio: </span>
+        <span className="profile-value">
+            {profile.bio ?? "No bio yet."}
+        </span>
+        </div>
+
+      {profileAction}
     </div>
   );
 }

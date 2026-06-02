@@ -45,6 +45,7 @@ export const testUserProfiles: UserProfile[] = [
             ]
         },
         level: 10,
+        bio: "Here for fun and games!",
         createdAt: "January 1, 2026",
         updatedAt: "January 2, 2026",
         email: "goober1@example.com",
@@ -90,6 +91,7 @@ export const testUserProfiles: UserProfile[] = [
             ]
         },
         level: 5,
+        bio: "Here for DEATH and DESTRUCTION!!",
         createdAt: "February 1, 2026",
         updatedAt: "February 2, 2026",
         email: "goober2@example.com",
