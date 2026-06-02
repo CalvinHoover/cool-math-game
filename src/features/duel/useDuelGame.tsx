@@ -1,4 +1,4 @@
-// React hook bridging gameEngine.tsx and the UI
+// React hook containing the main game state and functions to manipulate it. This is where the main logic of the game lives.
 
 import { useState, useCallback } from 'react';
 import { PlayerState, QuestionWithSource, ActiveAttack} from './types';
@@ -80,16 +80,21 @@ export const useDuelGame = () => {
     }));
   }, []);
 
-  // Resolves the player's response to an attack question, either deleting the attack or applying a penalty.
+  // Triggered when an attack reaches the end of the screen. Deals damage to the appropriate player and deletes the attack.
+  const resolveAttackHit = useCallback((attack: ActiveAttack) => {
+    addHP(-ATTACK_DAMAGE, opponentOf(attack.owner));
+    deleteAttack(attack.id);
+  }, [addHP, deleteAttack]);
+
+  // Resolves the player's response to an attack question, either deleting the attack or causing it to automatically hit.
   const resolveAttackResponse = useCallback((attackToResolve: ActiveAttack, answerInputted: string) => {
     if (checkAnswer(attackToResolve.question, answerInputted)) {
       deleteAttack(attackToResolve.id);
     }
     else {
-      // FIXME the penalty will eventually be that the question speeds up on the first wrong answer, and then immediately deals its damage on the second wrong answer
-      addHP(-ATTACK_DAMAGE, opponentOf(attackToResolve.owner)); // Temporary penalty for wrong answer: lose 10 HP
+      resolveAttackHit(attackToResolve);
     }
-  }, [deleteAttack, addHP]);
+  }, [deleteAttack, addHP, resolveAttackHit]);
 
   // Resolves the player's response to an income question, either awarding coins or forcing a veto.
   const resolveIncomeQuestionResponse = useCallback((questionToResolve: QuestionWithSource, answerInputted: string) => { //FIXME not implemented
@@ -157,12 +162,6 @@ export const useDuelGame = () => {
 
     addCoins(-QUESTION_PRICES[selectedDifficulty], buyer);
   }, [gameState.player.coins, spawnAttack, addCoins]);
-
-  // Triggered when an attack reaches the end of the screen. Deals damage to the appropriate player and deletes the attack.
-  const resolveAttackHit = useCallback((attack: ActiveAttack) => {
-    addHP(-ATTACK_DAMAGE, opponentOf(attack.owner));
-    deleteAttack(attack.id);
-  }, [addHP, deleteAttack]);
 
   return { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit };
 };

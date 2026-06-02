@@ -1,4 +1,6 @@
-// Helper functions for duels
+// Helper functions for duels. Some of these can probably be moved to more general utility files later.
+// Some will become irrelevant after database integration.
+// Should not contain any React-specific code.
 
 import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, QUESTION_PRICES, TOPIC_COLORS } from './constants';
 import { Question } from './types';

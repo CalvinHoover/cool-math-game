@@ -1,3 +1,5 @@
+// Component for the popup window that appears when an attack or income question is clicked, allowing the player to input their answer.
+
 'use client';
 
 import { useState } from 'react';

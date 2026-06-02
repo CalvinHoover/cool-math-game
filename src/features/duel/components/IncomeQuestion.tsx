@@ -1,3 +1,5 @@
+// Component for the income question buttons at the bottom of the screen. Answering these questions correctly awards coins.
+
 'use client';
 
 import { useIncomeQuestion } from "../useIncomeQuestion";

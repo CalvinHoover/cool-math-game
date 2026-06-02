@@ -1,3 +1,5 @@
+// Floating attack component that moves across the arena and can be clicked to solve the corresponding math question.
+
 'use client';
 
 import { ActiveAttack } from '../types';

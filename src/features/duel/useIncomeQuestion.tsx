@@ -1,4 +1,5 @@
-// React hook bridging gameEngine.tsx and the UI
+// React hook for managing the state of income questions, which are questions the player can choose to answer for extra coins. 
+// Contains the current question and whether it is currently vetoed, as well as functions to generate a new question and trigger the veto.
 
 import { useState, useCallback } from 'react';
 import { Question } from './types';
@@ -13,6 +14,7 @@ export interface IncomeQuestionState {
 export const useIncomeQuestion = (difficulty: number) => {
   const [incomeQuestionState, setState] = useState<IncomeQuestionState>({question: generateQuestion(difficulty), isVetoed: false});
 
+  // Generates a new question and resets the veto state. Should be called after a question is answered or after the veto cooldown expires.
   const generateNewProblem = useCallback(() => {
     setState({
       question: generateQuestion(difficulty),
@@ -20,12 +22,14 @@ export const useIncomeQuestion = (difficulty: number) => {
     });
   }, [difficulty]);
 
+  // Triggers the veto state, preventing the player from clicking the income question for a certain cooldown period. 
+  // After the cooldown, a new question is generated and the veto state is reset. 
   const triggerVeto = useCallback(() => {
     setState(prev => ({ ...prev, isVetoed: true }));
 
     setTimeout(() => {
       generateNewProblem();
-    }, VETO_COOLDOWN_MS); // Vetoing means no new question for a penalty period, after which a new question is generated and the veto state is reset. 
+    }, VETO_COOLDOWN_MS); 
   }, [generateNewProblem]);
 
   return { incomeQuestionState, generateNewProblem, triggerVeto };

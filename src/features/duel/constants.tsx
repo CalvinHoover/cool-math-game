@@ -40,10 +40,10 @@ export const TOPIC_COLORS: Record<string, string> = {
   'counting': '#6937A6',   // Purple
 };
 
-// coin rewards
-
-
-// Placeholder questions. Eventually we will call from the database.
+/* ==========================================================================
+   PLACEHOLDER QUESTIONS
+   ========================================================================== */
+// Eventually we will call from the database.
 
 export const easyArithmeticQuestion: Question = {
   text: 'What is 12 + 10?',
@@ -109,6 +109,8 @@ export const hardAlgebraQuestion: Question = {
   topic: 'algebra'
 };
 
-export const allSampleQuestions: Question[] = [easyArithmeticQuestion, mediumArithmeticQuestion, hardArithmeticQuestion,
+export const allSampleQuestions: Question[] = [
+  easyArithmeticQuestion, mediumArithmeticQuestion, hardArithmeticQuestion,
   easyCountingQuestion, mediumCountingQuestion, hardCountingQuestion,
-  easyAlgebraQuestion, mediumAlgebraQuestion, hardAlgebraQuestion];
+  easyAlgebraQuestion, mediumAlgebraQuestion, hardAlgebraQuestion
+];
