@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDuelGame } from '../useDuelGame';
 import './Duels.css';
 import './QuestionOverlay.css';
@@ -13,10 +13,22 @@ import IncomeQuestion from './IncomeQuestion';
 import { canAffordAttack, generateQuestion, getDifficultyColor, getDifficultyLabel, getTopicColor } from '../gameEngine';
 import { allDifficulties, allTopics } from '../constants';
 
-export default function DuelBoard() {
+interface DuelBoardProps {
+  onGameOver: (winner: 'player' | 'opponent') => void;
+}
+
+export default function DuelBoard({ onGameOver }: DuelBoardProps) {
   const [selectedTopic, setSelectedTopic] = useState<string>(allTopics[0]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(allDifficulties[0]);
   const { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit } = useDuelGame();
+
+  useEffect(() => {
+    if (gameState.player.hp <= 0) {
+      onGameOver('opponent');
+    } else if (gameState.opponent.hp <= 0) {
+      onGameOver('player');
+    }
+  }, [gameState.player.hp, gameState.opponent.hp, onGameOver]);
 
   return (
     <div className="duel-container">
