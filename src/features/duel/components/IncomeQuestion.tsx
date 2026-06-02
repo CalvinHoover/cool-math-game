@@ -1,7 +1,7 @@
 'use client';
 
 import { useIncomeQuestion } from "../useIncomeQuestion";
-import './IncomeQuestion.css';
+import './Toolbar.css';
 import { Question } from '../types';
 import { getDifficultyLabel, getDifficultyColor } from "../gameEngine";
 

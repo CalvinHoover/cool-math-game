@@ -1,6 +1,6 @@
-// Functions implementing game logic for Duels
+// Helper functions for duels
 
-import { allSampleQuestions } from './testData';
+import { allSampleQuestions } from './constants';
 import { Question } from './types';
 
 // Checks if the player's answer matches the correct answer for the given question, returning true or false
@@ -54,3 +54,18 @@ export const getDifficultyColor = (difficulty: number): string => {
       return '#FFFFFF'; // White
   }
 };
+
+export const getTopicColor = (topic: string): string => {
+  switch (topic) {
+    case 'arithmetic':
+      return '#2ED9D7'; // Cyan
+    case 'algebra':
+      return '#000080'; // Dark blue
+    case 'counting':
+      return '#6937A6'; // Purple
+    default:
+      return '#FFFFFF'; // White
+  }
+}
+
+

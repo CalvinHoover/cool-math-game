@@ -2,17 +2,20 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useDuelGame } from '../useDuelGame';
 import './Duels.css';
 import './QuestionOverlay.css';
-import './IncomeQuestion.css';
+import './Toolbar.css';
 import DuelAttack from "./DuelAttack"
-import { ActiveAttack } from '../types';
 import QuestionWindow from './QuestionWindow';
 import IncomeQuestion from './IncomeQuestion';
-import { generateQuestion } from '../gameEngine';
+import { generateQuestion, getDifficultyColor, getDifficultyLabel, getTopicColor } from '../gameEngine';
+import { allDifficulties, allTopics } from '../constants';
 
 export default function DuelBoard() {
+  const [selectedTopic, setSelectedTopic] = useState<string>(allTopics[0]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<number>(allDifficulties[0]);
   const { gameState, spawnAttack, setActiveQuestion, resolveQuestionResponse, resolveAttackHit } = useDuelGame();
 
   return (
@@ -43,7 +46,7 @@ export default function DuelBoard() {
 
         spawnAttack({
           id: Date.now(),
-          question: generateQuestion(), // TODO replace with actual question generation logic
+          question: generateQuestion(selectedDifficulty, selectedTopic),
           positionY: relativeY,
           owner: 'player'
         });
@@ -62,7 +65,7 @@ export default function DuelBoard() {
 
         spawnAttack({
           id: Date.now(),
-          question: generateQuestion(),
+          question: generateQuestion(selectedDifficulty, selectedTopic),
           positionY: relativeY,
           owner: 'opponent'
         });
@@ -70,7 +73,7 @@ export default function DuelBoard() {
     >
         
       <div className="attack-container">
-        {gameState.incomingAttacks.map((attack : ActiveAttack) => (
+        {gameState.incomingAttacks.map((attack) => (
           <DuelAttack 
             key={attack.id} 
             attackData={attack}
@@ -93,8 +96,41 @@ export default function DuelBoard() {
       />
     }
 
-  {/* Income question area */}
-    <div className="income-question-space">
+{/* Toolbar area */}
+  <div className="toolbar">
+    <div className="toolbar-buttons">
+
+      <div className="attack-selectors-container">
+        {/* Buttons for selecting topic of attacks */}
+        <div className="attack-selector-array">
+          {allTopics.map((topic) => (
+            <button 
+              key={topic}
+              className={`attack-selector-button ${topic === selectedTopic ? 'selected' : ''}`}
+              style={{ backgroundColor: getTopicColor(topic) }}
+              onClick={() => setSelectedTopic(topic)}
+            >
+              {topic}
+            </button>
+          ))}
+        </div>
+
+        {/* Buttons for selecting difficulty of attacks */}
+        <div className="attack-selector-array">
+          {allDifficulties.map((difficulty) => (
+            <button 
+              key={difficulty}
+              className={`attack-selector-button ${difficulty === selectedDifficulty ? 'selected' : ''}`}
+              style={{ backgroundColor: getDifficultyColor(difficulty) }}
+              onClick={() => setSelectedDifficulty(difficulty)}
+            >
+              {getDifficultyLabel(difficulty)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Right side: Income Questions */}
       <div className="income-question-array">
         {Array.from({ length: 3 }).map((_, i) => (
           <IncomeQuestion
@@ -111,7 +147,9 @@ export default function DuelBoard() {
           />
         ))}
       </div>
+
     </div>
+  </div>
 
   </div>
 

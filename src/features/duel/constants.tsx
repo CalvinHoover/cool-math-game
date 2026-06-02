@@ -1,5 +1,8 @@
 import { Question } from './types';
 
+export const allTopics = ['arithmetic', 'counting', 'algebra'];
+export const allDifficulties = [0, 1, 2];
+
 // Placeholder questions. Eventually we will call from the database.
 
 export const easyArithmeticQuestion: Question = {
