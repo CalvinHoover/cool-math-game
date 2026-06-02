@@ -1,24 +1,11 @@
 /* Base container for all floating attacks */
 .attack-box {
   position: absolute;
-  
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  background-color: #000000;
-  padding: 10px 20px;
-  min-width: 80px;
-  min-height: 50px;
-  
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: crosshair; /* Adds to the targeting/defense aesthetic */
-
-  white-space: nowrap;   /* Prevents the math question text from wrapping to a new line */
-  width: max-content;    /* Forces the box to always be exactly as wide as its contents */
+  cursor: crosshair;
 }
 
 /* ==========================================================================
@@ -27,63 +14,23 @@
 
 /* Attacks you spawn (move Left -> Right to hit the opponent) */
 .attack-box.player {
-  border: 4px outset #00FF00; /* Lime green for player */
-  box-shadow: 4px 4px 0px rgba(0, 255, 0, 0.4);
   animation: moveRight 30s linear forwards;
 }
 
 /* Attacks the opponent spawns (move Right -> Left to hit you) */
 .attack-box.opponent {
-  border: 4px outset #00FFFF; /* Cyan for opponent */
-  box-shadow: -4px 4px 0px rgba(0, 255, 255, 0.4);
   animation: moveLeft 30s linear forwards;
 }
 
-/* ==========================================================================
-   INTERNAL STATES (WARNING VS HOVER)
-   ========================================================================== */
-
-/* The warning icon shown before hovering */
-.attack-warning {
-  color: #FF0000;
-  font-size: 1.8rem;
-  animation: fastBlink 0.4s infinite steps(2);
-}
-
-/* The actual math equation layout */
-.attack-question {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.3rem;
-  color: #FFFFFF;
-}
-
-/* The retro text input box */
-.attack-input {
-  background-color: #111111;
-  border: 2px inset #C0C0C0;
-  color: #FFFF00; /* Yellow text for typed answers */
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 1.3rem;
-  font-weight: bold;
-  width: 70px;
-  text-align: center;
-  padding: 4px;
-  outline: none;
-}
-
-/* Glow up the input when they are actively typing */
-.attack-input:focus {
-  border-color: #FFFF00;
-  background-color: #222200;
+/* Add a slight scale effect when actively clicking to make it feel responsive */
+.attack-box:active {
+  transform: scale(0.9);
 }
 
 /* ==========================================================================
    ANIMATIONS
    ========================================================================== */
 
-/* Player's attack moves across the screen */
 @keyframes moveRight {
   0% { 
     left: 0%; 
@@ -95,7 +42,6 @@
   }
 }
 
-/* Opponent's attack moves across the screen */
 @keyframes moveLeft {
   0% { 
     right: 0%; 
@@ -105,10 +51,4 @@
     right: 100%; 
     transform: translateX(100%);
   }
-}
-
-/* Classic harsh arcade blink */
-@keyframes fastBlink {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
 }
