@@ -18,7 +18,8 @@ export interface ActiveAttack {
   owner: 'player' | 'opponent';
 }
 
-// This type is used to identify a math question, along with its source (which attack or income game object it corresponds to)
+// This is a wrapper which contains a math question along with the information of what in game object it is associated with
+// (either some particular attack or some particular income question)
 export interface QuestionWithSource {
   id: number;
   type: 'attack' | 'income';

@@ -47,7 +47,6 @@ export default function QuestionWindow({ questionToRender, clickFunction, resolu
           </button>
         </form>
 
-
       </div>
     </div>
   );

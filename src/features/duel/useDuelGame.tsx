@@ -149,7 +149,7 @@ export const useDuelGame = () => {
     selectedTopic: string
   ) => {
     if (!canAffordAttack(gameState[buyer].coins, selectedDifficulty)) {
-      alert("Not enough coins for that attack!");
+      alert("Not enough coins for that attack!"); // TODO switch to an in game indicator
       return;
     }
 

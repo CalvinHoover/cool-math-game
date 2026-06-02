@@ -33,6 +33,7 @@ export default function DuelBoard({ onGameOver }: DuelBoardProps) {
   return (
     <div className="duel-container">
 
+      {/* Displays HP and coins */}
       <div className="status-bar">
         <div className="player-status">
           <h2>Player</h2>
@@ -47,6 +48,7 @@ export default function DuelBoard({ onGameOver }: DuelBoardProps) {
       </div>
 
 
+      {/* Region where attacks appear and can be purchased by clicking */}
       <div className="duel-arena"
         onClick={(eventData) => {
           // Check to ensure the click is on the arena itself, not a child element (like an attack)
@@ -72,7 +74,8 @@ export default function DuelBoard({ onGameOver }: DuelBoardProps) {
           resolveAttackPurchase('opponent', relativeY, selectedDifficulty, selectedTopic);
         }}
       >
-          
+        
+        {/* Renders any active attacks */}
         <div className="attack-container">
           {gameState.incomingAttacks.map((attack) => (
             <DuelAttack 
@@ -87,6 +90,7 @@ export default function DuelBoard({ onGameOver }: DuelBoardProps) {
         </div>
       </div>
 
+      {/* Displays the answer window if there is an active question */}
       {gameState.activeQuestion && 
         <QuestionWindow 
           questionToRender={gameState.activeQuestion} 
