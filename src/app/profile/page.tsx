@@ -31,7 +31,7 @@ import FontSizeSelector from '@/features/profile/components/FontSizeSelector';
 import TopicProgress from '@/features/profile/components/TopicProgress';
 import { getProfileData } from '@/features/profile/actions';
 import type { ProfileData } from '@/features/profile/actions';
-import { AchievementGrid } from '@/features/achievements/components/AchievementGrid';
+import { AchievementGrid } from '@/features/achievements/components/AchievementGallery';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(testUserProfiles[0]);

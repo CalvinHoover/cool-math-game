@@ -40,7 +40,13 @@ export default function ProfileUsernamePage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <ProfileHeader profile={profile} />
 
-        <ProfileStats stats={profile.stats} />
+        <ProfileStats
+          totalXp={profile.stats.xp}
+          globalLevel={profile.stats.level}
+          currentLevelXp={profile.stats.xp % 100}
+          nextLevelXp={100}
+          practiceSessionsCompleted={profile.stats.gamesCompleted}
+        />
 
         {profile.settings.showMatchHistory && (
           <MatchHistoryList matches={profile.matchHistory} />
