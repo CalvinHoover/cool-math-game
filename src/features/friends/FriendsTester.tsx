@@ -6,6 +6,7 @@
 import { useEffect } from "react";
 import { getFriends, searchUsers } from "@/features/friends/api"
 
+
 export default function FriendsTester() {
   useEffect(() => {
     async function testFriendsAPI() {
