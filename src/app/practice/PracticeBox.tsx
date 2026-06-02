@@ -3,7 +3,7 @@
 import React, { useEffect, useState, startTransition } from 'react';
 import { MathText } from '@/components/math/MathText';
 import PracticeSummary from './PracticeSummary';
-import { actions, type PracticeActions } from '@/features/practice/actions';
+import { actions as defaultActions, type PracticeActions } from '@/features/practice/client';
 import { useToast } from '@/components/providers/ToastProvider';
 import {
   deriveInitialState,
@@ -33,7 +33,7 @@ export default function PracticeBox({
   actions,
 }: PracticeBoxProps) {
   // allow injected actions for tests while keeping default production wiring
-  const actionClient = actions ?? actions;
+  const actionClient = actions ?? defaultActions;
   const initialState = deriveInitialState(initialQuestions);
   const [questions, setQuestions] = useState<PracticeQuestion[]>(
     () => initialQuestions

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/features/auth/session';
 import { getAchievementStatus } from '@/features/achievements/engine';
-import { AchievementGallery } from '@/features/achievements/components/AchievementGallery';
+import { AchievementGrid } from '@/features/achievements/components/AchievementGallery';
 
 export default async function AchievementsPage() {
   const session = await getSession();
@@ -19,7 +19,7 @@ export default async function AchievementsPage() {
       <p className="mb-8 text-gray-600 dark:text-gray-400">
         Complete challenges to unlock badges and show off your math skills!
       </p>
-      <AchievementGallery achievements={achievements} />
+      <AchievementGrid achievements={achievements} />
     </main>
   );
 }
