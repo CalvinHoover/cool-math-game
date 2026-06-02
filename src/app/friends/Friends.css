@@ -88,3 +88,44 @@
   .friends-search-card p {
     margin: 4px 0;
   }
+
+  .friends-card {
+    background-color: #000000;
+    border: 4px inset #cccccc;
+    padding: 16px;
+    margin-top: 12px;
+    font-family: "Courier New", Courier, monospace;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  
+  .friends-avatar,
+  .friends-avatar-placeholder {
+    width: 72px;
+    height: 72px;
+    border: 4px outset #cccccc;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  
+  .friends-avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #111111;
+    color: #ffff00;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .friends-search-card {
+    background-color: #000000;
+    border: 4px inset #cccccc;
+    padding: 16px;
+    font-family: "Courier New", Courier, monospace;
+  
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }

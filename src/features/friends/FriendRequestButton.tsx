@@ -23,5 +23,5 @@ export default function FriendRequestButton({status,}: FriendRequestButtonProps)
     if (status.outgoingRequest) {
         return <button className="friends-button">Request Sent!</button>;
     }
-    return <button className="friends-button">Add Friend</button>;
+    return <button className="friends-button profile-button">Add Friend</button>;
 }

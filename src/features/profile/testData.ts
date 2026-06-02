@@ -5,6 +5,7 @@ export const testPublicProfiles: PublicProfile[] = [
     {
         id: "test1",
         username: "goober1",
+        avatarUrl: "/goobertest.png",
         level: 10,
         bio: "Here for fun and games!"
     },
@@ -21,6 +22,7 @@ export const testUserProfiles: UserProfile[] = [
     {
         id: "test1",
         username: "goober1",
+        avatarUrl: "/goobertest.png",
         stats: {
             level: 1,
             xp: 95,

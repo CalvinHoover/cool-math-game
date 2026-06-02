@@ -97,3 +97,10 @@
 .profile-input:focus {
   background-color: #ffffcc;
 }
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border: 4px outset #cccccc;
+  object-fit: cover;
+}

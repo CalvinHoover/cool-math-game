@@ -31,13 +31,31 @@ export default function FriendSearch() {
     
           <div className="friends-search-results">
             {results.map((user) => (
-              <div 
-                key={user.id}
-                className="friends-search-card"
-              >
-                <h3>{user.username}</h3>
-                <p>@{user.id}</p>
+              <div
+              key={user.username}
+              className="friends-search-card"
+            >
+              {user.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={`${user.username}'s avatar`}
+                  className="friends-avatar"
+                />
+              ) : (
+                <div className="friends-avatar-placeholder">
+                  ?
+                </div>
+              )}
+            
+              <div>
+                <h3>@{user.username}</h3>
+                <p>Level {user.level}</p>
+            
+                {user.bio && (
+                  <p>{user.bio}</p>
+                )}
               </div>
+            </div>
             ))}
           </div>
         </div>
