@@ -1,3 +1,5 @@
+// [GenAI Use] Prompt: "My practice actions import prisma, auth session, three repositories, and the achievement engine. I need to test them without a real database or JWT secret. Show me how to mock everything with vitest vi.hoisted so the tests stay isolated. The practice action file practice/actions.ts is attached."
+// [GenAI Use] LLM Response Start
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // mock auth and repositories to keep action tests isolated from io
@@ -51,6 +53,8 @@ vi.mock('@/features/achievements/repository', () => ({
   getAllAchievements: mockAchievementRepo.getAllAchievements,
   awardAchievement: mockAchievementRepo.awardAchievement,
 }));
+// [GenAI Use] LLM Response End
+// [GenAI Use] Reflection: The mock ordering matters a lot. vitest evaluates hoisted mocks before imports, so the shape of each mock must exactly match the real exports. I had to debug this a few times.
 
 import {
   bootstrapPracticeSession,

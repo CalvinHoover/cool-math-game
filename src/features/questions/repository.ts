@@ -1,3 +1,18 @@
+/*
+[GenAI Use] Prompt: "I need a single place for all question related Prisma queries. It should support filtering by topic and difficulty, excluding seen questions, finding by ID, listing topics, and creating questions. Help me write a plan for this."
+[GenAI Use] LLM Response Start
+Plan:
+- export type QuestionRecord = Question -- re-export alias for consistency.
+- export const QuestionDBAccess = { ... } -- plain object with five async methods so the whole module can be mocked in tests.
+- async findQuestions(opts: { topicId?: string; difficulty?: number; count?: number; excludeIds?: string[] } = {}): Promise<QuestionRecord[]> -- builds a dynamic Prisma where object conditionally adding topicId, difficulty, and notIn filters so callers can combine filters without needing multiple dedicated queries.
+- async findById(id: string): Promise<QuestionRecord | null> -- thin wrapper around findUnique.
+- async findAllTopics(): Promise<Topic[]> -- returns all topics ordered by name.
+- async createTopic(name: string): Promise<Topic> -- thin wrapper around topic.create.
+- async createQuestion(data: { topicId: string; text: string; answer: string; hint?: string; explanation: string; difficulty: number }): Promise<Question> -- thin wrapper around question.create. This keeps all question-related Prisma calls in one place for easier mocking in tests.
+[GenAI Use] LLM Response End
+[GenAI Use] Reflection: The dynamic where object was a good pattern I learned here. Instead of hardcoding every filter combination, I build the where object conditionally. This made the function much shorter.
+*/
+
 import { prisma } from '@/lib/prisma';
 import type { Question, Topic } from '@prisma/client';
 

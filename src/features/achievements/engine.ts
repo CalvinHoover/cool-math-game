@@ -1,3 +1,17 @@
+/*
+[GenAI Use] Prompt: "I need an achievement unlock engine that does not talk to Prisma directly. It should receive plain data about user progress and evaluate 5 badge conditions. Suggest a plan for a TypeScript file that does this."
+[GenAI Use] LLM Response Start
+Plan:
+- export interface UserProgressSnapshot { totalCompletedSessions: number; userTopics: { topicId: string; level: number }[]; currentSessionScorePercent?: number; } -- read-only data passed in from the caller.
+- export interface AchievementStatus extends AchievementDefinition { earned: boolean; earnedAt?: Date; } -- badge definition plus an earned flag for the UI.
+- export interface NewlyUnlocked { slug: string; name: string; color: string; } -- lightweight result when a badge is first awarded.
+- function evaluateCondition(def: AchievementDefinition, snapshot: UserProgressSnapshot): boolean -- switch on the badge slug to check if the snapshot meets the threshold.
+- export async function checkAndAwardAchievements(userId: string, snapshot: UserProgressSnapshot): Promise<{ newlyUnlocked: NewlyUnlocked[] }> -- fetches all definitions and current earned badges in parallel, skips already earned ones, evaluates each remaining condition, and calls the repository to award new badges.
+- export async function getAchievementStatus(userId: string): Promise<AchievementStatus[]> -- returns every badge definition with an earned flag by looking up dates in a Map. The engine never touches Prisma; all persistence goes through the repository layer.
+[GenAI Use] LLM Response End
+[GenAI Use] Reflection: I implemented the plan and renamed some variables to match my project. Using a snapshot keeps the engine testable without a real database.
+*/
+
 import { ACHIEVEMENTS, type AchievementDefinition } from './definitions';
 import { getUserAchievements, awardAchievement, getAllAchievements } from './repository';
 
