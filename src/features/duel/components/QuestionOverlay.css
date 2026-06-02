@@ -1,0 +1,60 @@
+/* ==========================================================================
+   QUESTION MODAL OVERLAY
+   ========================================================================== */
+
+/* The dark background that covers the whole screen */
+.modal-overlay {
+  position: absolute; /* Positions it relative to the .duel-container */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000; /* Forces it perfectly on top of all attacks */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The actual retro pop-up window */
+.question-window {
+  background-color: #000000;
+  border: 4px outset #C0C0C0;
+  min-width: 300px;
+  box-shadow: 10px 10px 0px rgba(0, 255, 0, 0.2);
+}
+
+/* The title bar of the window */
+.window-header {
+  background-color: #000080; /* Classic Win95 Navy Blue */
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.window-header h3 {
+  color: #FFFFFF;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.window-header button {
+  background-color: #C0C0C0;
+  border: 2px outset #FFFFFF;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.window-header button:active {
+  border-style: inset; /* Makes it look pushed in when clicked */
+}
+
+/* The interior where the math happens */
+.window-body {
+  padding: 30px;
+  text-align: center;
+  color: #00FF00;
+  font-size: 2rem;
+  font-weight: bold;
+}

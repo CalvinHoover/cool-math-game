@@ -1,0 +1,142 @@
+/* ==========================================================================
+   TOOLBAR
+   ========================================================================== */
+
+/* The full-width bar at the bottom */
+.toolbar {
+  width: 100%;
+  background-color: #222222;
+  border-top: 4px ridge #C0C0C0;
+  padding: 0px 20px 0px 20px; 
+  margin-top: auto; 
+}
+
+/* The main flexbox that separates the left controls from the right income area */
+.toolbar-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* Pushes selectors left, income right */
+  align-items: center; /* Vertically centers everything in the bar */
+  width: 100%;
+  height: 100%;
+  gap: 20px;
+  padding: 15px 0; 
+}
+
+/* ==========================================================================
+   ATTACK SELECTORS
+   ========================================================================== */
+
+/* Stacks the topic row and difficulty row vertically */
+.attack-selectors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; 
+  flex-shrink: 0; /* Prevents the buttons from squishing */
+}
+
+/* Aligns a single row of three buttons */
+.attack-selector-array {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+/* The individual button styling */
+.attack-selector-button {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 3px outset #C0C0C0; /* Classic Win98 3D pop */
+  padding: 10px 15px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-width: 110px;
+  transition: all 0.1s ease;
+  filter: brightness(0.5); /* Default to dimmed until selected */
+}
+
+/* When the player clicks down on a button */
+.attack-selector-button:active {
+  border-style: inset;
+}
+
+/* The style for the currently 'active' choice */
+.attack-selector-button.selected {
+  border-style: inset;       /* Keeps it looking "pushed in" */
+  filter: brightness(1.0);
+}
+
+/* ==========================================================================
+   INCOME QUESTIONS
+   ========================================================================== */
+
+/* The container that aligns the three buttons */
+.income-question-array {
+  display: flex;
+  justify-content: center; 
+  align-items: stretch;    
+  gap: 12px;               
+  height: 120px;           
+}
+
+/* The individual rectangular cards */
+.income-question {
+  position: relative; 
+  background-color: #000000;
+  border: 4px outset #C0C0C0;
+  width: 300px; 
+  height: auto;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  box-shadow: 5px 3px 0px rgba(255, 255, 0, 0.15); 
+}
+
+/* The Veto Button in the top right */
+.veto-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: #800000; /* Dark red */
+  color: #FFFFFF;
+  border: 2px outset #FF0000;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+/* The physical "push" effect for the veto button */
+.veto-button:active {
+  border-style: inset;
+  background-color: #FF0000;
+}
+
+/* Typography for the math problem */
+.income-content {
+  text-align: center;
+}
+
+.income-content h3 {
+  color: #FFFF00; /* Gold header */
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.income-content p {
+  color: #00FF00; /* Lime green math */
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.income-question.vetoed { opacity: 0.5; cursor: not-allowed; }
