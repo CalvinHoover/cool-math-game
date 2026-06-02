@@ -1,93 +1,194 @@
 // pretty much the same as profile/api.ts
 
-import type { Friend, FriendRequest, FriendStatus } from "./types";
+import type { Friend, FriendRequest, PastOpponent } from "./types";
+import type { PublicProfile } from "../profile/types";
 
+// mock data for friends testing
+// id: string;
+// username: string;
+// avatarUrl?: string;
+// level: number;
+// bio?: string;
+const testUsers: PublicProfile[] = [
+  {
+    id: "testfriend1",
+    username: "gooper1",
+    avatarUrl: "/default_friend.png",
+    level: 12,
+    bio: "I am friendly!"
+  },
+  {
+    id: "testfriend2",
+    username: "gooper2",
+    avatarUrl: "/default_friend.png",
+    level: 35,
+    bio: "I am also friendly!"
+  },
+];
+
+let testFriends: Friend[] = [
+  {
+    profile: testUsers[0],
+    status: {
+      isFriend: true,
+      incomingRequest: false,
+      outgoingRequest: false,
+    },
+  },
+]
+
+let testRequests: FriendRequest[] = [
+  {
+    id: "request-1",
+    fromUser: testUsers[1],
+    toUser: {
+      id: "currentuser",
+      username: "Current User",
+      avatarUrl: "/default_avatar.png",
+      level: 38,
+      bio: "AAAAUUUUUGHHHHH"
+    },
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  },
+];
+
+let testPastOpponents: PastOpponent[] = [
+  {
+    profile: testUsers[1],
+    result: "win",
+    playedAt: new Date().toISOString(),
+  }
+]
 export async function getFriends(): Promise<Friend[]> {
-  const response = await fetch("/api/friends");
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch friends :[");
-  }
-
-  const data = await response.json();
-  return data.friends;
+  return testFriends;
 }
 
-export async function getFriendStatus(userId: string): Promise<FriendStatus> {
-  const response = await fetch(`/api/friends/status/${userId}`);
+// export async function getFriendStatus(userId: string): Promise<FriendStatus> {
+  // const response = await fetch(`/api/friends/status/${userId}`);
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch friend status :[");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to fetch friend status :[");
+  // }
 
-  const data = await response.json();
-  return data.status;
-}
+  // const data = await response.json();
+  // return data.status;
+// }
 
 export async function getFriendRequests(): Promise<FriendRequest[]> {
-  const response = await fetch("/api/friends/requests");
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch friend requests :[");
-  }
-
-  const data = await response.json();
-  return data.requests;
+  return testRequests.filter((request) => request.status === "pending");
 }
 
-export async function sendFriendRequest(userId: string): Promise<FriendRequest> {
-  const response = await fetch("/api/friends/requests", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+// search function for users
+export async function searchUsers(query: string): Promise<PublicProfile[]> {
+  const normalizedQuery = query.toLowerCase().trim();
+  if (!normalizedQuery) {
+    return [];
+  }
+  return testUsers.filter((user) =>
+    user.username.toLowerCase().includes(normalizedQuery)
+  );
+}
+
+export async function sendFriendRequest(username: string): Promise<FriendRequest> {
+  const user = testUsers.find((user) => user.username === username);
+  if (!user) {
+    throw new Error ("User not found.");
+  }
+
+  const newRequest: FriendRequest = {
+    id: `request-${testRequests.length + 1}`,
+    fromUser: {
+      id: "pleasepleaseplease",
+      username: "HopefulFriend242",
+      avatarUrl: "/default_friend.png",
+      level: 100,
+      bio: "please can i be your friend" 
     },
-    body: JSON.stringify({ userId }),
-  });
+    toUser: user,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
 
-  if (!response.ok) {
-    throw new Error("Failed to send friend request :[");
-  }
+  testRequests.push(newRequest);
+  return newRequest;
 
-  const data = await response.json();
-  return data.request;
+  // const response = await fetch("/api/friends/requests", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({ userId }),
+  // });
+
+  // if (!response.ok) {
+  //   throw new Error("Failed to send friend request :[");
+  // }
+
+  // const data = await response.json();
+  // return data.request;
 }
 
-export async function acceptFriendRequest(
-  requestId: string
-): Promise<FriendRequest> {
-  const response = await fetch(`/api/friends/requests/${requestId}/accept`, {
-    method: "POST",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to accept friend request :[");
+export async function acceptFriendRequest(requestId: string): Promise<Friend> {
+  const request = testRequests.find((request) => request.id === requestId);
+  if (!request) {
+    throw new Error("Friend request not found.")
   }
+  request.status = "accepted";
+  const newFriend: Friend = {
+    profile: request.fromUser,
+    status: {
+      isFriend: true,
+      incomingRequest: false,
+      outgoingRequest: false,
+    },
+  };
 
-  const data = await response.json();
-  return data.request;
+  testFriends.push(newFriend);
+  return newFriend;
+
+  // const response = await fetch(`/api/friends/requests/${requestId}/accept`, {
+  //   method: "POST",
+  // });
+
+  // if (!response.ok) {
+  //   throw new Error("Failed to accept friend request :[");
+  // }
+
+  // const data = await response.json();
+  // return data.request;
 }
 
-export async function denyFriendRequest(
-  requestId: string
-): Promise<FriendRequest> {
-  const response = await fetch(`/api/friends/requests/${requestId}/deny`, {
-    method: "POST",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to deny friend request :[");
+export async function denyFriendRequest(requestId: string): Promise<FriendRequest> {
+  const request = testRequests.find((request) => request.id === requestId);
+  if (!request) {
+    throw new Error("Friend request not found.");
   }
+  request.status = "denied";
+  return request;
 
-  const data = await response.json();
-  return data.request;
+//   const response = await fetch(`/api/friends/requests/${requestId}/deny`, {
+//     method: "POST",
+//   });
+
+//   if (!response.ok) {
+//     throw new Error("Failed to deny friend request :[");
+//   }
+
+//   const data = await response.json();
+//   return data.request;
+// }
+
+// export async function removeFriend(userId: string): Promise<void> {
+//   const response = await fetch(`/api/friends/${userId}`, {
+//     method: "DELETE",
+//   });
+
+//   if (!response.ok) {
+//     throw new Error("Failed to remove friend :[");
+//   }
 }
 
-export async function removeFriend(userId: string): Promise<void> {
-  const response = await fetch(`/api/friends/${userId}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to remove friend :[");
-  }
+export async function getPastOpponents(): Promise<PastOpponent[]> {
+  return testPastOpponents;
 }

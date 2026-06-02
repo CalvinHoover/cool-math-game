@@ -7,10 +7,6 @@
 
 import FriendsTester from "@/features/friends/FriendsTester";
 
-export default function Page() {
-  return (
-    <main>
-      <FriendsTester />
-    </main>
-  );
+export default function FriendsPage() {
+  return <FriendsTester />;
 }

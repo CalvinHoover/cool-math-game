@@ -22,3 +22,10 @@ export interface FriendRequest {
     status: "pending" | "accepted" | "denied";
     createdAt: string;
 }
+
+// for past opponents of a user
+export interface PastOpponent {
+    profile: PublicProfile;
+    result: "win" | "loss";
+    playedAt: string;
+}
