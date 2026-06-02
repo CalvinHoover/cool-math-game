@@ -1,54 +1,26 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { getTopics } from '@/features/practice/actions';
-
-type Topic = {
-  id: string;
-  name: string;
-};
-
-const SESSION_LENGTHS = [5, 10, 20];
+import { usePracticeSetup } from '@/features/practice/usePracticeSetup';
 
 export default function PracticeSetup() {
-  const router = useRouter();
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState('');
-  const [selectedCount, setSelectedCount] = useState(5);
-  const [timedMode, setTimedMode] = useState(false);
-  const [timeLimit, setTimeLimit] = useState(30);
+  // All data-fetching and routing logic lives in the hook so this component stays presentational.
+  const {
+    topics,
+    isLoading,
+    error,
+    selectedTopic,
+    setSelectedTopic,
+    selectedCount,
+    setSelectedCount,
+    timedMode,
+    setTimedMode,
+    timeLimit,
+    setTimeLimit,
+    handleStart,
+    sessionLengths,
+  } = usePracticeSetup();
 
-  useEffect(() => {
-    let cancelled = false;
-    getTopics().then((result) => {
-      if (cancelled) return;
-      if (!result.ok) {
-        setError(result.error);
-      } else {
-        setTopics(result.topics);
-      }
-      setLoading(false);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const handleStart = () => {
-    if (!selectedTopic) return;
-    const params = new URLSearchParams();
-    params.set('topicId', selectedTopic);
-    params.set('count', String(selectedCount));
-    if (timedMode) {
-      params.set('timeLimit', String(timeLimit));
-    }
-    router.push(`/practice?${params.toString()}`);
-  };
-
-  if (loading) {
+  if (isLoading) {
     return <p className="text-gray-600">Loading topics...</p>;
   }
 
@@ -83,7 +55,7 @@ export default function PracticeSetup() {
           onChange={(e) => setSelectedCount(Number(e.target.value))}
           className="w-full border p-2 rounded"
         >
-          {SESSION_LENGTHS.map((n) => (
+          {sessionLengths.map((n) => (
             <option key={n} value={n}>
               {n} questions
             </option>
