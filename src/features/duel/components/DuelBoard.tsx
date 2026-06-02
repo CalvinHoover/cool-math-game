@@ -35,123 +35,122 @@ export default function DuelBoard() {
       </div>
 
 
-    <div className="duel-arena"
-      onClick={(eventData) => {
-        // Check to ensure the click is on the arena itself, not a child element (like an attack)
-        if (eventData.target !== eventData.currentTarget) return;
+      <div className="duel-arena"
+        onClick={(eventData) => {
+          // Check to ensure the click is on the arena itself, not a child element (like an attack)
+          if (eventData.target !== eventData.currentTarget) return;
 
-        // Get relative Y coordinate of the click within the arena
-        const rect = eventData.currentTarget.getBoundingClientRect();
-        const relativeY = eventData.clientY - rect.top;
+          // Get relative Y coordinate of the click within the arena
+          const rect = eventData.currentTarget.getBoundingClientRect();
+          const relativeY = eventData.clientY - rect.top;
 
-        spawnAttack({
-          id: Date.now(),
-          question: generateQuestion(selectedDifficulty, selectedTopic),
-          positionY: relativeY,
-          owner: 'player'
-        });
-      }}
+          spawnAttack({
+            id: Date.now(),
+            question: generateQuestion(selectedDifficulty, selectedTopic),
+            positionY: relativeY,
+            owner: 'player'
+          });
+        }}
 
-      // TODO this is bad, repeated placeholder code just so you can play as both sides for now.
-      // Right click to spawn attacks for the opponent.
-      onContextMenu={(eventData) => {
-        eventData.preventDefault();
+        // TODO this is bad, repeated placeholder code just so you can play as both sides for now.
+        // Right click to spawn attacks for the opponent.
+        onContextMenu={(eventData) => {
+          eventData.preventDefault();
 
-        if (eventData.target !== eventData.currentTarget) return;
+          if (eventData.target !== eventData.currentTarget) return;
 
-        // Get relative Y coordinate of the click within the arena
-        const rect = eventData.currentTarget.getBoundingClientRect();
-        const relativeY = eventData.clientY - rect.top;
+          // Get relative Y coordinate of the click within the arena
+          const rect = eventData.currentTarget.getBoundingClientRect();
+          const relativeY = eventData.clientY - rect.top;
 
-        spawnAttack({
-          id: Date.now(),
-          question: generateQuestion(selectedDifficulty, selectedTopic),
-          positionY: relativeY,
-          owner: 'opponent'
-        });
-      }}
-    >
-        
-      <div className="attack-container">
-        {gameState.incomingAttacks.map((attack) => (
-          <DuelAttack 
-            key={attack.id} 
-            attackData={attack}
-            clickFunction={() => setActiveQuestion(
-             { id: attack.id, question: attack.question, type: 'attack' }
-            )}
-            hitFunction={() => resolveAttackHit(attack)}
-          />
-        ))}
-      </div>
-    </div>
-
-    {gameState.activeQuestion && 
-      <QuestionWindow 
-        questionToRender={gameState.activeQuestion} 
-        clickFunction={() => setActiveQuestion(null)} 
-        resolutionFunction={(question, userAnswer) => {
-          resolveQuestionResponse(question, userAnswer);
-        }} 
-      />
-    }
-
-{/* Toolbar area */}
-  <div className="toolbar">
-    <div className="toolbar-buttons">
-
-      <div className="attack-selectors-container">
-        {/* Buttons for selecting topic of attacks */}
-        <div className="attack-selector-array">
-          {allTopics.map((topic) => (
-            <button 
-              key={topic}
-              className={`attack-selector-button ${topic === selectedTopic ? 'selected' : ''}`}
-              style={{ backgroundColor: getTopicColor(topic) }}
-              onClick={() => setSelectedTopic(topic)}
-            >
-              {topic}
-            </button>
-          ))}
-        </div>
-
-        {/* Buttons for selecting difficulty of attacks */}
-        <div className="attack-selector-array">
-          {allDifficulties.map((difficulty) => (
-            <button 
-              key={difficulty}
-              className={`attack-selector-button ${difficulty === selectedDifficulty ? 'selected' : ''}`}
-              style={{ backgroundColor: getDifficultyColor(difficulty) }}
-              onClick={() => setSelectedDifficulty(difficulty)}
-            >
-              {getDifficultyLabel(difficulty)}
-            </button>
+          spawnAttack({
+            id: Date.now(),
+            question: generateQuestion(selectedDifficulty, selectedTopic),
+            positionY: relativeY,
+            owner: 'opponent'
+          });
+        }}
+      >
+          
+        <div className="attack-container">
+          {gameState.incomingAttacks.map((attack) => (
+            <DuelAttack 
+              key={attack.id} 
+              attackData={attack}
+              clickFunction={() => setActiveQuestion(
+              { id: attack.id, question: attack.question, type: 'attack' }
+              )}
+              hitFunction={() => resolveAttackHit(attack)}
+            />
           ))}
         </div>
       </div>
 
-      {/* Right side: Income Questions */}
-      <div className="income-question-array">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <IncomeQuestion
-            key={i}
-            difficulty={i}
-            clickFunction={(myQuestion, handleCorrect, handleIncorrect) => setActiveQuestion(
-              { id: i, 
-                question: myQuestion, 
-                type: 'income', 
-                onCorrect: handleCorrect,
-                onIncorrect: handleIncorrect
-              }
-            )} 
-          />
-        ))}
+      {gameState.activeQuestion && 
+        <QuestionWindow 
+          questionToRender={gameState.activeQuestion} 
+          clickFunction={() => setActiveQuestion(null)} 
+          resolutionFunction={(question, userAnswer) => {
+            resolveQuestionResponse(question, userAnswer);
+          }} 
+        />
+      }
+
+    {/* Toolbar area */}
+      <div className="toolbar">
+        <div className="toolbar-buttons">
+
+          <div className="attack-selectors-container">
+            {/* Buttons for selecting topic of attacks */}
+            <div className="attack-selector-array">
+              {allTopics.map((topic) => (
+                <button 
+                  key={topic}
+                  className={`attack-selector-button ${topic === selectedTopic ? 'selected' : ''}`}
+                  style={{ backgroundColor: getTopicColor(topic) }}
+                  onClick={() => setSelectedTopic(topic)}
+                >
+                  {topic}
+                </button>
+              ))}
+            </div>
+
+            {/* Buttons for selecting difficulty of attacks */}
+            <div className="attack-selector-array">
+              {allDifficulties.map((difficulty) => (
+                <button 
+                  key={difficulty}
+                  className={`attack-selector-button ${difficulty === selectedDifficulty ? 'selected' : ''}`}
+                  style={{ backgroundColor: getDifficultyColor(difficulty) }}
+                  onClick={() => setSelectedDifficulty(difficulty)}
+                >
+                  {getDifficultyLabel(difficulty)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right side: Income Questions */}
+          <div className="income-question-array">
+            {allDifficulties.map((difficulty) => (
+              <IncomeQuestion
+                key={difficulty}
+                difficulty={difficulty}
+                clickFunction={(myQuestion, handleCorrect, handleIncorrect) => setActiveQuestion(
+                  { id: difficulty, 
+                    question: myQuestion, 
+                    type: 'income', 
+                    onCorrect: handleCorrect,
+                    onIncorrect: handleIncorrect
+                  }
+                )} 
+              />
+            ))}
+          </div>
+
+        </div>
       </div>
 
     </div>
-  </div>
-
-  </div>
-
   );
 }

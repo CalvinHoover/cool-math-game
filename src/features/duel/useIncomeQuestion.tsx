@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { Question } from './types';
 import { generateQuestion } from './gameEngine';
+import { VETO_COOLDOWN_MS } from './constants';
 
 export interface IncomeQuestionState {
   question: Question;
@@ -24,7 +25,7 @@ export const useIncomeQuestion = (difficulty: number) => {
 
     setTimeout(() => {
       generateNewProblem();
-    }, 3000); // Vetoing means no new question for 3 seconds, after which a new question is generated and the veto state is reset. 
+    }, VETO_COOLDOWN_MS); // Vetoing means no new question for 3 seconds, after which a new question is generated and the veto state is reset. 
   }, [generateNewProblem]);
 
   return { incomeQuestionState, generateNewProblem, triggerVeto };

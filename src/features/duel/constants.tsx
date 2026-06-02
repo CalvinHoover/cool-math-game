@@ -3,6 +3,46 @@ import { Question } from './types';
 export const allTopics = ['arithmetic', 'counting', 'algebra'];
 export const allDifficulties = [0, 1, 2];
 
+export const INITIAL_HP = 100; // Starting HP for both player and opponent
+export const INITIAL_COINS = 0; // Starting coins for both player and opponent
+
+export const ATTACK_DAMAGE = 10; // HP lost by the opponent when an attack question hits them
+
+export const VETO_COOLDOWN_MS = 10000; // Cooldown period for vetoing an attack (in milliseconds)
+
+export const INCOME_QUESTION_REWARDS: Record<number, number> = {
+  0: 10,
+  1: 20,
+  2: 30
+};
+
+export const QUESTION_PRICES: Record<number, number> = {
+  0: 5,
+  1: 10,
+  2: 15
+};
+
+export const DIFFICULTY_LABELS: Record<number, string> = {
+  0: 'Easy',
+  1: 'Medium',
+  2: 'Hard'
+};
+
+export const DIFFICULTY_COLORS: Record<number, string> = {
+  0: '#00FF00', // Lime green
+  1: '#FFFF00', // Gold
+  2: '#FF3333', // Red
+};
+
+export const TOPIC_COLORS: Record<string, string> = {
+  'arithmetic': '#2ED9D7', // Cyan
+  'algebra': '#000080',    // Dark blue
+  'counting': '#6937A6',   // Purple
+};
+
+// coin rewards
+
+
 // Placeholder questions. Eventually we will call from the database.
 
 export const easyArithmeticQuestion: Question = {

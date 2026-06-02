@@ -1,6 +1,6 @@
 // Helper functions for duels
 
-import { allSampleQuestions } from './constants';
+import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, TOPIC_COLORS } from './constants';
 import { Question } from './types';
 
 // Checks if the player's answer matches the correct answer for the given question, returning true or false
@@ -30,42 +30,15 @@ export const generateQuestion = (difficulty?: number, topic?: string): Question 
 
 // Converts a difficulty number to a string label for display purposes
 export const getDifficultyLabel = (difficulty: number): string => {
-  switch (difficulty) {
-    case 0:
-      return 'Easy';
-    case 1:
-      return 'Medium';
-    case 2:
-      return 'Hard';
-    default:
-      return 'Unknown';
-  }
+  return DIFFICULTY_LABELS[difficulty] || 'Unknown';
 };
 
 export const getDifficultyColor = (difficulty: number): string => {
-  switch (difficulty) {
-    case 0:
-      return '#00FF00'; // Lime green
-    case 1:
-      return '#FFFF00'; // Gold
-    case 2:
-      return '#FF3333'; // Red
-    default:
-      return '#FFFFFF'; // White
-  }
+  return DIFFICULTY_COLORS[difficulty] || '#FFFFFF';
 };
 
 export const getTopicColor = (topic: string): string => {
-  switch (topic) {
-    case 'arithmetic':
-      return '#2ED9D7'; // Cyan
-    case 'algebra':
-      return '#000080'; // Dark blue
-    case 'counting':
-      return '#6937A6'; // Purple
-    default:
-      return '#FFFFFF'; // White
-  }
+  return TOPIC_COLORS[topic] || '#FFFFFF';
 }
 
 

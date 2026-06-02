@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { PlayerState, QuestionWithSource, ActiveAttack} from './types';
 import { checkAnswer, opponentOf } from './gameEngine';
+import { INITIAL_HP, INITIAL_COINS, ATTACK_DAMAGE, INCOME_QUESTION_REWARDS } from './constants';
 
 export interface GameState {
   player: PlayerState;
@@ -12,8 +13,8 @@ export interface GameState {
 }
 
 export const useDuelGame = () => {
-  const [gameState, setGameState] = useState<GameState>({player: { hp: 100, coins: 0 },
-    opponent: { hp: 100, coins: 1000 },
+  const [gameState, setGameState] = useState<GameState>({player: { hp: INITIAL_HP, coins: INITIAL_COINS },
+    opponent: { hp: INITIAL_HP, coins: INITIAL_COINS },
     incomingAttacks: [],
     activeQuestion: null });
 
@@ -86,14 +87,14 @@ export const useDuelGame = () => {
     }
     else {
       // FIXME the penalty will eventually be that the question speeds up on the first wrong answer, and then immediately deals its damage on the second wrong answer
-      addHP(-10, opponentOf(attackToResolve.owner)); // Temporary penalty for wrong answer: lose 10 HP
+      addHP(-ATTACK_DAMAGE, opponentOf(attackToResolve.owner)); // Temporary penalty for wrong answer: lose 10 HP
     }
   }, [deleteAttack, addHP]);
 
 
   const resolveIncomeQuestionResponse = useCallback((questionToResolve: QuestionWithSource, answerInputted: string) => { //FIXME not implemented
     if (checkAnswer(questionToResolve.question, answerInputted)) {
-      addCoins(10, 'player');
+      addCoins(INCOME_QUESTION_REWARDS[questionToResolve.question.difficulty], 'player');
       setActiveQuestion(null);
       
       // Generates a new income question
@@ -136,7 +137,7 @@ export const useDuelGame = () => {
 
   // Triggered when an attack reaches the end of the screen. Deals damage to the appropriate player and deletes the attack.
   const resolveAttackHit = useCallback((attack: ActiveAttack) => {
-    addHP(-10, opponentOf(attack.owner));
+    addHP(-ATTACK_DAMAGE, opponentOf(attack.owner));
     deleteAttack(attack.id);
   }, [addHP, deleteAttack]);
 
