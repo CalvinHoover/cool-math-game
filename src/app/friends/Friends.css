@@ -1,0 +1,90 @@
+.friends-container {
+    min-height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: "Comic Sans MS", "Trebuchet MS", cursive;
+    padding: 32px;
+  }
+  
+  .friends-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .friends-title {
+    font-size: 3rem;
+    color: #ffff00;
+    text-shadow: 4px 4px 0px #ff0000;
+    text-decoration: underline;
+    text-align: center;
+  }
+  
+  .friends-section {
+    background-color: #111111;
+    border: 4px outset #cccccc;
+    padding: 24px;
+    color: #ffffff;
+  }
+  
+  .friends-section h2 {
+    color: #00ffff;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .friends-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    border: 4px outset #cccccc;
+    cursor: pointer;
+    background-color: #0000ff;
+    color: white;
+    text-transform: uppercase;
+    margin: 8px;
+  }
+  
+  .friends-button:hover {
+    border: 4px inset #cccccc;
+    background-color: #0000cc;
+  }
+  
+  .friends-input {
+    padding: 10px 12px;
+    font-size: 1rem;
+    font-family: "Courier New", Courier, monospace;
+    background-color: white;
+    color: black;
+    border: 4px inset #cccccc;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .friends-search-results {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .friends-search-card {
+    background-color: #000000;
+    border: 4px inset #cccccc;
+    padding: 16px;
+    font-family: "Courier New", Courier, monospace;
+  }
+  
+  .friends-search-card h3 {
+    color: #00ffff;
+    margin-bottom: 8px;
+  }
+  
+  .friends-search-card p {
+    margin: 4px 0;
+  }

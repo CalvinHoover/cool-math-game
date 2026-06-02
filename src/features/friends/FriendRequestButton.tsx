@@ -10,18 +10,18 @@ interface FriendRequestButtonProps {
 
 export default function FriendRequestButton({status,}: FriendRequestButtonProps) {
     if (status.isFriend) {
-        return <button>Friends</button>;
+        return <button className="friends-button">Friends</button>;
     }
     if (status.incomingRequest) {
         return (
             <div>
-                <button>Accept</button>
-                <button>Reject</button>
+                <button className="friends-button">Accept</button>
+                <button className="friends-button">Reject</button>
             </div>
         );
     }
     if (status.outgoingRequest) {
-        return <button>Request Sent!</button>;
+        return <button className="friends-button">Request Sent!</button>;
     }
-    return <button>Add Friend</button>;
+    return <button className="friends-button">Add Friend</button>;
 }

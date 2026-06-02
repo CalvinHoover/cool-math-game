@@ -18,19 +18,23 @@ export default function FriendSearch() {
           <h2>Find Friends</h2>
     
           <input
+            className="friends-input"
             type="text"
-            placeholder="Search by username..."
+            placeholder="Search by username"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
     
-          <button onClick={handleSearch}>
+          <button className="friends-button" onClick={handleSearch}>
             Search
           </button>
     
-          <div>
+          <div className="friends-search-results">
             {results.map((user) => (
-              <div key={user.id}>
+              <div 
+                key={user.id}
+                className="friends-search-card"
+              >
                 <h3>{user.username}</h3>
                 <p>@{user.id}</p>
               </div>
