@@ -163,5 +163,5 @@ export const useDuelGame = () => {
     addCoins(-QUESTION_PRICES[selectedDifficulty], buyer);
   }, [gameState.player.coins, spawnAttack, addCoins]);
 
-  return { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit };
+  return { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit, deflectAttack: deleteAttack };
 };

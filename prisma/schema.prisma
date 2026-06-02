@@ -24,6 +24,15 @@ model User {
   wonMatches          Match[]      @relation("winner")
   sentFriendships     Friendship[] @relation("sent")
   receivedFriendships Friendship[] @relation("received")
+  queueEntry          MatchQueue?
+}
+
+model MatchQueue {
+  id       String   @id @default(uuid())
+  userId   String   @unique
+  elo      Int
+  joinedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
 }
 
 model Topic {

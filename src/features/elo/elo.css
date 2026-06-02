@@ -1,0 +1,106 @@
+.elo-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.elo-number {
+  font-size: 2rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  color: #FFFF00;
+}
+
+.league-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 0.85rem;
+  border: 3px outset #CCCCCC;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #000000;
+}
+
+.leaderboard-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #000000;
+  font-family: 'Comic Sans MS', 'Trebuchet MS', cursive;
+  padding: 40px 16px;
+}
+
+.leaderboard-title {
+  font-size: 2.5rem;
+  color: #FFFF00;
+  text-shadow: 4px 4px 0px #FF0000;
+  text-decoration: underline;
+  margin-bottom: 30px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  max-width: 680px;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.leaderboard-table th {
+  background-color: #222222;
+  color: #FFFF00;
+  padding: 10px 12px;
+  text-align: left;
+  border: 2px solid #444444;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.leaderboard-table td {
+  padding: 8px 12px;
+  border: 1px solid #2a2a2a;
+  color: #FFFFFF;
+  font-size: 0.9rem;
+}
+
+.leaderboard-table tr:nth-child(even) td {
+  background-color: #111111;
+}
+
+.leaderboard-table tr:hover td {
+  background-color: #1a1a1a;
+}
+
+.rank-top {
+  color: #FFD700;
+  font-weight: bold;
+  text-align: center;
+}
+
+.rank-normal {
+  color: #888888;
+  text-align: center;
+}
+
+.elo-col {
+  color: #00FF00;
+  text-align: right;
+}
+
+.status-text {
+  color: #00FFFF;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.error-text {
+  color: #FF4444;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+  margin-top: 30px;
+}
