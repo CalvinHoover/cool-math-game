@@ -30,7 +30,7 @@ let testFriends: Friend[] = [
   {
     profile: testUsers[0],
     status: {
-      isFriend: true,
+      isFriend: false,
       incomingRequest: false,
       outgoingRequest: false,
     },

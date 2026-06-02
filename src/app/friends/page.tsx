@@ -6,7 +6,8 @@
 // note that this change only happens once, so to see it in action again, rerun npm run dev
 
 import FriendsTester from "@/features/friends/FriendsTester";
+import FriendsList from "@/features/friends/FriendsList";
 
 export default function FriendsPage() {
-  return <FriendsTester />;
+  return <FriendsList />;
 }
