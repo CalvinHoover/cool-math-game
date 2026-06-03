@@ -30,7 +30,7 @@ export function Navbar({ username }: NavbarProps) {
             <NavLink href="/dashboard" label="Dashboard" />
             <NavLink href="/practice" label="Practice" />
             <NavLink href="/profile" label="Profile" />
-            <NavLink href="/friends" label="Friends" />
+            <NavLink href="/friends" label="Friends" disabled />
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -45,12 +45,16 @@ export function Navbar({ username }: NavbarProps) {
   );
 }
 
-function NavLink({ href, label }: { href: string; label: string }) {
+function NavLink({ href, label, disabled }: { href: string; label: string; disabled?: boolean }) {
   const router = useRouter();
   return (
     <button
-      onClick={() => router.push(href)}
-      className="text-sm font-medium text-gray-600 transition-colors hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+      onClick={() => !disabled && router.push(href)}
+      className={
+        disabled
+          ? "text-sm font-medium text-gray-400 cursor-not-allowed dark:text-gray-600"
+          : "text-sm font-medium text-gray-600 transition-colors hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+      }
     >
       {label}
     </button>
