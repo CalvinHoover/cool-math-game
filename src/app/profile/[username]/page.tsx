@@ -12,6 +12,7 @@ import SettingsPanel from "@/features/profile/components/SettingsPanel";
 import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
 import { testUserProfiles } from "@/features/profile/testData";
 import type { PastMatch } from "@/features/profile/types";
+import BackButton from '@/components/interface/BackButton';
 
 export default function ProfileUsernamePage() {
   const params  = useParams<{ username: string }>();
@@ -34,22 +35,22 @@ export default function ProfileUsernamePage() {
   }, [username]);
 
   if (!foundProfile) {
-    return (
-        <main className="p-6 text-white">
-            <div className="mx-auto max-w-4xl space-y-6">
-                <button onClick={() => router.push('/dashboard')} style={{ color: '#aaa',   background: 'none', border: 'none', cursor: 'pointer' }}>
-                ← Back to Menu
-                </button>
-                <h1 className="text-2xl font-bold">{username}</h1>
-                {loadingMatches
-                    ? <p>Loading match history...</p>
-                    : realMatches.length === 0
-                        ? <p>No matches played yet.</p>
-                        : <MatchHistoryList matches={realMatches} />}
-                </div>
-            </main>
-        );
-    }
+  return (
+    <main className="p-6 text-white">
+      <div className="mx-auto max-w-4xl space-y-6">
+        <h1 className="text-2xl font-bold">{username}</h1>
+        {loadingMatches
+          ? <p>Loading match history...</p>
+          : realMatches.length === 0
+            ? <p>No matches played yet.</p>
+            : <MatchHistoryList matches={realMatches} />}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+          <BackButton />
+        </div>
+      </div>
+    </main>
+  );
+}
 
   const fontSizeClasses = {
     small:  "text-sm",
