@@ -117,7 +117,7 @@ describe('POST /api/auth/register', () => {
     const res = await registerPOST(req as NextRequest);
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.error).toContain('at least 6 characters');
+    expect(body.error).toBe('Password must be at least 6 characters');
   });
 
   it('returns 409 when email or username is taken', async () => {
