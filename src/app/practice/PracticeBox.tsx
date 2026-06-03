@@ -192,6 +192,7 @@ export default function PracticeBox({
         setAttempt(2);
         setFeedback({ message: 'Incorrect. Try again!', correct: false });
         setUserAnswer('');
+        setIsSubmitting(false);
         return;
       } else {
         const answerText = result.answer

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import PracticeBox from '@/app/practice/PracticeBox';
@@ -73,7 +73,9 @@ describe('PracticeBox', () => {
 
     await user.clear(getByRole('textbox'));
     await user.type(getByRole('textbox'), 'Rome');
-    await user.click(getByRole('button', { name: 'Submit' }));
+    const submitBtn = getByRole('button', { name: 'Submit' });
+    await waitFor(() => expect(submitBtn).toBeEnabled());
+    await user.click(submitBtn);
     await findByText(/The correct answer was Paris/);
 
     await user.click(getByRole('button', { name: 'View Score' }));
