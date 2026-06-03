@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ProfileStats from "@/features/profile/components/ProfileStats";
@@ -10,16 +10,28 @@ import EditProfile from "@/features/profile/components/EditProfile";
 import SettingsPanel from "@/features/profile/components/SettingsPanel";
 import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
 import { testUserProfiles } from "@/features/profile/testData";
+import type { PastMatch } from "@/features/profile/types";
 
 export default function ProfileUsernamePage() {
-  const params = useParams<{ username: string }>();
+  const params  = useParams<{ username: string }>();
   const username = params.username;
 
-  const foundProfile = testUserProfiles.find(
-    (user) => user.username === username
-  );
+  const foundProfile = testUserProfiles.find((u) => u.username === username);
 
-  if (!foundProfile) {
+  const [profile,     setProfile]     = useState(foundProfile);
+  const [realMatches, setRealMatches] = useState<PastMatch[]>([]);
+  const [loadingMatches, setLoadingMatches] = useState(true);
+
+  // Fetch real match history from the database
+  useEffect(() => {
+    fetch(`/api/profile/${username}/matches`)
+      .then((res) => res.json())
+      .then((data: PastMatch[]) => setRealMatches(data))
+      .catch(console.error)
+      .finally(() => setLoadingMatches(false));
+  }, [username]);
+
+  if (!profile) {
     return (
       <main className="p-6 text-white">
         <p>User not found.</p>
@@ -27,13 +39,14 @@ export default function ProfileUsernamePage() {
     );
   }
 
-  const [profile, setProfile] = useState(foundProfile);
-
   const fontSizeClasses = {
-    small: "text-sm",
+    small:  "text-sm",
     medium: "text-base",
-    large: "text-lg",
+    large:  "text-lg",
   };
+
+  // Use real matches if available, fall back to test data while loading
+  const matchesToShow = loadingMatches ? profile.matchHistory : realMatches;
 
   return (
     <main className={`space-y-6 ${fontSizeClasses[profile.settings.fontSize]}`}>
@@ -43,7 +56,7 @@ export default function ProfileUsernamePage() {
         <ProfileStats stats={profile.stats} />
 
         {profile.settings.showMatchHistory && (
-          <MatchHistoryList matches={profile.matchHistory} />
+          <MatchHistoryList matches={matchesToShow} />
         )}
 
         <EditProfile
@@ -54,10 +67,7 @@ export default function ProfileUsernamePage() {
         <SettingsPanel
           settings={profile.settings}
           onChange={(updatedSettings) =>
-            setProfile({
-              ...profile,
-              settings: updatedSettings,
-            })
+            setProfile({ ...profile, settings: updatedSettings })
           }
         />
 
@@ -66,10 +76,7 @@ export default function ProfileUsernamePage() {
           onChange={(newFontSize) =>
             setProfile({
               ...profile,
-              settings: {
-                ...profile.settings,
-                fontSize: newFontSize,
-              },
+              settings: { ...profile.settings, fontSize: newFontSize },
             })
           }
         />
