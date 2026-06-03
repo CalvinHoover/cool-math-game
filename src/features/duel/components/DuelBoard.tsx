@@ -12,15 +12,19 @@ import QuestionWindow from './QuestionWindow';
 import IncomeQuestion from './IncomeQuestion';
 import { canAffordAttack, generateQuestion, getDifficultyColor, getDifficultyLabel, getTopicColor } from '../gameEngine';
 import { allDifficulties, allTopics } from '../constants';
+import { useBotOpponent } from '../useBotOpponent';
 
 interface DuelBoardProps {
   onGameOver: (winner: 'player' | 'opponent') => void;
+  botElo: number;
 }
 
-export default function DuelBoard({ onGameOver }: DuelBoardProps) {
+export default function DuelBoard({ onGameOver, botElo }: DuelBoardProps) {
   const [selectedTopic, setSelectedTopic] = useState<string>(allTopics[0]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(allDifficulties[0]);
-  const { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit } = useDuelGame();
+  const { gameState, setActiveQuestion, resolveQuestionResponse, resolveAttackPurchase, resolveAttackHit, deflectAttack } = useDuelGame();
+
+  useBotOpponent({ botElo, gameState, resolveAttackPurchase, deflectAttack });
 
   useEffect(() => {
     if (gameState.player.hp <= 0) {
