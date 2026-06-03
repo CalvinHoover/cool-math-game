@@ -29,16 +29,23 @@ test.describe('login → practice → profile → logout journey', () => {
     await page.waitForURL(/\/practice\?topicId=/);
     await page.waitForSelector('input[type="text"]');
 
-    let nextButton = page.locator('button:has-text("Next Question"), button:has-text("View Score")');
-    while (!(await nextButton.isVisible().catch(() => false))) {
-      await page.fill('input[type="text"]', '2');
-      await page.click('button[type="submit"]');
-      await page.waitForTimeout(500);
-      nextButton = page.locator('button:has-text("Next Question"), button:has-text("View Score")');
+    // Answer all 5 questions in the session
+    for (let q = 0; q < 5; q++) {
+      const isLast = q === 4;
+      // Submit wrong answers until the Next/View Score button appears
+      let actionButton = page.locator('button:has-text("Next Question"), button:has-text("View Score")');
+      while (!(await actionButton.isVisible().catch(() => false))) {
+        await page.fill('input[type="text"]', '2');
+        await page.click('button[type="submit"]');
+        await page.waitForTimeout(500);
+        actionButton = page.locator('button:has-text("Next Question"), button:has-text("View Score")');
+      }
+      await actionButton.click();
+      if (!isLast) {
+        await page.waitForSelector('input[type="text"]');
+      }
     }
 
-    await nextButton.click();
-    await page.waitForURL(/\/practice\?topicId=/);
     await page.waitForSelector('text=Session Complete!');
 
     await page.click('a:has-text("Play Again")');
