@@ -58,18 +58,18 @@ export default function DuelBoard({ onGameOver, matchId }: DuelBoardProps) {
     <div className="duel-container">
 
       {/* HP / coins display */}
-      <div className="status-bar">
+        <div className="status-bar">
         <div className="player-status">
-          <h2>Player</h2>
-          <p>HP: {gameState.player.hp}</p>
-          <p>Coins: {gameState.player.coins}</p>
+            <h2>Player</h2>
+            <p>HP: {gameState.player.hp}</p>
+            <p>Coins: {gameState.player.coins}</p>
         </div>
         <div className="opponent-status">
-          <h2>Opponent</h2>
-          <p>HP: {gameState.opponent.hp}</p>
-          <p>Coins: {gameState.opponent.coins}</p>
+            <h2>Opponent</h2>
+            <p>HP: {gameState.opponent.hp}</p>
+            {!isMultiplayer && <p>Coins: {gameState.opponent.coins}</p>}
         </div>
-      </div>
+    </div>
 
       {/* Arena — click to launch an attack */}
       <div
