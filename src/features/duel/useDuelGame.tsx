@@ -17,7 +17,7 @@ export interface GameState {
 export const useDuelGame = () => {
   const [gameState, setGameState] = useState<GameState>({
     player:          { hp: INITIAL_HP, coins: INITIAL_COINS },
-    opponent:        { hp: INITIAL_HP, coins: 10000 },
+    opponent: { hp: INITIAL_HP, coins: INITIAL_COINS },
     incomingAttacks: [],
     activeQuestion:  null,
   });
