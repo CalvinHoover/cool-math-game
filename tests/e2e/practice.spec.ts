@@ -12,6 +12,8 @@ test.describe('login → practice → profile → logout journey', () => {
     expect(res.ok()).toBe(true);
   });
 
+  // [GenAI Use] Prompt: "Use previous context and uploaded files about my project. I have attached the auth.spec.ts signup e2e test as an example. Write a playwright e2e test that covers login, practice session flow, profile inspection, and logout. Use the project's page selectors and realistic seeded data."
+  // [GenAI Use] LLM Response Start
   test('full user journey', async ({ page }) => {
     await page.goto('/login');
     await page.fill('input[placeholder="Email"]', email);
@@ -53,4 +55,6 @@ test.describe('login → practice → profile → logout journey', () => {
     await page.waitForURL(/\/login/);
     await expect(page).toHaveURL(/\/login$/);
   });
+  // [GenAI Use] LLM Response End
+  // [GenAI Use] Reflection: I've been thinking through the test and believe it is correct and exactly what I need. I updated some selector patterns to match the project's naming conventions (using placeholder attributes and CSS classes like .btn-logout) and added explicit waitForURL calls to handle the Next.js router transitions reliably.
 });
