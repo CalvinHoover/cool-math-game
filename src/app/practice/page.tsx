@@ -2,10 +2,10 @@ import PracticeBox from './PracticeBox';
 import { bootstrapPracticeSession } from '@/features/practice/actions';
 
 type PracticePageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     topicId?: string | string[];
     count?: string | string[];
-  };
+  }>;
 };
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -17,10 +17,11 @@ const ERROR_MESSAGES: Record<string, string> = {
 export default async function PracticePage({
   searchParams,
 }: PracticePageProps) {
-  const topicId = typeof searchParams?.topicId === 'string' ? searchParams.topicId : '';
+  const params = await searchParams;
+  const topicId = typeof params?.topicId === 'string' ? params.topicId : '';
   const countValue =
-    typeof searchParams?.count === 'string'
-      ? Number.parseInt(searchParams.count, 10)
+    typeof params?.count === 'string'
+      ? Number.parseInt(params.count, 10)
       : undefined;
   const count = Number.isFinite(countValue) ? countValue : undefined;
 
