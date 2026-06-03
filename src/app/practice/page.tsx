@@ -2,12 +2,10 @@ import PracticeBox from './PracticeBox';
 import PracticeSetup from './PracticeSetup';
 import { bootstrapPracticeSession } from '@/features/practice/actions';
 
-type PracticePageProps = {
-  searchParams?: {
-    topicId?: string | string[];
-    count?: string | string[];
-    timeLimit?: string | string[];
-  };
+type SearchParams = {
+  topicId?: string | string[];
+  count?: string | string[];
+  timeLimit?: string | string[];
 };
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -18,8 +16,11 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default async function PracticePage({
   searchParams,
-}: PracticePageProps) {
-  const topicId = typeof searchParams?.topicId === 'string' ? searchParams.topicId : '';
+}: {
+  searchParams?: Promise<SearchParams>;
+}) {
+  const params = await searchParams;
+  const topicId = typeof params?.topicId === 'string' ? params.topicId : '';
 
   if (!topicId) {
     return (
@@ -31,14 +32,14 @@ export default async function PracticePage({
   }
 
   const countValue =
-    typeof searchParams?.count === 'string'
-      ? Number.parseInt(searchParams.count, 10)
+    typeof params?.count === 'string'
+      ? Number.parseInt(params.count, 10)
       : undefined;
   const count = Number.isFinite(countValue) ? countValue : undefined;
 
   const timeLimitValue =
-    typeof searchParams?.timeLimit === 'string'
-      ? Number.parseInt(searchParams.timeLimit, 10)
+    typeof params?.timeLimit === 'string'
+      ? Number.parseInt(params.timeLimit, 10)
       : undefined;
   const timeLimit = Number.isFinite(timeLimitValue) ? timeLimitValue : undefined;
 
