@@ -1,0 +1,54 @@
+/* Base container for all floating attacks */
+.attack-box {
+  position: absolute;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: crosshair;
+}
+
+/* ==========================================================================
+   DIRECTIONS & OWNERSHIP
+   ========================================================================== */
+
+/* Attacks you spawn (move Left -> Right to hit the opponent) */
+.attack-box.player {
+  animation: moveRight 30s linear forwards;
+}
+
+/* Attacks the opponent spawns (move Right -> Left to hit you) */
+.attack-box.opponent {
+  animation: moveLeft 30s linear forwards;
+}
+
+/* Add a slight scale effect when actively clicking to make it feel responsive */
+.attack-box:active {
+  transform: scale(0.9);
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes moveRight {
+  0% { 
+    left: 0%; 
+    transform: translateX(0); 
+  }
+  100% { 
+    left: 100%; 
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes moveLeft {
+  0% { 
+    right: 0%; 
+    transform: translateX(0); 
+  }
+  100% { 
+    right: 100%; 
+    transform: translateX(100%);
+  }
+}
