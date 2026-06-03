@@ -26,33 +26,22 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
 
   // ── No topic selected — show picker ───────────────────────────────────────
   if (!topicId) {
-    const topics = await prisma.topic.findMany({ orderBy: { name: 'asc' } });
-
-    return (
-      <main className="p-8 max-w-2xl mx-auto">
+  const topics = await prisma.topic.findMany({ orderBy: { name: 'asc' } });
+  return (
+    <main className="p-8 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mt-4 mb-6">Practice — Choose a Topic</h1>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {topics.map((topic) => (
+          <Link key={topic.id} href={`/practice?topicId=${topic.id}`}
+            style={{ padding: '0.75rem 1.25rem', border: '1px solid #444', borderRadius: '4px', color: '#fff', textTransform: 'capitalize', textDecoration: 'none' }}>
+            {topic.name}
+          </Link>
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
         <BackButton />
-
-        <h1 className="text-2xl font-bold mt-4 mb-6">Practice — Choose a Topic</h1>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {topics.map((topic) => (
-            <Link
-              key={topic.id}
-              href={`/practice?topicId=${topic.id}`}
-              style={{
-                padding: '0.75rem 1.25rem',
-                border: '1px solid #444',
-                borderRadius: '4px',
-                color: '#fff',
-                textTransform: 'capitalize',
-                textDecoration: 'none',
-              }}
-            >
-              {topic.name}
-            </Link>
-          ))}
-        </div>
-      </main>
+      </div>
+    </main>
     );
   }
 
@@ -63,18 +52,22 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     const message = ERROR_MESSAGES[result.error] ?? 'Unable to start practice session.';
     return (
       <main className="p-8 max-w-2xl mx-auto">
-        <BackButton label="Back to Topics" href="/practice" />
         <h1 className="text-2xl font-bold mt-4 mb-6">Practice Session</h1>
         <p className="text-red-600">{message}</p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+            <BackButton label="Back to Topics" href="/practice" />
+        </div>
       </main>
     );
   }
 
   return (
     <main className="p-8 max-w-2xl mx-auto">
-      <BackButton label="Back to Topics" href="/practice" />
-      <h1 className="text-2xl font-bold mt-4 mb-6">Practice Session</h1>
-      <PracticeBox sessionId={result.sessionId} initialQuestions={result.questions} />
+        <h1 className="text-2xl font-bold mt-4 mb-6">Practice Session</h1>
+        <PracticeBox sessionId={result.sessionId} initialQuestions={result.questions} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+            <BackButton label="Back to Topics" href="/practice" />
+        </div>
     </main>
   );
 }
