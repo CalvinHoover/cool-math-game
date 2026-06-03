@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { getTopics } from './actions';
 
@@ -28,12 +28,14 @@ export function usePracticeSetup() {
     let cancelled = false;
     getTopics().then((result) => {
       if (cancelled) return;
-      if (!result.ok) {
-        setError(result.error);
-      } else {
-        setTopics(result.topics);
-      }
-      setIsLoading(false);
+      startTransition(() => {
+        if (!result.ok) {
+          setError(result.error);
+        } else {
+          setTopics(result.topics);
+        }
+        setIsLoading(false);
+      });
     });
     return () => {
       cancelled = true;
