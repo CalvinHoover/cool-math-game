@@ -120,6 +120,27 @@ describe('POST /api/auth/register', () => {
     expect(body.error).toBe('Password must be at least 6 characters');
   });
 
+  it('rejects a 5-character password at the boundary', async () => {
+    const req = makeReq({ username: 'u', email: 'a@b.com', password: '12345' });
+    const res = await registerPOST(req as NextRequest);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Password must be at least 6 characters');
+  });
+
+  it('accepts a 6-character password at the boundary', async () => {
+    authRepo.findUserByEmailOrUsername.mockResolvedValue(null);
+    authRepo.createUser.mockResolvedValue(dbUser);
+    mockBcryptHash.mockResolvedValue('hashed-password');
+
+    const req = makeReq({ username: 'new', email: 'new@example.com', password: '123456' });
+    const res = await registerPOST(req as NextRequest);
+
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body.username).toBe(dbUser.username);
+  });
+
   it('returns 409 when email or username is taken', async () => {
     authRepo.findUserByEmailOrUsername.mockResolvedValue(dbUser);
     const req = makeReq({ username: 'u', email: 'a@b.com', password: 'password123' });
