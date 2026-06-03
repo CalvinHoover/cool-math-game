@@ -140,3 +140,7 @@ vite.config.ts.timestamp-*
 
 # Vercel
 .vercel
+
+# Playwright / E2E test output
+test-results/
+playwright-report/

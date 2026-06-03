@@ -24,14 +24,11 @@ import { prisma } from '@/lib/prisma';
 import { getSession } from '@/features/auth/session';
 import { QuestionDBAccess } from '@/features/questions/repository';
 import { PracticeDBAccess, type SessionQuestionWithQuestion } from './repository';
-import { getEarnedPoints } from './practiceLogic';
+import { calculatePoints, getEarnedPoints, normalizeCount } from './practiceLogic';
 import type { PracticeQuestion } from './practiceLogic';
 import { getLevel } from '@/features/xp/leveling';
 import { checkAndAwardAchievements } from '@/features/achievements/engine';
 import type { UserProgressSnapshot } from '@/features/achievements/engine';
-
-const DEFAULT_COUNT = 5;
-const MAX_COUNT = 20;
 
 type ActionError = { ok: false; error: string };
 
@@ -59,22 +56,8 @@ type CompleteResult =
       newAchievements?: { slug: string; name: string; color: string }[];
     };
 
-function calculatePoints(difficulty: number): number {
-  const rounded = Number.isFinite(difficulty) ? Math.round(difficulty) : 1;
-  return Math.min(5, Math.max(1, rounded));
-}
-
 function orderQuestions<T>(questions: T[]): T[] {
   return [...questions];
-}
-
-function normalizeCount(count?: number): number {
-  if (!Number.isFinite(count)) {
-    return DEFAULT_COUNT;
-  }
-
-  const normalized = Math.floor(count ?? DEFAULT_COUNT);
-  return Math.min(MAX_COUNT, Math.max(1, normalized));
 }
 
 function toPracticeQuestion(

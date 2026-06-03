@@ -1,4 +1,21 @@
 // pure scoring and progression helpers shared by UI and tests
+
+const DEFAULT_COUNT = 5;
+const MAX_COUNT = 20;
+
+export function calculatePoints(difficulty: number): number {
+  const rounded = Number.isFinite(difficulty) ? Math.round(difficulty) : 1;
+  return Math.min(5, Math.max(1, rounded));
+}
+
+export function normalizeCount(count?: number): number {
+  if (!Number.isFinite(count)) {
+    return DEFAULT_COUNT;
+  }
+  const normalized = Math.floor(count ?? DEFAULT_COUNT);
+  return Math.min(MAX_COUNT, Math.max(1, normalized));
+}
+
 export type PracticeQuestion = {
   id: string;
   text: string;
