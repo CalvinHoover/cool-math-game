@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ProfileStats from "@/features/profile/components/ProfileStats";
@@ -15,6 +16,7 @@ import type { PastMatch } from "@/features/profile/types";
 export default function ProfileUsernamePage() {
   const params  = useParams<{ username: string }>();
   const username = params.username;
+  const router = useRouter();
 
   const foundProfile = testUserProfiles.find((u) => u.username === username);
 
@@ -32,17 +34,20 @@ export default function ProfileUsernamePage() {
   }, [username]);
 
   if (!foundProfile) {
-  return (
+    return (
         <main className="p-6 text-white">
             <div className="mx-auto max-w-4xl space-y-6">
+                <button onClick={() => router.push('/dashboard')} style={{ color: '#aaa',   background: 'none', border: 'none', cursor: 'pointer' }}>
+                ← Back to Menu
+                </button>
                 <h1 className="text-2xl font-bold">{username}</h1>
-                    {loadingMatches
+                {loadingMatches
                     ? <p>Loading match history...</p>
                     : realMatches.length === 0
                         ? <p>No matches played yet.</p>
                         : <MatchHistoryList matches={realMatches} />}
-            </div>
-        </main>
+                </div>
+            </main>
         );
     }
 
