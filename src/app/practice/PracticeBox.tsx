@@ -43,6 +43,7 @@ export default function PracticeBox({
   const [attempt, setAttempt] = useState(initialState.attempt);
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState<{ message: string; correct?: boolean } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [xpEarned, setXpEarned] = useState<number | undefined>(undefined);
@@ -78,6 +79,7 @@ export default function PracticeBox({
   }, [currentQuestion, currentIndex]);
 
   const handleGameOver = React.useCallback(async () => {
+    if (isSaving || isSaved) return;
     setIsSaving(true);
 
     const result = await actionClient.completePracticeSession({ sessionId });
@@ -141,10 +143,11 @@ export default function PracticeBox({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!currentQuestion) {
+    if (!currentQuestion || isSubmitting) {
       return;
     }
 
+    setIsSubmitting(true);
     setFeedback({ message: 'Checking...' });
 
     const result = await actionClient.verifyAnswer({
@@ -158,6 +161,7 @@ export default function PracticeBox({
         message: ERROR_MESSAGES[result.error] ?? 'Unable to check your answer.',
         correct: false,
       });
+      setIsSubmitting(false);
       return;
     }
 
@@ -201,6 +205,7 @@ export default function PracticeBox({
         setAttempt(3);
       }
     }
+    setIsSubmitting(false);
   };
 
   const nextQuestion = () => {
@@ -255,7 +260,7 @@ export default function PracticeBox({
             className="border p-2 flex-grow"
             required
           />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+          <button type="submit" disabled={isSubmitting} className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-wait">
             Submit
           </button>
         </form>
