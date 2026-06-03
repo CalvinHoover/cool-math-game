@@ -35,7 +35,7 @@ export function Navbar({ username }: NavbarProps) {
         </div>
         <div className="flex items-center gap-3">
           <Avatar fallback={username} size="sm" />
-          <span className="hidden text-sm font-medium sm:inline">{username}</span>
+          <span className="hidden text-sm font-medium text-gray-900 dark:text-gray-100 sm:inline">{username}</span>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
             Logout
           </Button>
