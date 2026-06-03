@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import PracticeBox from './PracticeBox';
+import BackButton from '@/components/interface/BackButton';
 import { bootstrapPracticeSession } from '@/features/practice/actions';
 import { prisma } from '@/lib/prisma';
 
@@ -29,9 +30,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
 
     return (
       <main className="p-8 max-w-2xl mx-auto">
-        <Link href="/dashboard" style={{ color: '#aaa', fontSize: '0.9rem' }}>
-          ← Back to Menu
-        </Link>
+        <BackButton />
 
         <h1 className="text-2xl font-bold mt-4 mb-6">Practice — Choose a Topic</h1>
 
@@ -64,9 +63,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     const message = ERROR_MESSAGES[result.error] ?? 'Unable to start practice session.';
     return (
       <main className="p-8 max-w-2xl mx-auto">
-        <Link href="/practice" style={{ color: '#aaa', fontSize: '0.9rem' }}>
-          ← Back to Topics
-        </Link>
+        <BackButton label="Back to Topics" href="/practice" />
         <h1 className="text-2xl font-bold mt-4 mb-6">Practice Session</h1>
         <p className="text-red-600">{message}</p>
       </main>
@@ -75,9 +72,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
 
   return (
     <main className="p-8 max-w-2xl mx-auto">
-      <Link href="/practice" style={{ color: '#aaa', fontSize: '0.9rem' }}>
-        ← Back to Topics
-      </Link>
+      <BackButton label="Back to Topics" href="/practice" />
       <h1 className="text-2xl font-bold mt-4 mb-6">Practice Session</h1>
       <PracticeBox sessionId={result.sessionId} initialQuestions={result.questions} />
     </main>
