@@ -10,25 +10,25 @@ type FontSizeProps = {
     onChange: (fontSize: FontSize) => void;
 };
 
-const fontSizeClasses = {
-    small: "text-sm",
-    medium: "text-base",
-    large: "text-lg",
-}
+// const fontSizeClasses = {
+//     small: "text-sm",
+//     medium: "text-base",
+//     large: "text-lg",
+// }
 
 export default function FontSizeSelector({
     fontSize, onChange,
 }: FontSizeProps) {
-    const [selectedFontSize, setSelectedFontSize] = useState(fontSize);
+    // const [selectedFontSize, setSelectedFontSize] = useState(fontSize);
 
     return (
-        <section className={`border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900 ${fontSizeClasses[selectedFontSize]}`}>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white"> Font Size </h2>
+        <section className="profile-section">
+            <h2> Font Size </h2>
 
             {/* <p className="mt-2 text-gray-600 dark:text-gray-300"> This text will change size. </p> */}
-            <div className="mt-4 space-y-3 text-gray-700 dark:text-gray-300">
+            <div className="profile-form">
                 {(["small", "medium", "large"] as const).map((size) => (
-                    <label key={size} className="flex items-center gap-2">
+                    <label key={size} className="profile-checkbox-row">
                         <input
                             type="radio"
                             name="fontSize"
@@ -36,7 +36,10 @@ export default function FontSizeSelector({
                             checked={fontSize === size}
                             onChange={() => onChange(size)}
                         />
-                        {size}
+
+                        <span className="profile-value">
+                            {size} 
+                        </span>
                     </label>
                 ))}
             </div>
