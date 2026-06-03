@@ -22,7 +22,7 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } else {
       try {
         const data = await res.json();
