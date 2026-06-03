@@ -1,59 +1,119 @@
 'use client';
+// src/app/duel/page.tsx
+// Entry point for the duel section.
+// Shows a lobby with two options: Find a multiplayer match, or play solo.
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MenuButton } from '../../components/interface/MenuButton';
 import DuelBoard from '../../features/duel/components/DuelBoard';
 import '../dashboard/Dashboard.css';
-import { useState } from 'react';
 
-export default function Duel() {
+type Screen = 'menu' | 'waiting' | 'solo';
+
+export default function DuelPage() {
   const router = useRouter();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [winner, setWinner] = useState<null | 'player' | 'opponent'>(null);
+  const [screen, setScreen] = useState<Screen>('menu');
+  const [winner, setWinner] = useState<'player' | 'opponent' | null>(null);
 
-  // Displays game over screen when a winner is determined, with an option to return to the main menu. 
-  // The winner is determined by the DuelBoard component, which calls the onGameOver function passed as a prop.
+  // ── Solo game-over screen ──────────────────────────────────────────────────
+
   if (winner) {
     return (
       <div className="app-container">
         <h1 className="main-title">You {winner === 'player' ? 'win!' : 'lose!'}</h1>
-        
         <div className="button-group">
-          <MenuButton 
-            label="Play Again" 
-            onClick={() => {setWinner(null); setIsPlaying(true);}}
-            className="btn-profile" 
+          <MenuButton
+            label="Play Again"
+            onClick={() => { setWinner(null); setScreen('solo'); }}
+            className="btn-profile"
           />
-          <MenuButton 
-            label="Back to Menu" 
+          <MenuButton
+            label="Back to Menu"
             onClick={() => router.push('/dashboard')}
-            className="btn-settings" 
+            className="btn-settings"
           />
         </div>
       </div>
     );
   }
 
-  // Displays the DuelBoard component when the game is active. The DuelBoard component handles the main gameplay.
-  if (isPlaying) {
+  // ── Solo game board ────────────────────────────────────────────────────────
+
+  if (screen === 'solo') {
     return <DuelBoard onGameOver={(result) => setWinner(result)} />;
   }
-  
-  // Otherwise, displays the main menu with options to start the game or return to the dashboard.
+
+  // ── Waiting for opponent ───────────────────────────────────────────────────
+
+  if (screen === 'waiting') {
+    return (
+      <div className="app-container">
+        <h1 className="main-title">Finding opponent...</h1>
+        <p style={{ color: '#aaa', marginBottom: '2rem' }}>Waiting for another player to join.</p>
+        <MenuButton
+          label="Cancel"
+          onClick={() => router.push('/dashboard')}
+          className="btn-settings"
+        />
+      </div>
+    );
+  }
+
+  // ── Main menu ──────────────────────────────────────────────────────────────
+
+  const handleFindMatch = async () => {
+    setScreen('waiting');
+
+    try {
+      const res = await fetch('/api/duel/matchmake', { method: 'POST' });
+      if (!res.ok) throw new Error('Matchmake failed');
+
+      const { matchId, role } = await res.json();
+
+      if (role === 'player2') {
+        // Opponent was already waiting — go straight to the game
+        router.push(`/duel/${matchId}`);
+        return;
+      }
+
+      // We created the match — poll until an opponent joins
+      const interval = setInterval(async () => {
+        try {
+          const statusRes = await fetch(`/api/duel/${matchId}/status`);
+          const { status } = await statusRes.json();
+          if (status === 'active') {
+            clearInterval(interval);
+            router.push(`/duel/${matchId}`);
+          }
+        } catch {
+          // swallow transient errors and keep polling
+        }
+      }, 1000);
+    } catch {
+      alert('Could not connect to matchmaking. Please try again.');
+      setScreen('menu');
+    }
+  };
+
   return (
     <div className="app-container">
       <h1 className="main-title">Math Duels!</h1>
-      
       <div className="button-group">
-        <MenuButton 
-          label="Begin Game" 
-          onClick={() => setIsPlaying(true)}
-          className="btn-profile" 
+        <MenuButton
+          label="Find Match"
+          onClick={handleFindMatch}
+          className="btn-profile"
         />
-        <MenuButton 
-          label="Back to Menu" 
-          onClick={() => router.push('/dashboard')} 
-          className="btn-settings" 
+        <MenuButton
+          label="Solo Practice"
+          onClick={() => setScreen('solo')}
+          className="btn-profile"
+        />
+        <MenuButton
+          label="Back to Menu"
+          onClick={() => router.push('/dashboard')}
+          className="btn-settings"
         />
       </div>
     </div>

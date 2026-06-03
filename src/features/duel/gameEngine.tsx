@@ -1,51 +1,69 @@
-// Helper functions for duels. Some of these can probably be moved to more general utility files later.
-// Some will become irrelevant after database integration.
-// Should not contain any React-specific code.
+// src/features/duel/gameEngine.tsx
+// Helper functions for duels.
+// Pure utility — no React-specific code.
 
 import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, QUESTION_PRICES, TOPIC_COLORS } from './constants';
 import { Question } from './types';
 
-// Checks if the player's answer matches the correct answer for the given question, returning true or false
+// ─── Answer checking ──────────────────────────────────────────────────────────
+
+// Returns true if the player's answer matches the correct answer for the question.
 export const checkAnswer = (question: Question, playerAnswer: string): boolean => {
-  return question.answer === playerAnswer;
+  return question.answer.trim().toLowerCase() === playerAnswer.trim().toLowerCase();
 };
 
-// Returns the opponent of the given actor ('player' or 'opponent')
+// ─── Opponent helper ──────────────────────────────────────────────────────────
+
+// Returns the opponent of the given actor ('player' or 'opponent').
 export const opponentOf = (actor: 'player' | 'opponent'): 'player' | 'opponent' => {
   return actor === 'player' ? 'opponent' : 'player';
 };
 
-// Returns a random question matching the given difficulty and/or topic, or any random question if no parameters are provided
+// ─── Question generation ──────────────────────────────────────────────────────
+
+// Synchronous fallback: picks a random question from the hardcoded sample bank.
+// Used when the API is unavailable or during testing.
 export const generateQuestion = (difficulty?: number, topic?: string): Question => {
-  let viableQuestions = allSampleQuestions;
-
-  if (difficulty !== undefined) {
-    viableQuestions = viableQuestions.filter(q => q.difficulty === difficulty);
-  }
-
-  if (topic !== undefined) {
-    viableQuestions = viableQuestions.filter(q => q.topic === topic);
-  }
-
-  return viableQuestions[Math.floor(Math.random() * viableQuestions.length)];
+  let viable = allSampleQuestions;
+  if (difficulty !== undefined) viable = viable.filter(q => q.difficulty === difficulty);
+  if (topic      !== undefined) viable = viable.filter(q => q.topic      === topic);
+  if (viable.length === 0)      viable = allSampleQuestions; // graceful fallback
+  return viable[Math.floor(Math.random() * viable.length)];
 };
 
-// Checks if a player with playerBalance coins can afford an attack of the given difficulty
+// Async version: fetches a random question from the database via the API.
+// Falls back to generateQuestion() if the request fails.
+export const fetchQuestion = async (difficulty?: number, topic?: string): Promise<Question> => {
+  try {
+    const params = new URLSearchParams();
+    if (difficulty !== undefined) params.append('difficulty', difficulty.toString());
+    if (topic      !== undefined) params.append('topic',      topic);
+
+    const res = await fetch(`/api/questions?${params.toString()}`);
+    if (!res.ok) throw new Error(`Questions API returned ${res.status}`);
+
+    const data = await res.json();
+    return data as Question;
+  } catch (err) {
+    console.warn('fetchQuestion: API unavailable, falling back to local questions.', err);
+    return generateQuestion(difficulty, topic);
+  }
+};
+
+// ─── Affordability ────────────────────────────────────────────────────────────
+
+// Returns true if the player can afford an attack of the given difficulty.
 export const canAffordAttack = (playerBalance: number, difficultyRequested: number): boolean => {
   return playerBalance >= QUESTION_PRICES[difficultyRequested];
 };
 
-// Converts a difficulty number to a string label for display purposes
-export const getDifficultyLabel = (difficulty: number): string => {
-  return DIFFICULTY_LABELS[difficulty] || 'Unknown';
-};
+// ─── Display helpers ──────────────────────────────────────────────────────────
 
-export const getDifficultyColor = (difficulty: number): string => {
-  return DIFFICULTY_COLORS[difficulty] || '#FFFFFF';
-};
+export const getDifficultyLabel = (difficulty: number): string =>
+  DIFFICULTY_LABELS[difficulty] || 'Unknown';
 
-export const getTopicColor = (topic: string): string => {
-  return TOPIC_COLORS[topic] || '#FFFFFF';
-}
+export const getDifficultyColor = (difficulty: number): string =>
+  DIFFICULTY_COLORS[difficulty] || '#FFFFFF';
 
-
+export const getTopicColor = (topic: string): string =>
+  TOPIC_COLORS[topic] || '#FFFFFF';
