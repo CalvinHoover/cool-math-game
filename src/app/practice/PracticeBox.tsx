@@ -79,6 +79,7 @@ export default function PracticeBox({
   }, [currentQuestion, currentIndex]);
 
   const handleGameOver = React.useCallback(async () => {
+    // bail out if a save is already in flight or the session was already persisted
     if (isSaving || isSaved) return;
     setIsSaving(true);
 
