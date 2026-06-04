@@ -37,7 +37,7 @@ export default function PracticeSetup() {
         <select
           value={selectedTopic}
           onChange={(e) => setSelectedTopic(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
         >
           <option value="">-- Select a topic --</option>
           {topics.map((topic) => (
@@ -53,7 +53,7 @@ export default function PracticeSetup() {
         <select
           value={selectedCount}
           onChange={(e) => setSelectedCount(Number(e.target.value))}
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
         >
           {sessionLengths.map((n) => (
             <option key={n} value={n}>
