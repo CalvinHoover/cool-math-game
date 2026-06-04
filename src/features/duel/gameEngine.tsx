@@ -1,107 +1,28 @@
+// src/features/duel/gameEngine.tsx
+// Helper functions for duels. No React-specific code.
+
 import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, QUESTION_PRICES, TOPIC_COLORS } from './constants';
 import { Question } from './types';
+import { generateArithmeticQuestion } from '@/lib/arithmeticGenerator';
+
+// ─── Answer checking ──────────────────────────────────────────────────────────
 
 export const checkAnswer = (question: Question, playerAnswer: string): boolean => {
   return question.answer.trim().toLowerCase() === playerAnswer.trim().toLowerCase();
 };
 
+// ─── Opponent helper ──────────────────────────────────────────────────────────
+
 export const opponentOf = (actor: 'player' | 'opponent'): 'player' | 'opponent' => {
   return actor === 'player' ? 'opponent' : 'player';
 };
 
-// Easy:   a + b  or  a - b        
-// Medium: a × b  or  a + b × c     
-// Hard:   (a + b) × c  or  a × b + c × d  or  a ÷ b + c  
+// Re-export so existing imports of generateArithmeticQuestion from gameEngine still work
+export { generateArithmeticQuestion };
 
-function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+// ─── Question generation ──────────────────────────────────────────────────────
 
-export const generateArithmeticQuestion = (difficulty: number): Question => {
-  switch (difficulty) {
-
-    case 0: {
-      const a  = randomInt(1, 101);
-      const b  = randomInt(1, 101);
-      const add = Math.random() < 0.5;
-      const [x, y] = add ? [a, b] : [Math.max(a, b), Math.min(a, b)]; // keep result positive
-      return {
-        text:       `What is ${x} ${add ? '+' : '-'} ${y}?`,
-        answer:     String(add ? x + y : x - y),
-        difficulty: 0,
-        topic:      'arithmetic',
-      };
-    }
-
-    case 1: {
-      if (Math.random() < 0.5) {
-        // this is a × b
-        const a = randomInt(2, 101);
-        const b = randomInt(2, 101);
-        return {
-          text:       `What is ${a} × ${b}?`,
-          answer:     String(a * b),
-          difficulty: 1,
-          topic:      'arithmetic',
-        };
-      } else {
-        const a = randomInt(1, 101);
-        const b = randomInt(2, 101);
-        const c = randomInt(1, 101);
-        return {
-          text:       `What is ${a} + ${b} × ${c}?`,
-          answer:     String(a + b * c),
-          difficulty: 1,
-          topic:      'arithmetic',
-        };
-      }
-    }
-
-    case 2: {
-      const type = randomInt(0, 2);
-
-      if (type === 0) {
-        // this is (a + b) × c
-        const a = randomInt(1, 101);
-        const b = randomInt(1, 101);
-        const c = randomInt(2, 101);
-        return {
-          text:       `What is (${a} + ${b}) × ${c}?`,
-          answer:     String((a + b) * c),
-          difficulty: 2,
-          topic:      'arithmetic',
-        };
-      } else if (type === 1) {
-        // this is a × b + c × d
-        const a = randomInt(2, 101);
-        const b = randomInt(2, 101);
-        const c = randomInt(2, 101);
-        const d = randomInt(2, 101);
-        return {
-          text:       `What is ${a} × ${b} + ${c} × ${d}?`,
-          answer:     String(a * b + c * d),
-          difficulty: 2,
-          topic:      'arithmetic',
-        };
-      } else {
-        const b      = randomInt(2, 101);
-        const result = randomInt(2, 101);
-        const a      = b * result;
-        const c      = randomInt(1, 101);
-        return {
-          text:       `What is ${a} ÷ ${b} + ${c}?`,
-          answer:     String(a / b + c),
-          difficulty: 2,
-          topic:      'arithmetic',
-        };
-      }
-    }
-
-    default:
-      return generateArithmeticQuestion(0);
-  }
-};
-
+// Synchronous fallback — uses the hardcoded sample bank.
 export const generateQuestion = (difficulty?: number, topic?: string): Question => {
   let viable = allSampleQuestions;
   if (difficulty !== undefined) viable = viable.filter(q => q.difficulty === difficulty);
@@ -110,6 +31,7 @@ export const generateQuestion = (difficulty?: number, topic?: string): Question 
   return viable[Math.floor(Math.random() * viable.length)];
 };
 
+// Async version — arithmetic is generated locally; everything else fetches from the DB.
 export const fetchQuestion = async (difficulty?: number, topic?: string): Promise<Question> => {
   if (topic === 'arithmetic') {
     return generateArithmeticQuestion(difficulty ?? 0);
@@ -129,9 +51,13 @@ export const fetchQuestion = async (difficulty?: number, topic?: string): Promis
   }
 };
 
+// ─── Affordability ────────────────────────────────────────────────────────────
+
 export const canAffordAttack = (playerBalance: number, difficultyRequested: number): boolean => {
   return playerBalance >= QUESTION_PRICES[difficultyRequested];
 };
+
+// ─── Display helpers ──────────────────────────────────────────────────────────
 
 export const getDifficultyLabel = (difficulty: number): string =>
   DIFFICULTY_LABELS[difficulty] || 'Unknown';
