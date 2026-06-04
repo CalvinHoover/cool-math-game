@@ -24,7 +24,9 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
   useEffect(() => {
     fetch(`/api/profile/${username}/matches`)
       .then((res) => res.json())
-      .then((data: PastMatch[]) => setRealMatches(data))
+      .then((data: PastMatch[]) => {
+        if (Array.isArray(data)) setRealMatches(data);
+        })
       .catch(console.error)
       .finally(() => setLoadingMatches(false));
   }, [username]);
@@ -48,7 +50,7 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
 }
 
   const fontSizeClasses = { small: "text-sm", medium: "text-base", large: "text-lg" };
-  const matchesToShow = loadingMatches ? profile.matchHistory : realMatches;
+  const matchesToShow = loadingMatches ? (profile?.matchHistory ?? []) : realMatches;
 
   return (
     <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>

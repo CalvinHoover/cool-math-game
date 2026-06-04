@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { MenuButton } from '../../components/interface/MenuButton';
 import DuelBoard from '../../features/duel/components/DuelBoard';
-import { joinQueue, leaveQueue } from '../../features/elo/api';
 import '../dashboard/Dashboard.css';
 
 type Phase = 'menu' | 'searching' | 'playing' | 'finished';
 
 interface EloResult {
-  newElo: number;
-  delta: number;
+  newElo:  number;
+  delta:   number;
 }
 
 function generateBotElo(playerElo: number): number {
@@ -19,45 +18,68 @@ function generateBotElo(playerElo: number): number {
   return Math.max(500, playerElo + offset);
 }
 
-export default function DuelClient({ playerElo }: { playerElo: number }) {
-  const router = useRouter();
-  const [phase, setPhase] = useState<Phase>('menu');
-  const [countdown, setCountdown] = useState(5);
-  const [botElo, setBotElo] = useState(1000);
-  const [winner, setWinner] = useState<'player' | 'opponent' | null>(null);
-  const [eloResult, setEloResult] = useState<EloResult | null>(null);
+const SEARCH_SECONDS = 10; 
 
-  // 5-second countdown then start game
+export default function DuelClient({ playerElo }: { playerElo: number }) {
+  const router    = useRouter();
+  const [phase,      setPhase]      = useState<Phase>('menu');
+  const [countdown,  setCountdown]  = useState(SEARCH_SECONDS);
+  const [botElo,     setBotElo]     = useState(1000);
+  const [winner,     setWinner]     = useState<'player' | 'opponent' | null>(null);
+  const [eloResult,  setEloResult]  = useState<EloResult | null>(null);
+
+  const matchIdRef  = useRef<string | null>(null);
+  const matchedRef  = useRef(false);
+
   useEffect(() => {
     if (phase !== 'searching') return;
 
-    setCountdown(5);
-    const tick = setInterval(() => {
+    setCountdown(SEARCH_SECONDS);
+    matchedRef.current = false;
+
+    fetch('/api/duel/matchmake', { method: 'POST' })
+      .then(res => res.json())
+      .then(({ matchId, role }: { matchId: string; role: 'player1' | 'player2' }) => {
+        matchIdRef.current = matchId;
+
+        if (role === 'player2') {
+          matchedRef.current = true;
+          router.push(`/duel/${matchId}`);
+        }
+      })
+      .catch(() => {
+      });
+
+    const tick = setInterval(async () => {
+      if (matchedRef.current) { clearInterval(tick); return; }
+
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(tick);
-          startGame();
+          startBotGame();
           return 0;
         }
         return prev - 1;
       });
+
+      const matchId = matchIdRef.current;
+      if (matchId) {
+        try {
+          const res    = await fetch(`/api/duel/${matchId}/status`);
+          const { status } = await res.json();
+          if (status === 'active' && !matchedRef.current) {
+            matchedRef.current = true;
+            clearInterval(tick);
+            router.push(`/duel/${matchId}`);
+          }
+        } catch { /* keep polling */ }
+      }
     }, 1000);
 
     return () => clearInterval(tick);
   }, [phase]);
 
-  async function beginSearch() {
-    setBotElo(generateBotElo(playerElo));
-    setPhase('searching');
-  }
-
-  async function startGame() {
-    try {
-      const result = await joinQueue();
-      if (!result.matched) await leaveQueue();
-    } catch {
-      // queue unavailable — just start bot game
-    }
+  function startBotGame() {
     setPhase('playing');
   }
 
@@ -67,14 +89,18 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
 
     try {
       const res = await fetch('/api/elo/bot-result', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ botElo, playerWon: result === 'player' }),
+        body:    JSON.stringify({ botElo, playerWon: result === 'player' }),
       });
       if (res.ok) setEloResult(await res.json());
-    } catch {
-      // ELO update failed silently
-    }
+    } catch { /* ELO update failed silently */ }
+  }
+
+  function beginSearch() {
+    setBotElo(generateBotElo(playerElo));
+    matchIdRef.current = null;
+    setPhase('searching');
   }
 
   function playAgain() {
@@ -82,6 +108,8 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
     setEloResult(null);
     beginSearch();
   }
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   if (phase === 'searching') {
     return (
@@ -101,7 +129,7 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
   }
 
   if (phase === 'playing') {
-    return <DuelBoard onGameOver={handleGameOver} botElo={botElo} />;
+    return <DuelBoard onGameOver={handleGameOver} />;
   }
 
   if (phase === 'finished' && winner) {
@@ -124,15 +152,14 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
         )}
 
         <div className="button-group">
-          <MenuButton label="Play Again" onClick={playAgain} className="btn-profile" />
-          <MenuButton label="Leaderboard" onClick={() => router.push('/leaderboard')} className="btn-leaderboard" />
-          <MenuButton label="Back to Menu" onClick={() => router.push('/dashboard')} className="btn-settings" />
+          <MenuButton label="Play Again"     onClick={playAgain}                          className="btn-profile"     />
+          <MenuButton label="Leaderboard"    onClick={() => router.push('/leaderboard')}  className="btn-leaderboard" />
+          <MenuButton label="Back to Menu"   onClick={() => router.push('/dashboard')}    className="btn-settings"    />
         </div>
       </div>
     );
   }
 
-  // Menu
   return (
     <div className="app-container">
       <h1 className="main-title">Math Duels!</h1>
@@ -140,8 +167,8 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
         Your ELO: {playerElo}
       </p>
       <div className="button-group">
-        <MenuButton label="Find Match" onClick={beginSearch} className="btn-practice" />
-        <MenuButton label="Back to Menu" onClick={() => router.push('/dashboard')} className="btn-settings" />
+        <MenuButton label="Find Match"   onClick={beginSearch}                        className="btn-practice" />
+        <MenuButton label="Back to Menu" onClick={() => router.push('/dashboard')}    className="btn-settings" />
       </div>
     </div>
   );
