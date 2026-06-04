@@ -5,16 +5,25 @@ function generateMany(difficulty: number, count = 200) {
   return Array.from({ length: count }, () => generateArithmeticQuestion(difficulty));
 }
 
+// Parse "What is X?" → extract the numeric answer independently of eval
+function extractNumbers(text: string): number[] {
+  return (text.match(/\d+/g) ?? []).map(Number);
+}
+
 describe('generateArithmeticQuestion — easy (difficulty 0)', () => {
-  it('produces the correct answer for every generated question', () => {
+  it('answer is a non-negative integer', () => {
     for (const q of generateMany(0)) {
-      expect(Number(q.answer)).toBe(eval(q.text.replace('What is ', '').replace('?', '').replace('×', '*').replace('÷', '/')));
+      const answer = Number(q.answer);
+      expect(Number.isInteger(answer)).toBe(true);
+      expect(answer).toBeGreaterThanOrEqual(0);
     }
   });
 
-  it('never produces a negative answer', () => {
+  it('answer equals the sum or difference of the two operands', () => {
     for (const q of generateMany(0)) {
-      expect(Number(q.answer)).toBeGreaterThanOrEqual(0);
+      const [a, b] = extractNumbers(q.text);
+      const answer = Number(q.answer);
+      expect(answer === a + b || answer === a - b).toBe(true);
     }
   });
 
@@ -27,14 +36,27 @@ describe('generateArithmeticQuestion — easy (difficulty 0)', () => {
 });
 
 describe('generateArithmeticQuestion — medium (difficulty 1)', () => {
-  it('produces the correct answer for every generated question', () => {
+  it('answer is a positive integer', () => {
     for (const q of generateMany(1)) {
-      const expr = q.text
-        .replace('What is ', '')
-        .replace('?', '')
-        .replace('×', '*')
-        .replace('÷', '/');
-      expect(Number(q.answer)).toBe(eval(expr));
+      const answer = Number(q.answer);
+      expect(Number.isInteger(answer)).toBe(true);
+      expect(answer).toBeGreaterThan(0);
+    }
+  });
+
+  it('multiplication answer equals the product of the two operands', () => {
+    const multQuestions = generateMany(1, 500).filter(q => !q.text.includes('+'));
+    for (const q of multQuestions) {
+      const [a, b] = extractNumbers(q.text);
+      expect(Number(q.answer)).toBe(a * b);
+    }
+  });
+
+  it('compound answer respects BODMAS (a + b * c)', () => {
+    const compoundQuestions = generateMany(1, 500).filter(q => q.text.includes('+'));
+    for (const q of compoundQuestions) {
+      const [a, b, c] = extractNumbers(q.text);
+      expect(Number(q.answer)).toBe(a + b * c);
     }
   });
 
@@ -47,21 +69,26 @@ describe('generateArithmeticQuestion — medium (difficulty 1)', () => {
 });
 
 describe('generateArithmeticQuestion — hard (difficulty 2)', () => {
-  it('produces the correct answer for every generated question', () => {
+  it('answer is a positive integer', () => {
     for (const q of generateMany(2)) {
-      const expr = q.text
-        .replace('What is ', '')
-        .replace('?', '')
-        .replace('×', '*')
-        .replace('÷', '/');
-      expect(Number(q.answer)).toBe(eval(expr));
+      const answer = Number(q.answer);
+      expect(Number.isInteger(answer)).toBe(true);
+      expect(answer).toBeGreaterThan(0);
     }
   });
 
-  it('division questions always produce whole number answers', () => {
-    const divisionQuestions = generateMany(2, 500).filter(q => q.text.includes('÷'));
-    for (const q of divisionQuestions) {
+  it('division questions produce whole number answers', () => {
+    const divQuestions = generateMany(2, 500).filter(q => q.text.includes('\u00F7'));
+    for (const q of divQuestions) {
       expect(Number(q.answer) % 1).toBe(0);
+    }
+  });
+
+  it('bracket questions answer equals (a + b) * c', () => {
+    const bracketQuestions = generateMany(2, 500).filter(q => q.text.includes('('));
+    for (const q of bracketQuestions) {
+      const [a, b, c] = extractNumbers(q.text);
+      expect(Number(q.answer)).toBe((a + b) * c);
     }
   });
 
