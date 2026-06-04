@@ -6,7 +6,6 @@ import { useState } from "react";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import MatchHistoryList from "@/features/profile/components/MatchHistory";
-import EditProfile from "@/features/profile/components/EditProfile";
 import SettingsPanel from "@/features/profile/components/SettingsPanel";
 import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
 import { testUserProfiles } from "@/features/profile/testData";
@@ -49,13 +48,8 @@ export default function ProfileUsernamePage() {
         />
 
         {profile.settings.showMatchHistory && (
-          <MatchHistoryList matches={profile.matchHistory} />
+          <MatchHistoryList matches={[]} />
         )}
-
-        <EditProfile
-          profile={profile}
-          onSave={(updatedProfile) => setProfile(updatedProfile)}
-        />
 
         <SettingsPanel
           settings={profile.settings}
