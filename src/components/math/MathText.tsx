@@ -1,6 +1,6 @@
 'use client';
 
-import { renderMath } from '@/features/questions/mathRenderer';
+import { renderMixedMath } from '@/features/questions/mathRenderer';
 
 export function MathText({
   text,
@@ -9,7 +9,7 @@ export function MathText({
   text: string;
   className?: string;
 }) {
-  const html = renderMath(text);
+  const html = renderMixedMath(text);
   return (
     <span
       className={className}
