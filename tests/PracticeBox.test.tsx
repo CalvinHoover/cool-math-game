@@ -22,7 +22,7 @@ describe('PracticeBox', () => {
     // as described in practiceActionClient.ts and PracticeBox.tsx, we need to inject test versions of the helper functions (responsible for the business logic of the practice loop).
     const actions = { 
       verifyAnswer: vi.fn(),
-      completePracticeSession: vi.fn(),
+      completePracticeSession: vi.fn().mockResolvedValue({ ok: true }),
       hasActiveSession: vi.fn(),
     };
 
@@ -135,8 +135,7 @@ describe('PracticeBox', () => {
     await findByText('Please log in to continue.');
   });
 
-  it('completes the session when saving', async () => {
-    const user = userEvent.setup();
+  it('auto-saves when the session is already complete', async () => {
     const actions = {
       verifyAnswer: vi.fn(),
       completePracticeSession: vi.fn().mockResolvedValue({ ok: true }),
@@ -148,21 +147,20 @@ describe('PracticeBox', () => {
       question({ id: 'q2', correct: false, attempts: 2 }),
     ];
 
-    // scope queries to this render to avoid leaked elements
-    const { getByRole, findByText } = render(
+    render(
       <ToastProvider>
-      <PracticeBox
-        sessionId="session-1"
-        initialQuestions={questions}
-        actions={actions}
-      />
-    </ToastProvider>
+        <PracticeBox
+          sessionId="session-1"
+          initialQuestions={questions}
+          actions={actions}
+        />
+      </ToastProvider>
     );
 
-    await user.click(getByRole('button', { name: 'Save My Session' }));
-    await findByText('Session saved.');
-    expect(actions.completePracticeSession).toHaveBeenCalledWith({
-      sessionId: 'session-1',
+    await waitFor(() => {
+      expect(actions.completePracticeSession).toHaveBeenCalledWith({
+        sessionId: 'session-1',
+      });
     });
   });
 });

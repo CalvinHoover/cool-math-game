@@ -114,7 +114,14 @@ export default function PracticeBox({
       }
     }
     setIsSaving(false);
-  }, [actionClient, sessionId, toast]);
+  }, [actionClient, sessionId, toast, isSaving, isSaved]);
+
+  // Auto-save when the session ends
+  useEffect(() => {
+    if (isGameOver && !isSaving && !isSaved) {
+      handleGameOver();
+    }
+  }, [isGameOver, isSaving, isSaved, handleGameOver]);
 
   useEffect(() => {
     if (!timeLimit || isGameOver) return;
@@ -228,9 +235,6 @@ export default function PracticeBox({
         xpEarned={xpEarned}
         newLevel={newLevel}
         newAchievements={newAchievements}
-        onSave={handleGameOver}
-        isSaving={isSaving}
-        isSaved={isSaved}
       />
     );
   }
