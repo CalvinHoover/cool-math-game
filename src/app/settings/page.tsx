@@ -2,10 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { MenuButton } from '../../components/interface/MenuButton';
+import { useAudio } from '@/components/providers/AudioProvider';
 import '../dashboard/Dashboard.css'; 
 
 export default function Settings() {
   const router = useRouter();
+  const { muted, toggleMute } = useAudio();
 
   return (
     <div className="app-container">
@@ -13,8 +15,8 @@ export default function Settings() {
       
       <div className="button-group">
         <MenuButton
-          label="Audio"
-          onClick={() => console.log('Audio button clicked')}
+          label={muted ? 'Turn Audio On' : 'Turn Audio Off'}
+          onClick={toggleMute}
           className="retro-button btn-practice"
         />
         <MenuButton
