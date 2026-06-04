@@ -1,4 +1,10 @@
+// src/features/practice/repository.ts
+// Wraps Prisma calls to keep data access testable in isolation.
+// For the arithmetic topic, questions are generated procedurally and inserted
+// into the database so the existing session/tracking flow works unchanged.
+
 import { prisma } from '@/lib/prisma';
+import { generateArithmeticQuestion } from '@/lib/arithmeticGenerator';
 import type { PracticeSession, Question, SessionQuestion } from '@prisma/client';
 
 export type QuestionRecord = Question;
@@ -7,7 +13,6 @@ export type PracticeSessionWithQuestions = PracticeSession & {
   questions: SessionQuestionWithQuestion[];
 };
 
-// repository wraps prisma calls to keep data access testable in isolation
 export const PracticeRepository = {
   async findActiveSession(
     userId: string,
@@ -17,42 +22,48 @@ export const PracticeRepository = {
       where: {
         userId,
         completed: false,
-        questions: {
-          some: {
-            question: {
-              topicId,
-            },
-          },
-        },
+        questions: { some: { question: { topicId } } },
       },
-      orderBy: {
-        startedAt: 'desc',
-      },
+      orderBy: { startedAt: 'desc' },
       include: {
         questions: {
-          include: {
-            question: true,
-          },
-          orderBy: {
-            questionId: 'asc',
-          },
+          include: { question: true },
+          orderBy: { questionId: 'asc' },
         },
       },
     });
   },
 
-  async findQuestionsByTopic(
-    topicId: string,
-    count: number
-  ): Promise<QuestionRecord[]> {
+  async findQuestionsByTopic(topicId: string, count: number): Promise<QuestionRecord[]> {
+    // Check if this is the arithmetic topic
+    const topic = await prisma.topic.findUnique({ where: { id: topicId } });
+
+    if (topic?.name === 'arithmetic') {
+      // Generate fresh questions and persist them so session tracking works
+      const difficulties = Array.from({ length: count }, (_, i) => i % 3) as (0 | 1 | 2)[];
+      const generated = difficulties.map((d) => generateArithmeticQuestion(d));
+
+      const created = await Promise.all(
+        generated.map((q) =>
+          prisma.question.create({
+            data: {
+              topicId,
+              text:       q.text,
+              answer:     q.answer,
+              difficulty: q.difficulty,
+            },
+          })
+        )
+      );
+
+      return created;
+    }
+
+    // All other topics — fetch from DB as normal
     return prisma.question.findMany({
-      where: {
-        topicId,
-      },
-      orderBy: {
-        id: 'asc',
-      },
-      take: count,
+      where:   { topicId },
+      orderBy: { id: 'asc' },
+      take:    count,
     });
   },
 
@@ -63,20 +74,12 @@ export const PracticeRepository = {
     return prisma.practiceSession.create({
       data: {
         userId,
-        questions: {
-          create: questionIds.map((questionId) => ({
-            questionId,
-          })),
-        },
+        questions: { create: questionIds.map((questionId) => ({ questionId })) },
       },
       include: {
         questions: {
-          include: {
-            question: true,
-          },
-          orderBy: {
-            questionId: 'asc',
-          },
+          include: { question: true },
+          orderBy: { questionId: 'asc' },
         },
       },
     });
@@ -91,14 +94,9 @@ export const PracticeRepository = {
       where: {
         sessionId,
         questionId,
-        session: {
-          userId,
-          completed: false,
-        },
+        session: { userId, completed: false },
       },
-      include: {
-        question: true,
-      },
+      include: { question: true },
     });
   },
 
@@ -107,24 +105,15 @@ export const PracticeRepository = {
     data: { attempts: number; userAnswer: string; correct: boolean }
   ) {
     return prisma.sessionQuestion.update({
-      where: {
-        id: sessionQuestionId,
-      },
+      where: { id: sessionQuestionId },
       data,
     });
   },
 
   async completeSession(sessionId: string, userId: string) {
     return prisma.practiceSession.updateMany({
-      where: {
-        id: sessionId,
-        userId,
-        completed: false,
-      },
-      data: {
-        completed: true,
-        endedAt: new Date(),
-      },
+      where:  { id: sessionId, userId, completed: false },
+      data:   { completed: true, endedAt: new Date() },
     });
   },
 };
