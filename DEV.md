@@ -1,9 +1,14 @@
-# Commit conventions
-FEAT: Added new feature
-FIX: Bug fix
-CHORE: Cleanup/refactor
+# Ways to test and deploy
+ 
+**Database**
+- *Local Postgres* (Docker Compose) — for local development and testing
+- *Supabase* (production / shared) — live cloud database
+ 
+**Application Server**
+- *Local* (`npm run dev`) — runs Next.js on `localhost:3000`
+- *Vercel* (production) — hosts the live Next.js app
 
-## Local PostgreSQL Setup (Docker)
+## Local PostgreSQL Setup (Docker) + Local server (`npm run dev`)
 
 For manual testing without hitting the live Supabase instance, a local Postgres 16 container is available via Docker Compose.
 
@@ -41,6 +46,8 @@ This script will:
 - Wait for Postgres to be ready
 - Push the Prisma schema to the local database (`npx prisma db push`)
 
+### Then run `npm run dev` to start the local server
+
 ### Stop the local database
 
 ```bash
@@ -59,7 +66,7 @@ npx prisma studio
 
 Open `http://localhost:5555` for a visual GUI of all tables.
 
-### Switching between local and Supabase
+## Switching between local and Supabase
 
 The `.env.local` file contains both connection strings. To use the local database, ensure the local `DATABASE_URL` and `DIRECT_URL` lines are **uncommented** and the Supabase lines above them are **commented out**.
 
@@ -73,13 +80,42 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/coolmathgame?schema=
 DIRECT_URL="postgresql://postgres:postgres@localhost:5432/coolmathgame?schema=public"
 ```
 
-### Start the dev server (after local DB is running)
+---
+
+## Deploying with Vercel CLI + Supabase
+
+This project uses manual deployment via the Vercel CLI rather than GitHub integration.
+
+### Prerequisites
+
+1. Install the Vercel CLI globally:
+   ```bash
+   npm install -g vercel
+   ```
+
+2. Link the project (one-time setup):
+   ```bash
+   npx vercel link
+   ```
+   When prompted, select the existing project (`calvin-hoovers-projects/cool-math-game`).
+
+3. Set environment variables on Vercel (one-time setup):
+   ```bash
+   npx vercel env add DATABASE_URL
+   npx vercel env add DIRECT_URL
+   npx vercel env add JWT_SECRET
+   ```
+   For each variable, paste the value when prompted and select **Production**, **Preview**, and **Development** as the target environments.
+
+### Deploying to production
 
 ```bash
-npm run dev
+npx vercel --prod
 ```
 
-The Next.js dev server reads `.env.local` automatically and connects to whichever database is configured.
+### Note
+
+- If your teammate sets up GitHub integration in the future, stop using manual CLI deploys and switch to the auto-deploy workflow (push to `dev` branch → Vercel auto-deploys).
 
 ---
 
