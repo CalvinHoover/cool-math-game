@@ -166,9 +166,9 @@ export async function verifyAnswer(input: {
   }
 
   const nextAttempts = sessionQuestion.attempts + 1;
-  const normalizedAnswer = userAnswer.toLowerCase();
-  const actualAnswer = sessionQuestion.question.answer.trim();
-  const isCorrect = normalizedAnswer === actualAnswer.toLowerCase();
+  const normalizedUserAnswer = userAnswer.trim().toLowerCase();
+  const normalizedActualAnswer = sessionQuestion.question.answer.trim().toLowerCase();
+  const isCorrect = normalizedUserAnswer === normalizedActualAnswer;
 
   await PracticeDBAccess.updateSessionQuestion(sessionQuestion.id, {
     attempts: nextAttempts,
@@ -190,7 +190,7 @@ export async function verifyAnswer(input: {
       ok: true,
       correct: false,
       attempts: nextAttempts,
-      answer: actualAnswer,
+      answer: sessionQuestion.question.answer.trim(),
       explanation: sessionQuestion.question.explanation,
     };
   }
