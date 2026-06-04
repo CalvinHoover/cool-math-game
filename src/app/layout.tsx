@@ -4,6 +4,7 @@ import "katex/dist/katex.min.css";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ToastProvider } from "@/components/providers/ToastProvider";
+import { AudioProvider } from "@/components/providers/AudioProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <AudioProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </AudioProvider>
         </ThemeProvider>
       </body>
     </html>
