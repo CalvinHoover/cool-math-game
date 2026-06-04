@@ -16,6 +16,7 @@ model User {
   firstSession DateTime @default(now())
   elo          Int      @default(1000)
   storyLine    Int      @default(0)
+
   sessions            PracticeSession[]
   topics              UserTopic[]
   userAchievements    UserAchievement[]
@@ -24,15 +25,6 @@ model User {
   wonMatches          Match[]      @relation("winner")
   sentFriendships     Friendship[] @relation("sent")
   receivedFriendships Friendship[] @relation("received")
-  queueEntry          MatchQueue?
-}
-
-model MatchQueue {
-  id       String   @id @default(uuid())
-  userId   String   @unique
-  elo      Int
-  joinedAt DateTime @default(now())
-  user     User     @relation(fields: [userId], references: [id])
 }
 
 model Topic {
@@ -48,8 +40,10 @@ model UserTopic {
   topicId String
   xp      Int    @default(0)
   level   Int    @default(1)
+
   user    User   @relation(fields: [userId], references: [id])
   topic   Topic  @relation(fields: [topicId], references: [id])
+
   @@unique([userId, topicId])
 }
 
@@ -60,7 +54,8 @@ model Question {
   answer     String
   hint       String?
   difficulty Int      @default(1)
-  topic      Topic              @relation(fields: [topicId], references: [id])
+
+  topic      Topic             @relation(fields: [topicId], references: [id])
   sessions   SessionQuestion[]
 }
 
@@ -88,28 +83,44 @@ model SessionQuestion {
 }
 
 model Match {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   player1Id     String
-  player2Id     String
+  player2Id     String?                      // nullable — empty while waiting for opponent
   winnerId      String?
-  player1Score  Int      @default(0)
-  player2Score  Int      @default(0)
-  status        String   @default("waiting")
-  startedAt     DateTime @default(now())
+  player1Score  Int       @default(0)
+  player2Score  Int       @default(0)
+  status        String    @default("waiting") // waiting | active | finished
+  startedAt     DateTime  @default(now())
   endedAt       DateTime?
-  player1       User     @relation("player1", fields: [player1Id], references: [id])
-  player2       User     @relation("player2", fields: [player2Id], references: [id])
-  winner        User?    @relation("winner", fields: [winnerId], references: [id])
+
+  player1       User      @relation("player1", fields: [player1Id], references: [id])
+  player2       User?     @relation("player2", fields: [player2Id], references: [id])
+  winner        User?     @relation("winner", fields: [winnerId], references: [id])
+  events        DuelEvent[]
+}
+
+// One row per in-game action that needs to be seen by the other player.
+// The poll endpoint returns rows newer than the client's last-seen timestamp,
+// filtered to exclude the sender so events aren't echoed back.
+model DuelEvent {
+  id        String   @id @default(uuid())
+  matchId   String
+  senderId  String                           // user who triggered this event
+  type      String                           // attack_spawned | attack_blocked | attack_hit | game_over
+  payload   Json
+  createdAt DateTime @default(now())
+
+  match     Match    @relation(fields: [matchId], references: [id])
 }
 
 model Friendship {
   id         String   @id @default(uuid())
   senderId   String
   receiverId String
-  status     String   @default("pending") 
+  status     String   @default("pending")
   createdAt  DateTime @default(now())
 
-  sender     User     @relation("sent", fields: [senderId], references: [id])
+  sender     User     @relation("sent",     fields: [senderId],   references: [id])
   receiver   User     @relation("received", fields: [receiverId], references: [id])
 
   @@unique([senderId, receiverId])
@@ -120,6 +131,7 @@ model Achievement {
   name        String   @unique
   description String
   xpReward    Int      @default(0)
+
   users       UserAchievement[]
 }
 
@@ -128,7 +140,9 @@ model UserAchievement {
   userId        String
   achievementId String
   earnedAt      DateTime @default(now())
+
   user          User        @relation(fields: [userId], references: [id])
   achievement   Achievement @relation(fields: [achievementId], references: [id])
+
   @@unique([userId, achievementId])
 }
