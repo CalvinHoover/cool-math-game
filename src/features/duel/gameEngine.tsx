@@ -1,11 +1,6 @@
-// src/features/duel/gameEngine.tsx
-// Helper functions for duels. No React-specific code.
-
 import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, QUESTION_PRICES, TOPIC_COLORS } from './constants';
 import { Question } from './types';
 import { generateArithmeticQuestion } from '@/lib/arithmeticGenerator';
-
-// ─── Answer checking ──────────────────────────────────────────────────────────
 
 export const checkAnswer = (question: Question, playerAnswer: string): boolean => {
   return question.answer.trim().toLowerCase() === playerAnswer.trim().toLowerCase();
@@ -17,12 +12,9 @@ export const opponentOf = (actor: 'player' | 'opponent'): 'player' | 'opponent' 
   return actor === 'player' ? 'opponent' : 'player';
 };
 
-// Re-export so existing imports of generateArithmeticQuestion from gameEngine still work
 export { generateArithmeticQuestion };
 
 // ─── Question generation ──────────────────────────────────────────────────────
-
-// Synchronous fallback — uses the hardcoded sample bank.
 export const generateQuestion = (difficulty?: number, topic?: string): Question => {
   let viable = allSampleQuestions;
   if (difficulty !== undefined) viable = viable.filter(q => q.difficulty === difficulty);
@@ -31,7 +23,6 @@ export const generateQuestion = (difficulty?: number, topic?: string): Question 
   return viable[Math.floor(Math.random() * viable.length)];
 };
 
-// Async version — arithmetic is generated locally; everything else fetches from the DB.
 export const fetchQuestion = async (difficulty?: number, topic?: string): Promise<Question> => {
   if (topic === 'arithmetic') {
     return generateArithmeticQuestion(difficulty ?? 0);
