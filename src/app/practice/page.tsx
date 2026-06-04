@@ -1,5 +1,7 @@
 import PracticeBox from './PracticeBox';
 import PracticeSetup from './PracticeSetup';
+import { Navbar } from '@/components/layout/Navbar';
+import { getSession } from '@/features/auth/session';
 import { bootstrapPracticeSession } from '@/features/practice/actions';
 
 type SearchParams = {
@@ -20,14 +22,18 @@ export default async function PracticePage({
   searchParams?: Promise<SearchParams>;
 }) {
   const params = await searchParams;
+  const session = await getSession();
   const topicId = typeof params?.topicId === 'string' ? params.topicId : '';
 
   if (!topicId) {
     return (
-      <main className="p-8 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
-        <PracticeSetup />
-      </main>
+      <>
+        <Navbar username={session?.username ?? 'Guest'} />
+        <main className="p-8 max-w-2xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
+          <PracticeSetup />
+        </main>
+      </>
     );
   }
 
@@ -48,21 +54,27 @@ export default async function PracticePage({
   if (!result.ok) {
     const message = ERROR_MESSAGES[result.error] ?? 'Unable to start practice session.';
     return (
-      <main className="p-8 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
-        <p className="text-red-600">{message}</p>
-      </main>
+      <>
+        <Navbar username={session?.username ?? 'Guest'} />
+        <main className="p-8 max-w-2xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
+          <p className="text-red-600">{message}</p>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="p-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
-      <PracticeBox
-        sessionId={result.sessionId}
-        initialQuestions={result.questions}
-        timeLimit={result.timeLimit}
-      />
-    </main>
+    <>
+      <Navbar username={session?.username ?? 'Guest'} />
+      <main className="p-8 max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
+        <PracticeBox
+          sessionId={result.sessionId}
+          initialQuestions={result.questions}
+          timeLimit={result.timeLimit}
+        />
+      </main>
+    </>
   );
 }
