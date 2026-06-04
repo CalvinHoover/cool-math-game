@@ -15,12 +15,12 @@ export default function Settings() {
         <MenuButton
           label="Audio"
           onClick={() => console.log('Audio button clicked')}
-          className="btn-practice"
+          className="retro-button btn-practice"
         />
         <MenuButton
           label="Back to Menu"
           onClick={() => router.push('/dashboard')}
-          className="btn-settings"
+          className="retro-button btn-settings"
         />
       </div>
     </div>
