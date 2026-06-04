@@ -23,6 +23,7 @@ describe('PracticeBox', () => {
     const actions = { 
       verifyAnswer: vi.fn(),
       completePracticeSession: vi.fn(),
+      hasActiveSession: vi.fn(),
     };
 
     actions.verifyAnswer
@@ -86,6 +87,7 @@ describe('PracticeBox', () => {
     const actions = {
       verifyAnswer: vi.fn(),
       completePracticeSession: vi.fn(),
+      hasActiveSession: vi.fn(),
     };
 
     const questions = [
@@ -113,6 +115,7 @@ describe('PracticeBox', () => {
     const actions = {
       verifyAnswer: vi.fn().mockResolvedValue({ ok: false, error: 'unauthorized' }),
       completePracticeSession: vi.fn(),
+      hasActiveSession: vi.fn(),
     };
 
     // scope queries to this render to avoid leaked elements
@@ -137,6 +140,7 @@ describe('PracticeBox', () => {
     const actions = {
       verifyAnswer: vi.fn(),
       completePracticeSession: vi.fn().mockResolvedValue({ ok: true }),
+      hasActiveSession: vi.fn(),
     };
 
     const questions = [

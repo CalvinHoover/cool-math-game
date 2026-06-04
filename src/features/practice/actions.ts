@@ -210,6 +210,24 @@ export async function getTopics() {
   return { ok: true, topics } as const;
 }
 
+export async function hasActiveSession(input: {
+  topicId?: string;
+}): Promise<ActionError | { ok: true }> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, error: 'unauthorized' };
+  }
+  const topicId = typeof input.topicId === 'string' ? input.topicId.trim() : '';
+  if (!topicId) {
+    return { ok: false, error: 'invalid-topic' };
+  }
+  const existingSession = await PracticeDBAccess.findActiveSession(session.id, topicId);
+  if (existingSession) {
+    return { ok: true };
+  }
+  return { ok: false, error: 'no-active-session' };
+}
+
 export async function completePracticeSession(input: {
   sessionId: string;
 }): Promise<CompleteResult> {
