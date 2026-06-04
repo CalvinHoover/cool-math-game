@@ -4,7 +4,7 @@
 
 import { useState, useEffect, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { getTopics } from './actions';
+import { getTopics, hasActiveSession } from './actions';
 
 type Topic = {
   id: string;
@@ -22,6 +22,7 @@ export function usePracticeSetup() {
   const [selectedCount, setSelectedCount] = useState(5);
   const [timedMode, setTimedMode] = useState(false);
   const [timeLimit, setTimeLimit] = useState(30);
+  const [hasActive, setHasActive] = useState(false);
 
   // Pull the topic list on mount so the dropdown is never empty.
   useEffect(() => {
@@ -41,6 +42,24 @@ export function usePracticeSetup() {
       cancelled = true;
     };
   }, []);
+
+  // Detect whether an unfinished session exists for the selected topic.
+  useEffect(() => {
+    if (!selectedTopic) {
+      setHasActive(false);
+      return;
+    }
+    let cancelled = false;
+    hasActiveSession({ topicId: selectedTopic }).then((result) => {
+      if (cancelled) return;
+      startTransition(() => {
+        setHasActive(result.ok);
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedTopic]);
 
   const handleStart = () => {
     if (!selectedTopic) return;
@@ -65,6 +84,7 @@ export function usePracticeSetup() {
     setTimedMode,
     timeLimit,
     setTimeLimit,
+    hasActiveSession: hasActive,
     handleStart,
     sessionLengths: SESSION_LENGTHS,
   };

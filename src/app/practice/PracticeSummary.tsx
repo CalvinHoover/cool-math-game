@@ -12,9 +12,6 @@ type PracticeSummaryProps = {
   xpEarned?: number;
   newLevel?: number;
   newAchievements?: { slug: string; name: string; color: string }[];
-  onSave: () => void;
-  isSaving: boolean;
-  isSaved: boolean;
 };
 
 export default function PracticeSummary({
@@ -24,9 +21,6 @@ export default function PracticeSummary({
   xpEarned,
   newLevel,
   newAchievements,
-  onSave,
-  isSaving,
-  isSaved,
 }: PracticeSummaryProps) {
   const percentage = totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0;
 
@@ -88,13 +82,6 @@ export default function PracticeSummary({
       </div>
 
       <div className="flex gap-3">
-        <button
-          onClick={onSave}
-          disabled={isSaving || isSaved}
-          className="bg-purple-500 text-white px-4 py-2 rounded disabled:opacity-50"
-        >
-          {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save My Session'}
-        </button>
         <a
           href="/practice"
           className="bg-green-600 text-white px-4 py-2 rounded inline-block text-center"
@@ -102,9 +89,6 @@ export default function PracticeSummary({
           Play Again
         </a>
       </div>
-      {isSaved && (
-        <p className="mt-3 text-sm text-green-600">Session saved.</p>
-      )}
     </div>
   );
 }

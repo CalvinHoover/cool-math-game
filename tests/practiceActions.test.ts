@@ -61,6 +61,7 @@ import {
   completePracticeSession,
   verifyAnswer,
   getTopics,
+  hasActiveSession,
 } from '@/features/practice/actions';
 import { prisma } from '@/lib/prisma';
 
@@ -395,6 +396,31 @@ describe('completePracticeSession', () => {
       expect(result.newAchievements!.length).toBeGreaterThan(0);
       expect(result.newAchievements![0].slug).toBe('first-steps');
     }
+  });
+});
+
+describe('hasActiveSession', () => {
+  it('returns unauthorized when no session', async () => {
+    mockGetSession.mockResolvedValue(null);
+    const result = await hasActiveSession({ topicId: 'topic-1' });
+    expect(result).toEqual({ ok: false, error: 'unauthorized' });
+  });
+
+  it('returns invalid-topic when topic is empty', async () => {
+    const result = await hasActiveSession({ topicId: '' });
+    expect(result).toEqual({ ok: false, error: 'invalid-topic' });
+  });
+
+  it('returns ok when an active session exists', async () => {
+    repository.findActiveSession.mockResolvedValue(sessionRecord);
+    const result = await hasActiveSession({ topicId: 'topic-1' });
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('returns error when no active session exists', async () => {
+    repository.findActiveSession.mockResolvedValue(null);
+    const result = await hasActiveSession({ topicId: 'topic-1' });
+    expect(result).toEqual({ ok: false, error: 'no-active-session' });
   });
 });
 

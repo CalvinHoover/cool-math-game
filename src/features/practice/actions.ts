@@ -69,6 +69,8 @@ function toPracticeQuestion(
     points: calculatePoints(record.question.difficulty),
     attempts: record.attempts,
     correct: record.correct,
+    answer: record.question.answer,
+    explanation: record.question.explanation ?? undefined,
   };
 }
 
@@ -164,9 +166,9 @@ export async function verifyAnswer(input: {
   }
 
   const nextAttempts = sessionQuestion.attempts + 1;
-  const normalizedAnswer = userAnswer.toLowerCase();
-  const actualAnswer = sessionQuestion.question.answer.trim();
-  const isCorrect = normalizedAnswer === actualAnswer.toLowerCase();
+  const normalizedUserAnswer = userAnswer.trim().toLowerCase();
+  const normalizedActualAnswer = sessionQuestion.question.answer.trim().toLowerCase();
+  const isCorrect = normalizedUserAnswer === normalizedActualAnswer;
 
   await PracticeDBAccess.updateSessionQuestion(sessionQuestion.id, {
     attempts: nextAttempts,
@@ -188,7 +190,7 @@ export async function verifyAnswer(input: {
       ok: true,
       correct: false,
       attempts: nextAttempts,
-      answer: actualAnswer,
+      answer: sessionQuestion.question.answer.trim(),
       explanation: sessionQuestion.question.explanation,
     };
   }
@@ -208,6 +210,24 @@ export async function getTopics() {
   }
   const topics = await QuestionDBAccess.findAllTopics();
   return { ok: true, topics } as const;
+}
+
+export async function hasActiveSession(input: {
+  topicId?: string;
+}): Promise<ActionError | { ok: true }> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, error: 'unauthorized' };
+  }
+  const topicId = typeof input.topicId === 'string' ? input.topicId.trim() : '';
+  if (!topicId) {
+    return { ok: false, error: 'invalid-topic' };
+  }
+  const existingSession = await PracticeDBAccess.findActiveSession(session.id, topicId);
+  if (existingSession) {
+    return { ok: true };
+  }
+  return { ok: false, error: 'no-active-session' };
 }
 
 export async function completePracticeSession(input: {

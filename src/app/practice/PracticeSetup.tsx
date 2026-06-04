@@ -16,6 +16,7 @@ export default function PracticeSetup() {
     setTimedMode,
     timeLimit,
     setTimeLimit,
+    hasActiveSession,
     handleStart,
     sessionLengths,
   } = usePracticeSetup();
@@ -89,7 +90,7 @@ export default function PracticeSetup() {
         disabled={!selectedTopic}
         className="w-full bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
       >
-        Start Session
+        {hasActiveSession ? 'Resume Session' : 'Start Session'}
       </button>
     </div>
   );
