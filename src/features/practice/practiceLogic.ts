@@ -22,6 +22,8 @@ export type PracticeQuestion = {
   points: number;
   attempts: number;
   correct: boolean;
+  answer?: string;
+  explanation?: string;
 };
 
 export type PracticeState = {

@@ -69,6 +69,8 @@ function toPracticeQuestion(
     points: calculatePoints(record.question.difficulty),
     attempts: record.attempts,
     correct: record.correct,
+    answer: record.question.answer,
+    explanation: record.question.explanation ?? undefined,
   };
 }
 
