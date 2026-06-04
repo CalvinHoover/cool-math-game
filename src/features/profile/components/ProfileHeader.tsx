@@ -1,38 +1,68 @@
-// initial UI for public profiles!! reference for future profile UIs :D
-// test is in app/profile/page.tsx
-import type { PublicProfile } from "../types";
+import FriendRequestButton from "@/features/friends/FriendRequestButton";
 
 interface ProfileHeaderProps {
-    profile: PublicProfile;
+  profile: {
+    id: string;
+    username: string;
+    avatarUrl?: string;
+    bio?: string;
+  };
+  isOwnProfile: boolean;
+  onEditProfile?: () => void
 }
 
-export default function ProfileHeader({ profile }: ProfileHeaderProps) {
-    return (
-        <section className="border dark:border-gray-600 p-5 shadow-sm">
-            <div className="flex items-center gap-4">
-                <img
-                    src={profile.avatarUrl || "/default_avatar.png"}
-                    alt={`${profile.username}'s avatar`}
-                    className="h-30 w-30 rounded-full object-cover"
-                />
-                <div>
-                    <h1 className="text-2xl font-bold">{profile.username}</h1>
-                    {profile.bio ? (
-                        <p className="mt-2 text-gray-700 dark:text-gray-300">
-                            {profile.bio}
-                        </p>
-                    ) : (
-                        <p className="mt-2 text-gray-700 dark:text-gray-300">
-                            User has no bio.
-                        </p>
-                    )}
-                </div>
-            </div>
-            <div className="mt-4 flex gap-4 text-sm">
-                <p>
-                    <span className="font-bold">Level:</span> {profile.level}
-                </p>
-            </div>
-        </section>
+export default function ProfileHeader({
+  profile,
+  isOwnProfile,
+  onEditProfile
+}: ProfileHeaderProps) {
+  let profileAction;
+
+  if (isOwnProfile) {
+    profileAction = (
+      <button 
+        className="profile-button"
+        onClick={onEditProfile}
+      >
+        Edit Profile
+      </button>
     );
+  } else {
+    profileAction = (
+      <FriendRequestButton
+        status={{
+          isFriend: false,
+          incomingRequest: false,
+          outgoingRequest: false,
+        }}
+      />
+    );
+  }
+
+  return (
+    <section className="profile-section">
+      <div className="profile-left-column">
+        {profile.avatarUrl ? (
+          <img
+            src={profile.avatarUrl}
+            alt={`${profile.username}'s avatar`}
+            className="profile-avatar-large"
+          />
+        ) : (
+          <div className="profile-avatar-placeholder-large">?</div>
+        )}
+
+        <h2 className="profile-username">@{profile.username}</h2>
+
+        <div className="profile-bio">
+          <span className="profile-label">Bio: </span>
+          <span className="profile-value">
+            {profile.bio || "No bio yet."}
+          </span>
+        </div>
+
+        {profileAction}
+      </div>
+    </section>
+  );
 }
