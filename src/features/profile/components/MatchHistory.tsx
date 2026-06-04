@@ -12,29 +12,33 @@ export default function MatchHistoryList ({
             <h2 className ="text-xl font-bold"> Match History </h2>
 
             <div className="mt-4 space-y-3">
-                {matches.map((match) => (
-                    <div key={match.id} >
-                        <p className="font-semibold">
-                            {match.topic}
-                        </p>
+                {matches.length === 0 ? (
+                    <p className="text-gray-600 dark:text-gray-300">Coming soon!</p>
+                ) : (
+                    matches.map((match) => (
+                        <div key={match.id} >
+                            <p className="font-semibold">
+                                {match.topic}
+                            </p>
 
-                        <p>
-                            Level: {match.level}
-                        </p>
+                            <p>
+                                Level: {match.level}
+                            </p>
 
-                        <p>
-                            Result: {match.result}
-                        </p>
+                            <p>
+                                Result: {match.result}
+                            </p>
 
-                        <p>
-                            {match.result === "Won" ? "Won" : "Lost"} vs {match.opponent}
-                        </p>
-                        
-                        <p className="text-sm text-gray-500">
-                            {match.completedOn}
-                        </p>
-                    </div>
-                ))}
+                            <p>
+                                {match.result === "Won" ? "Won" : "Lost"} vs {match.opponent}
+                            </p>
+                            
+                            <p className="text-sm text-gray-500">
+                                {match.completedOn}
+                            </p>
+                        </div>
+                    ))
+                )}
             </div>
         </section>
     )
