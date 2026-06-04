@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { generateArithmeticQuestion } from '@/lib/arithmeticGenerator';
 
-// Helper: run the generator many times and collect results so we can assert
-// properties that hold across all possible random outputs.
 function generateMany(difficulty: number, count = 200) {
   return Array.from({ length: count }, () => generateArithmeticQuestion(difficulty));
 }
