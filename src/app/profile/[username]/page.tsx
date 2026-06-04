@@ -29,27 +29,23 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
       .finally(() => setLoadingMatches(false));
   }, [username]);
 
-  if (!profile) {
+  if (!foundProfile) {
     return (
-      <main className="profile-container">
-        <div className="profile-inner">
-          <h1 className="profile-title">Profile Not Found</h1>
-          <section className="profile-section">
-            <p>No user exists with the username @{username}.</p>
-          </section>
-          <h1 className="text-2xl font-bold">{username}</h1>
-          {loadingMatches
-            ? <p>Loading match history...</p>
-            : realMatches.length === 0
-              ? <p>No matches played yet.</p>
-              : <MatchHistoryList matches={realMatches} />}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-            <BackButton />
-          </div>
-        </div>
-      </main>
+        <main className="p-6 text-white">
+            <div className="mx-auto max-w-4xl space-y-6">
+                <h1 className="text-2xl font-bold">{username}</h1>
+                {loadingMatches
+                    ? <p>Loading match history...</p>
+                    : realMatches.length === 0
+                        ? <p>No matches played yet.</p>
+                        : <MatchHistoryList matches={realMatches} />}
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                    <BackButton />
+                </div>
+            </div>
+        </main>
     );
-  }
+}
 
   const fontSizeClasses = { small: "text-sm", medium: "text-base", large: "text-lg" };
   const matchesToShow = loadingMatches ? profile.matchHistory : realMatches;
