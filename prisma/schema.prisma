@@ -90,7 +90,7 @@ model SessionQuestion {
 model Match {
   id            String   @id @default(uuid())
   player1Id     String
-  player2Id     String
+  player2Id     String?
   winnerId      String?
   player1Score  Int      @default(0)
   player2Score  Int      @default(0)
@@ -98,7 +98,7 @@ model Match {
   startedAt     DateTime @default(now())
   endedAt       DateTime?
   player1       User     @relation("player1", fields: [player1Id], references: [id])
-  player2       User     @relation("player2", fields: [player2Id], references: [id])
+  player2       User?    @relation("player2", fields: [player2Id], references: [id])
   winner        User?    @relation("winner", fields: [winnerId], references: [id])
 }
 
