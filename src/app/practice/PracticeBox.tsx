@@ -66,17 +66,33 @@ export default function PracticeBox({
       const next = [...prev];
       next[currentIndex] = {
         ...next[currentIndex],
-        attempts: Math.min(2, next[currentIndex].attempts + 1),
+        attempts: 2,
         correct: false,
       };
       return next;
     });
+    const answerText = currentQuestion.answer
+      ? `The correct answer was ${currentQuestion.answer}.`
+      : "The correct answer was not available.";
+    const explanationText = currentQuestion.explanation
+      ? ` ${currentQuestion.explanation}`
+      : '';
     setFeedback({
-      message: "Time's up! Moving to next question.",
+      message: `Time's up! ${answerText}${explanationText}`,
       correct: false,
     });
     setAttempt(3);
-  }, [currentQuestion, currentIndex]);
+    // Auto-advance after giving the user time to read the explanation
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = getNextQuestionIndex(questions, prevIndex + 1);
+        setAttempt(getAttemptForQuestion(questions[nextIndex]));
+        setUserAnswer('');
+        setFeedback(null);
+        return nextIndex;
+      });
+    }, 2000);
+  }, [currentQuestion, currentIndex, questions]);
 
   const handleGameOver = React.useCallback(async () => {
     // bail out if a save is already in flight or the session was already persisted
@@ -124,7 +140,7 @@ export default function PracticeBox({
   }, [isGameOver, isSaving, isSaved, handleGameOver]);
 
   useEffect(() => {
-    if (!timeLimit || isGameOver) return;
+    if (!timeLimit || isGameOver || feedback !== null) return;
     startTransition(() => {
       setSecondsLeft(timeLimit);
     });
@@ -138,15 +154,15 @@ export default function PracticeBox({
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [timeLimit, currentIndex, isGameOver]);
+  }, [timeLimit, currentIndex, isGameOver, feedback]);
 
   useEffect(() => {
-    if (secondsLeft === 0 && !isGameOver && currentQuestion) {
+    if (secondsLeft === 0 && !isGameOver && currentQuestion && feedback === null) {
       startTransition(() => {
         handleTimedExpiry();
       });
     }
-  }, [secondsLeft, isGameOver, currentQuestion, handleTimedExpiry]);
+  }, [secondsLeft, isGameOver, currentQuestion, handleTimedExpiry, feedback]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -248,8 +264,8 @@ export default function PracticeBox({
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg">Question {currentIndex + 1} ({currentQuestion.points} pts)</h2>
         {typeof secondsLeft === 'number' && (
-          <span className={`text-sm font-mono font-bold px-2 py-1 rounded ${
-            secondsLeft <= 5 ? 'bg-red-100 text-red-700' : 'bg-gray-100'
+          <span className={`text-sm font-mono font-bold px-2 py-1 rounded dark:bg-gray-800 dark:text-white ${
+            secondsLeft <= 5 ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200' : 'bg-gray-100'
           }`}>
             {secondsLeft}s
           </span>
