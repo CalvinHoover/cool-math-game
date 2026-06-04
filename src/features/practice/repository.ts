@@ -1,8 +1,3 @@
-// src/features/practice/repository.ts
-// Wraps Prisma calls to keep data access testable in isolation.
-// For the arithmetic topic, questions are generated procedurally and inserted
-// into the database so the existing session/tracking flow works unchanged.
-
 import { prisma } from '@/lib/prisma';
 import { generateArithmeticQuestion } from '@/lib/arithmeticGenerator';
 import type { PracticeSession, Question, SessionQuestion } from '@prisma/client';
