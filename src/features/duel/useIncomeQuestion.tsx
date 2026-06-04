@@ -1,9 +1,10 @@
-// React hook for managing the state of income questions, which are questions the player can choose to answer for extra coins. 
-// Contains the current question and whether it is currently vetoed, as well as functions to generate a new question and trigger the veto.
+// src/features/duel/useIncomeQuestion.tsx
+// React hook for managing income question state.
+// Uses fetchQuestion (async, DB-backed) instead of the hardcoded fallback.
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Question } from './types';
-import { generateQuestion } from './gameEngine';
+import { generateQuestion, fetchQuestion } from './gameEngine';
 import { VETO_COOLDOWN_MS } from './constants';
 
 export interface IncomeQuestionState {
@@ -12,24 +13,32 @@ export interface IncomeQuestionState {
 }
 
 export const useIncomeQuestion = (difficulty: number) => {
-  const [incomeQuestionState, setState] = useState<IncomeQuestionState>({question: generateQuestion(difficulty), isVetoed: false});
+  // Initialise synchronously with the local fallback; replace with a fetched
+  // question immediately after mount.
+  const [incomeQuestionState, setState] = useState<IncomeQuestionState>({
+    question: generateQuestion(difficulty),
+    isVetoed: false,
+  });
 
-  // Generates a new question and resets the veto state. Should be called after a question is answered or after the veto cooldown expires.
-  const generateNewProblem = useCallback(() => {
-    setState({
-      question: generateQuestion(difficulty),
-      isVetoed: false
+  useEffect(() => {
+    fetchQuestion(difficulty).then((question) => {
+      setState((prev) => ({ ...prev, question }));
     });
   }, [difficulty]);
 
-  // Triggers the veto state, preventing the player from clicking the income question for a certain cooldown period. 
-  // After the cooldown, a new question is generated and the veto state is reset. 
-  const triggerVeto = useCallback(() => {
-    setState(prev => ({ ...prev, isVetoed: true }));
+  // Generates a new question and resets the veto state.
+  const generateNewProblem = useCallback(() => {
+    fetchQuestion(difficulty).then((question) => {
+      setState({ question, isVetoed: false });
+    });
+  }, [difficulty]);
 
+  // Triggers the veto cooldown, then generates a fresh question.
+  const triggerVeto = useCallback(() => {
+    setState((prev) => ({ ...prev, isVetoed: true }));
     setTimeout(() => {
       generateNewProblem();
-    }, VETO_COOLDOWN_MS); 
+    }, VETO_COOLDOWN_MS);
   }, [generateNewProblem]);
 
   return { incomeQuestionState, generateNewProblem, triggerVeto };
