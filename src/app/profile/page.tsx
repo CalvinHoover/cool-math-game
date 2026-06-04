@@ -54,7 +54,7 @@ export default function ProfilePage() {
     <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
       <div className="profile-inner">
         <h1 className="profile-title">Player Profile</h1>
-        <ProfileHeader profile={profile} />
+        <ProfileHeader profile={realData ? { ...profile, username: realData.username } : profile} />
 
         {realData ? (
           <ProfileStats
