@@ -5,7 +5,6 @@ function generateMany(difficulty: number, count = 200) {
   return Array.from({ length: count }, () => generateArithmeticQuestion(difficulty));
 }
 
-// Parse "What is X?" → extract the numeric answer independently of eval
 function extractNumbers(text: string): number[] {
   return (text.match(/\d+/g) ?? []).map(Number);
 }
