@@ -17,14 +17,17 @@ model User {
   elo          Int      @default(1000)
   storyLine    Int      @default(0)
 
+  twoFactorEnabled    Boolean  @default(false)
+
   sessions            PracticeSession[]
   topics              UserTopic[]
   userAchievements    UserAchievement[]
-  matches1            Match[]      @relation("player1")
-  matches2            Match[]      @relation("player2")
-  wonMatches          Match[]      @relation("winner")
-  sentFriendships     Friendship[] @relation("sent")
-  receivedFriendships Friendship[] @relation("received")
+  matches1            Match[]             @relation("player1")
+  matches2            Match[]             @relation("player2")
+  wonMatches          Match[]             @relation("winner")
+  sentFriendships     Friendship[]        @relation("sent")
+  receivedFriendships Friendship[]        @relation("received")
+  verificationCodes   VerificationCode[]
 }
 
 model Topic {
@@ -124,6 +127,18 @@ model Friendship {
   receiver   User     @relation("received", fields: [receiverId], references: [id])
 
   @@unique([senderId, receiverId])
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  userId    String
+  code      String
+  type      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Achievement {
