@@ -6,7 +6,14 @@ import { setSessionCookie } from "@/features/auth/session";
 const MIN_PASSWORD_LENGTH = 6;
 
 export async function POST(req: NextRequest) {
-  const { username, email, password } = await req.json();
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const { username, email, password } = body;
 
   if (!username || !email || !password) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });

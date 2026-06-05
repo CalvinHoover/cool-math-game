@@ -83,14 +83,14 @@ export default function ProfileContent({ realData }: ProfileContentProps) {
           {realData ? (
             <AchievementGrid achievements={realData.achievements} />
           ) : (
-            <p className="text-gray-600 dark:text-gray-300">Loading achievements...</p>
+            <p className="text-gray-600 dark:text-gray-300">No achievements unlocked yet.</p>
           )}
         </section>
 
         <section className="profile-section">
           <h2 className="text-xl font-bold">Friends</h2>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT FRIEND LIST HERE
+            Friends list coming soon.
           </p>
         </section>
       </div>
