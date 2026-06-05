@@ -35,17 +35,19 @@ export default function FriendSearch() {
               key={user.username}
               className="friends-search-card"
             >
-              {user.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
-                  alt={`${user.username}'s avatar`}
-                  className="friends-avatar"
-                />
-              ) : (
-                <div className="friends-avatar-placeholder">
-                  ?
-                </div>
-              )}
+              <div className="friends-avatar-frame">
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={`${user.username}'s avatar`}
+                    className="friends-avatar"
+                  />
+                ) : (
+                  <div className="friends-avatar-placeholder">
+                    ?
+                  </div>
+                )}
+              </div>
             
               <div>
                 <h3>@{user.username}</h3>

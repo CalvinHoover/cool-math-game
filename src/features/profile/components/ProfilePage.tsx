@@ -14,15 +14,9 @@ type ProfilePageProps = {
   }: ProfilePageProps) {
     return (
       <main className="space-y-6">
-        <ProfileHeader profile={profile} />
+        <ProfileHeader profile={profile} isOwnProfile={true} />
   
-        <ProfileStats
-          totalXp={profile.stats.xp}
-          globalLevel={profile.stats.level}
-          currentLevelXp={profile.stats.xp % 100}
-          nextLevelXp={100}
-          practiceSessionsCompleted={profile.stats.gamesCompleted}
-        />
+        <ProfileStats stats={profile.stats} />
   
         {profile.settings.showMatchHistory && (
           <MatchHistoryList matches={profile.matchHistory} />

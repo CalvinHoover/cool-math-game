@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import ProfileHeader from '@/features/profile/components/ProfileHeader';
 import { testUserProfiles } from '@/features/profile/testData';
@@ -9,16 +10,20 @@ import ProfileStats from '@/features/profile/components/ProfileStats';
 import MatchHistoryList from '@/features/profile/components/MatchHistory';
 import SettingsPanel from '@/features/profile/components/SettingsPanel';
 import FontSizeSelector from '@/features/profile/components/FontSizeSelector';
-import TopicProgress from '@/features/profile/components/TopicProgress';
+import EditProfile from '@/features/profile/components/EditProfile';
+import FriendsList from '@/features/friends/FriendsList';
 import type { ProfileData } from '@/features/profile/actions';
-import { AchievementGrid } from '@/features/achievements/components/AchievementGallery';
+import type { ProfileStats as ProfileStatsType } from '@/features/profile/types';
+import '@/app/friends/Friends.css';
 
 interface ProfileContentProps {
   realData: ProfileData | null;
 }
 
 export default function ProfileContent({ realData }: ProfileContentProps) {
+  const router = useRouter();
   const [profile, setProfile] = useState(testUserProfiles[0]);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const fontSizeClasses = {
     small: 'text-sm',
@@ -26,73 +31,111 @@ export default function ProfileContent({ realData }: ProfileContentProps) {
     large: 'text-lg',
   };
 
+  const displayProfile = {
+    id: profile.id,
+    username: realData?.username ?? profile.username,
+    avatarUrl: profile.avatarUrl,
+    bio: profile.bio,
+  };
+
+  const stats: ProfileStatsType = realData
+    ? {
+        level: realData.globalLevel,
+        xp: realData.totalXp,
+        gamesCompleted: realData.practiceSessionsCompleted,
+        recentWins: [],
+      }
+    : profile.stats;
+
+  const completedLevels = realData?.globalLevel ?? profile.level;
+
   return (
     <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
-      <div className="profile-inner">
-        <h1 className="profile-title">Player Profile</h1>
-        <ProfileHeader profile={realData ? { ...profile, username: realData.username } : profile} />
+      <div className="profile-topbar">
+        <h1 className="profile-title">PROFILE</h1>
+      </div>
 
-        {realData ? (
-          <ProfileStats
-            totalXp={realData.totalXp}
-            globalLevel={realData.globalLevel}
-            currentLevelXp={realData.currentLevelXp}
-            nextLevelXp={realData.nextLevelXp}
-            practiceSessionsCompleted={realData.practiceSessionsCompleted}
+      <div className="profile-layout">
+        <div className="profile-left-column">
+          <ProfileHeader
+            profile={displayProfile}
+            isOwnProfile={true}
+            onEditProfile={() => setIsEditingProfile(true)}
           />
-        ) : (
-          <ProfileStats
-            totalXp={profile.stats.xp}
-            globalLevel={profile.stats.level}
-            currentLevelXp={0}
-            nextLevelXp={100}
-            practiceSessionsCompleted={profile.stats.gamesCompleted}
-          />
-        )}
 
-        {realData && <TopicProgress topics={realData.topics} />}
+          {isEditingProfile && (
+            <>
+              <EditProfile
+                profile={{
+                  ...profile,
+                  username: realData?.username ?? profile.username,
+                  email: realData?.email ?? profile.email,
+                }}
+                onSave={(updatedProfile) => {
+                  setProfile(updatedProfile);
+                  setIsEditingProfile(false);
+                }}
+                onCancel={() => setIsEditingProfile(false)}
+              />
 
-        {profile.settings.showMatchHistory && (
-          <MatchHistoryList matches={[]} />
-        )}
+              <SettingsPanel
+                settings={profile.settings}
+                onChange={(updatedSettings) =>
+                  setProfile({
+                    ...profile,
+                    settings: updatedSettings,
+                  })
+                }
+              />
 
-        <SettingsPanel
-          settings={profile.settings}
-          onChange={(updatedSettings) =>
-            setProfile({
-              ...profile,
-              settings: updatedSettings,
-            })
-          }
-        />
-        <FontSizeSelector
-          fontSize={profile.settings.fontSize}
-          onChange={(newFontSize) =>
-            setProfile({
-              ...profile,
-              settings: {
-                ...profile.settings,
-                fontSize: newFontSize,
-              },
-            })
-          }
-        />
-
-        <section className="profile-section">
-          <h2 className="text-xl font-bold mb-4">Achievements</h2>
-          {realData ? (
-            <AchievementGrid achievements={realData.achievements} />
-          ) : (
-            <p className="text-gray-600 dark:text-gray-300">No achievements unlocked yet.</p>
+              <FontSizeSelector
+                fontSize={profile.settings.fontSize}
+                onChange={(newFontSize) =>
+                  setProfile({
+                    ...profile,
+                    settings: {
+                      ...profile.settings,
+                      fontSize: newFontSize,
+                    },
+                  })
+                }
+              />
+              <div className="profile-edit-controls">
+                <button
+                  className="profile-button profile-danger-button"
+                  onClick={() => setIsEditingProfile(false)}
+                >
+                  Cancel Edit
+                </button>
+              </div>
+            </>
           )}
-        </section>
 
-        <section className="profile-section">
-          <h2 className="text-xl font-bold">Friends</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            Friends list coming soon.
-          </p>
-        </section>
+          <section className="profile-section">
+            <h2>Friends</h2>
+            <FriendsList showTitle={false} />
+            <div className="profile-button-row">
+              <button
+                className="profile-button"
+                onClick={() => router.push('/friends')}
+              >
+                View Friends Page
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <div className="profile-right-column">
+          <div className="profile-level-box">
+            {displayProfile.username} has completed {completedLevels} levels!
+          </div>
+
+          <ProfileStats stats={stats} />
+
+          {profile.settings.showMatchHistory && (
+            <MatchHistoryList matches={profile.matchHistory} />
+          )}
+        </div>
       </div>
     </main>
   );

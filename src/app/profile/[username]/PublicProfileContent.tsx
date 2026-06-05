@@ -25,15 +25,9 @@ export default function PublicProfileContent({ profile }: PublicProfileContentPr
   return (
     <main className={`space-y-6 ${fontSizeClasses[localProfile.settings.fontSize]}`}>
       <div className="mx-auto max-w-4xl space-y-6">
-        <ProfileHeader profile={localProfile} />
+        <ProfileHeader profile={localProfile} isOwnProfile={false} />
 
-        <ProfileStats
-          totalXp={localProfile.stats.xp}
-          globalLevel={localProfile.stats.level}
-          currentLevelXp={localProfile.stats.xp % 100}
-          nextLevelXp={100}
-          practiceSessionsCompleted={localProfile.stats.gamesCompleted}
-        />
+        <ProfileStats stats={localProfile.stats} />
 
         {localProfile.settings.showMatchHistory && (
           <MatchHistoryList matches={[]} />

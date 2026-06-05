@@ -102,13 +102,26 @@
     align-items: center;
   }
   
-  .friends-avatar,
-  .friends-avatar-placeholder {
+  .friends-avatar-frame {
     width: 72px;
     height: 72px;
     border: 4px outset #cccccc;
-    object-fit: cover;
+    overflow: hidden;
     flex-shrink: 0;
+    background-color: #111111;
+  }
+
+  .friends-avatar,
+  .friends-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    flex-shrink: 0;
+  }
+
+  .friends-avatar {
+    object-fit: cover;
+    display: block;
   }
   
   .friends-avatar-placeholder {

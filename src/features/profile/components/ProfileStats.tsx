@@ -1,37 +1,32 @@
-import { Badge } from '@/components/ui/Badge';
-import { ProgressBar } from '@/components/ui/ProgressBar';
+import type { ProfileStats as ProfileStatsType } from "../types";
 
 type ProfileStatsProps = {
-  totalXp: number;
-  globalLevel: number;
-  currentLevelXp: number;
-  nextLevelXp: number;
-  practiceSessionsCompleted: number;
+  stats: ProfileStatsType;
 };
 
-export default function ProfileStats({
-  totalXp,
-  globalLevel,
-  currentLevelXp,
-  nextLevelXp,
-  practiceSessionsCompleted,
-}: ProfileStatsProps) {
+export default function ProfileStats({ stats }: ProfileStatsProps) {
   return (
-    <section className="border p-4 dark:border-gray-700">
-      <h2 className="mb-4 text-xl font-semibold dark:text-gray-100">Profile Stats</h2>
+    <section className="profile-section">
+      <h2>Profile Stats</h2>
 
-      <div className="grid grid-cols-3 gap-4 text-gray-900 dark:text-gray-100">
-        <Stat label="Level" value={globalLevel} badge={<Badge variant="info">Global</Badge>} />
-        <Stat label="Total XP" value={totalXp} />
-        <Stat label="Sessions" value={practiceSessionsCompleted} />
+      <div className="profile-stats-grid">
+        <Stat label="Level" value={stats.level} />
+        <Stat label="XP" value={stats.xp} />
+        <Stat label="Games Completed" value={stats.gamesCompleted} />
       </div>
 
-      <div className="mt-4">
-        <ProgressBar
-          value={currentLevelXp}
-          max={nextLevelXp}
-          label="Next level progress"
-        />
+      <div className="profile-subsection">
+        <h3>Recent Wins</h3>
+
+        {stats.recentWins.length === 0 ? (
+          <p>No recent wins yet.</p>
+        ) : (
+          <div className="profile-card-list">
+            {stats.recentWins.map((win) => (
+              <RecentWinCard key={win.gameId} win={win} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -40,17 +35,27 @@ export default function ProfileStats({
 type StatProps = {
   label: string;
   value: string | number;
-  badge?: React.ReactNode;
 };
 
-function Stat({ label, value, badge }: StatProps) {
+function Stat({ label, value }: StatProps) {
   return (
-    <div className="rounded-md bg-gray-100 p-3 dark:bg-gray-800">
-      <div className="flex items-center gap-2">
-        <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
-        {badge}
-      </div>
-      <p className="text-lg font-bold">{value}</p>
+    <div className="profile-card">
+      <p className="profile-label">{label}</p>
+      <p className="profile-value">{value}</p>
+    </div>
+  );
+}
+
+type RecentWinCardProps = {
+  win: ProfileStatsType["recentWins"][number];
+};
+
+function RecentWinCard({ win }: RecentWinCardProps) {
+  return (
+    <div className="profile-card">
+      <p className="profile-label">{win.topic}</p>
+      <p className="profile-value">Level {win.gameLevel}</p>
+      <p>{win.description}</p>
     </div>
   );
 }
