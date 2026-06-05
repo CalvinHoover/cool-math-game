@@ -137,3 +137,10 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Vercel
+.vercel
+
+# Playwright / E2E test output
+test-results/
+playwright-report/

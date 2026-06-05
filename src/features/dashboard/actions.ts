@@ -1,3 +1,5 @@
+// [GenAI Use] Prompt: "I need a server action that gathers dashboard data from multiple places. It should fetch the current user, total XP, global level, practice session count, recent activity with scores, and an achievement summary. Write it as one async function that returns everything the dashboard needs."
+// [GenAI Use] LLM Response Start
 'use server';
 
 import { prisma } from '@/lib/prisma';
@@ -141,3 +143,5 @@ export async function getAchievementSummary(): Promise<AchievementSummaryResult>
 
   return { ok: true, totalEarned, total, recentlyUnlocked };
 }
+// [GenAI Use] LLM Response End
+// [GenAI Use] Reflection: I realized the score percent calculation is duplicated between dashboard and practice. I should probably extract that later. For now it works.

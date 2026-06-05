@@ -51,15 +51,17 @@ model UserTopic {
 }
 
 model Question {
-  id         String   @id @default(uuid())
-  topicId    String
-  text       String
-  answer     String
-  hint       String?
-  difficulty Int      @default(1)
+  id           String   @id @default(uuid())
+  topicId      String
+  text         String
+  answer       String
+  hint         String?
+  explanation  String   @default("")
+  difficulty   Int      @default(1)
+  topic        Topic    @relation(fields: [topicId], references: [id])
+  sessions     SessionQuestion[]
 
-  topic      Topic             @relation(fields: [topicId], references: [id])
-  sessions   SessionQuestion[]
+  @@unique([topicId, text])
 }
 
 model PracticeSession {
@@ -68,6 +70,7 @@ model PracticeSession {
   startedAt   DateTime  @default(now())
   endedAt     DateTime?
   completed   Boolean   @default(false)
+  timeLimit   Int?
 
   user        User              @relation(fields: [userId], references: [id])
   questions   SessionQuestion[]

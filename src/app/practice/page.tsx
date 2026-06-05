@@ -1,73 +1,80 @@
-import Link from 'next/link';
 import PracticeBox from './PracticeBox';
-import BackButton from '@/components/interface/BackButton';
+import PracticeSetup from './PracticeSetup';
+import { Navbar } from '@/components/layout/Navbar';
+import { getSession } from '@/features/auth/session';
 import { bootstrapPracticeSession } from '@/features/practice/actions';
-import { prisma } from '@/lib/prisma';
 
-type PracticePageProps = {
-  searchParams?: Promise<{
-    topicId?: string | string[];
-    count?: string | string[];
-  }>;
+type SearchParams = {
+  topicId?: string | string[];
+  count?: string | string[];
+  timeLimit?: string | string[];
 };
 
 const ERROR_MESSAGES: Record<string, string> = {
-  unauthorized:    'Please log in to start a practice session.',
+  unauthorized: 'Please log in to start a practice session.',
   'invalid-topic': 'Choose a topic to start practice.',
-  'no-questions':  'No questions are available for this topic yet.',
+  'no-questions': 'No questions are available for this topic yet.',
 };
 
-export default async function PracticePage({ searchParams }: PracticePageProps) {
-  const params  = await searchParams;
+export default async function PracticePage({
+  searchParams,
+}: {
+  searchParams?: Promise<SearchParams>;
+}) {
+  const params = await searchParams;
+  const session = await getSession();
   const topicId = typeof params?.topicId === 'string' ? params.topicId : '';
-  const countValue =
-    typeof params?.count === 'string' ? Number.parseInt(params.count, 10) : undefined;
-  const count = Number.isFinite(countValue) ? countValue : undefined;
 
-  // ── No topic selected — show picker ───────────────────────────────────────
   if (!topicId) {
-  const topics = await prisma.topic.findMany({ orderBy: { name: 'asc' } });
-  return (
-    <main className="p-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mt-4 mb-6">Practice — Choose a Topic</h1>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {topics.map((topic) => (
-          <Link key={topic.id} href={`/practice?topicId=${topic.id}`}
-            style={{ padding: '0.75rem 1.25rem', border: '1px solid #444', borderRadius: '4px', color: '#fff', textTransform: 'capitalize', textDecoration: 'none' }}>
-            {topic.name}
-          </Link>
-        ))}
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-        <BackButton />
-      </div>
-    </main>
+    return (
+      <>
+        <Navbar username={session?.username ?? 'Guest'} />
+        <main className="p-8 max-w-2xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
+          <PracticeSetup />
+        </main>
+      </>
     );
   }
 
-  // ── Topic selected — bootstrap session ────────────────────────────────────
-  const result = await bootstrapPracticeSession({ topicId, count });
+  const countValue =
+    typeof params?.count === 'string'
+      ? Number.parseInt(params.count, 10)
+      : undefined;
+  const count = Number.isFinite(countValue) ? countValue : undefined;
+
+  const timeLimitValue =
+    typeof params?.timeLimit === 'string'
+      ? Number.parseInt(params.timeLimit, 10)
+      : undefined;
+  const timeLimit = Number.isFinite(timeLimitValue) ? timeLimitValue : undefined;
+
+  const result = await bootstrapPracticeSession({ topicId, count, timeLimit });
 
   if (!result.ok) {
     const message = ERROR_MESSAGES[result.error] ?? 'Unable to start practice session.';
     return (
-      <main className="p-8 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mt-4 mb-6">Practice Session</h1>
-        <p className="text-red-600">{message}</p>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-            <BackButton label="Back to Topics" href="/practice" />
-        </div>
-      </main>
+      <>
+        <Navbar username={session?.username ?? 'Guest'} />
+        <main className="p-8 max-w-2xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
+          <p className="text-red-600">{message}</p>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="p-8 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mt-4 mb-6">Practice Session</h1>
-        <PracticeBox sessionId={result.sessionId} initialQuestions={result.questions} />
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-            <BackButton label="Back to Topics" href="/practice" />
-        </div>
-    </main>
+    <>
+      <Navbar username={session?.username ?? 'Guest'} />
+      <main className="p-8 max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
+        <PracticeBox
+          sessionId={result.sessionId}
+          initialQuestions={result.questions}
+          timeLimit={result.timeLimit}
+        />
+      </main>
+    </>
   );
 }

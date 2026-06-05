@@ -1,0 +1,14 @@
+The following files contain AI usage (code and/or planning). Please see individual files for details.
+
+- src/features/achievements/engine.ts
+- src/features/achievements/definitions.ts
+- tests/achievements/engine.test.ts
+- src/features/practice/repository.ts
+- src/features/practice/actions.ts
+- tests/practiceActions.test.ts
+- src/features/questions/repository.ts
+- src/features/xp/leveling.ts
+- src/features/dashboard/actions.ts
+- src/components/providers/ThemeProvider.tsx
+- src/components/providers/ToastProvider.tsx
+- src/lib/utils.ts

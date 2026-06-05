@@ -244,8 +244,8 @@ sequenceDiagram
 
 ## Contributors
 
-- Carter handled sign up/login authentication and database schema.
-- Max built the profile page UI and friends system.
-- Aryan managed question seeding & generation, retrieval, friend search.
-- Calvin handled duels functionality and deployment as repository owner.
+- Carter handled authentication and database schema
+- Max built the profile page
+- Aryan managed question seeding and retrieval
+- Calvin handled deployment as repository owner
 - Practice mode, XP and leveling system, achievements, shared UI library, and infrastructure documentation
