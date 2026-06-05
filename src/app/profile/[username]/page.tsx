@@ -81,7 +81,6 @@ export default function ProfileUsernamePage() {
           </>
         ) : currentUsername && (
           <FriendRequestButton
-            username={username}
             status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
           />
         )}
@@ -127,15 +126,16 @@ export default function ProfileUsernamePage() {
 
           {!isOwnProfile && currentUsername && (
             <FriendRequestButton
-              username={username}
               status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
             />
           )}
 
+          {/*
           <section className="profile-section">
             <h2>Achievements</h2>
             <p>INSERT ACHIEVEMENTS HERE</p>
           </section>
+          */}
 
           <section className="profile-section">
             <h2>Friends</h2>
