@@ -1,12 +1,15 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import MatchHistoryList from "@/features/profile/components/MatchHistory";
 import { testUserProfiles } from "@/features/profile/testData";
 import type { PastMatch } from "@/features/profile/types";
 import BackButton from '@/components/interface/BackButton';
+import FriendsList from "@/features/friends/FriendsList";
+import "@/app/friends/Friends.css";
 import "../Profile.css";
 
 interface PublicProfilePageProps {
@@ -14,10 +17,10 @@ interface PublicProfilePageProps {
 }
 
 export default function PublicProfilePage({ params }: PublicProfilePageProps) {
+  const router = useRouter();
   const { username } = use(params);
 
   const foundProfile = testUserProfiles.find((p) => p.username === username);
-  const [profile] = useState(foundProfile);
   const [realMatches, setRealMatches] = useState<PastMatch[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
 
@@ -49,8 +52,9 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
     );
 }
 
+  const profile = foundProfile;
   const fontSizeClasses = { small: "text-sm", medium: "text-base", large: "text-lg" };
-  const matchesToShow = loadingMatches ? (profile?.matchHistory ?? []) : realMatches;
+  const matchesToShow = loadingMatches ? profile.matchHistory : realMatches;
 
   return (
     <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
@@ -66,7 +70,15 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
           </section>
           <section className="profile-section">
             <h2>Friends</h2>
-            <p>INSERT FRIEND LIST HERE</p>
+            <FriendsList showTitle={false} />
+            <div className="profile-button-row">
+              <button
+                className="profile-button"
+                onClick={() => router.push("/friends")}
+              >
+                View Friends Page
+              </button>
+            </div>
           </section>
         </div>
         <div className="profile-right-column">
