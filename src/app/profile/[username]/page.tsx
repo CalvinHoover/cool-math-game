@@ -105,27 +105,18 @@ export default function ProfileUsernamePage() {
   return (
     <main className={`space-y-6 ${fontSizeClasses[profile.settings.fontSize]}`}>
       <div className="mx-auto max-w-4xl space-y-6">
-        <ProfileHeader profile={profile} />
-
-        {/* Show Add Friend or Edit Profile based on ownership */}
-        {isOwnProfile ? (
-          <>
-            <button className="profile-button" onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </button>
-            {isEditing && (
-              <EditProfile
+        <ProfileHeader
+            profile={profile}
+            isOwnProfile={isOwnProfile}
+            onEditProfile={() => setIsEditing(true)}
+        />
+        
+        {isEditing && isOwnProfile && (
+            <EditProfile
                 profile={profile}
                 onSave={(updatedProfile) => { setProfile(updatedProfile); setIsEditing(false); }}
                 onCancel={() => setIsEditing(false)}
-              />
-            )}
-          </>
-        ) : currentUsername && (
-          <FriendRequestButton
-            username={username}
-            status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
-          />
+            />
         )}
 
         <ProfileStats stats={profile.stats} />

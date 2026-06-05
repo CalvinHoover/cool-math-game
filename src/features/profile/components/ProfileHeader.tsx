@@ -29,14 +29,14 @@ export default function ProfileHeader({
     );
   } else {
     profileAction = (
-      <FriendRequestButton
-        username={profile.username}
-        status={{
-          isFriend: false,
-          incomingRequest: false,
-          outgoingRequest: false,
-        }}
-      />
+        <FriendRequestButton
+            username={profile.username}
+            status={{
+                isFriend: false,
+                incomingRequest: false,
+                outgoingRequest: false,
+            }}
+        />
     );
   }
 
