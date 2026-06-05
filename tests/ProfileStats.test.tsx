@@ -3,34 +3,36 @@ import { describe, expect, it } from 'vitest';
 import ProfileStats from '../src/features/profile/components/ProfileStats';
 
 describe('ProfileStats', () => {
-  it('renders level, XP and sessions', () => {
+  it('renders level, XP and games completed', () => {
     render(
       <ProfileStats
-        totalXp={250}
-        globalLevel={3}
-        currentLevelXp={50}
-        nextLevelXp={100}
-        practiceSessionsCompleted={12}
+        stats={{
+          level: 3,
+          xp: 250,
+          gamesCompleted: 12,
+          recentWins: [],
+        }}
       />
     );
 
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('250')).toBeInTheDocument();
     expect(screen.getByText('12')).toBeInTheDocument();
-    expect(screen.getByText('Global')).toBeInTheDocument();
   });
 
-  it('renders progress bar', () => {
+  it('renders recent wins section', () => {
     render(
       <ProfileStats
-        totalXp={250}
-        globalLevel={3}
-        currentLevelXp={50}
-        nextLevelXp={100}
-        practiceSessionsCompleted={12}
+        stats={{
+          level: 3,
+          xp: 250,
+          gamesCompleted: 12,
+          recentWins: [],
+        }}
       />
     );
 
-    expect(screen.getByText('Next level progress')).toBeInTheDocument();
+    expect(screen.getByText('Recent Wins')).toBeInTheDocument();
+    expect(screen.getByText('No recent wins yet.')).toBeInTheDocument();
   });
 });

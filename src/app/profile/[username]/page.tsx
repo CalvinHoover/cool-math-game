@@ -48,7 +48,6 @@ export default function ProfileUsernamePage() {
       .finally(() => setLoadingMatches(false));
   }, [username]);
 
-  // ── Not in test data — real user fallback ──────────────────────────────────
   if (!profile) {
     return (
       <main className="p-6 text-white">
@@ -82,6 +81,7 @@ export default function ProfileUsernamePage() {
           </>
         ) : currentUsername && (
           <FriendRequestButton
+            username={username}
             status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
           />
         )}
@@ -99,7 +99,6 @@ export default function ProfileUsernamePage() {
     );
   }
 
-  // ── Test data profile — full retro layout ──────────────────────────────────
   const fontSizeClasses = { small: "text-sm", medium: "text-base", large: "text-lg" };
   const matchesToShow   = loadingMatches ? profile.matchHistory : realMatches;
 
@@ -127,6 +126,7 @@ export default function ProfileUsernamePage() {
 
           {!isOwnProfile && currentUsername && (
             <FriendRequestButton
+              username={username}
               status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
             />
           )}

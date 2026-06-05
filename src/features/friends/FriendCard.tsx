@@ -30,7 +30,7 @@ export default function FriendCard({ friend }: FriendCardProps) {
   
           {friend.profile.bio && <p>{friend.profile.bio}</p>}
   
-          <FriendRequestButton status={friend.status} />
+          <FriendRequestButton status={friend.status} username={friend.profile.username} />
         </div>
       </div>
     );
