@@ -1,3 +1,5 @@
+// [GenAI Use] Prompt: "I need a single place that defines all achievement badges with their colors and descriptions. Write a TypeScript file that exports an interface and a hardcoded array of 5 badges."
+// [GenAI Use] LLM Response Start
 export interface AchievementDefinition {
   slug: string;
   name: string;
@@ -44,3 +46,5 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     iconName: 'check-circle',
   },
 ];
+// [GenAI Use] LLM Response End
+// [GenAI Use] Reflection: I picked the Tailwind color classes myself. Keeping this array in one file means the engine and UI both stay in sync automatically.

@@ -10,13 +10,13 @@ import {getProfile, updateProfile} from "./api";
 
 export function useProfile() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     // manually refetch profile
     async function loadProfile() {
         try {
-            setLoading(true);
+            setIsLoading(true);
             setError(null);
 
             const fetchedProfile = await getProfile();
@@ -26,7 +26,7 @@ export function useProfile() {
             setError("Failed to load profile :[");
         }
         finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     }
 
@@ -51,6 +51,6 @@ export function useProfile() {
     }, []);
 
     return {
-        profile, loading, error, loadProfile, saveProfile,
+        profile, isLoading, error, loadProfile, saveProfile,
     };
 }

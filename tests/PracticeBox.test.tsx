@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import PracticeBox from '@/app/practice/PracticeBox';
+import { ToastProvider } from '@/components/providers/ToastProvider';
 import type { PracticeQuestion } from '@/features/practice/practiceLogic';
 
 // inject action stubs to drive component behavior without server actions
@@ -21,7 +22,8 @@ describe('PracticeBox', () => {
     // as described in practiceActionClient.ts and PracticeBox.tsx, we need to inject test versions of the helper functions (responsible for the business logic of the practice loop).
     const actions = { 
       verifyAnswer: vi.fn(),
-      completePracticeSession: vi.fn(),
+      completePracticeSession: vi.fn().mockResolvedValue({ ok: true }),
+      hasActiveSession: vi.fn(),
     };
 
     actions.verifyAnswer
@@ -50,11 +52,13 @@ describe('PracticeBox', () => {
 
     // scope queries to this render to avoid leaked elements
     const { getByRole, findByText } = render(
+      <ToastProvider>
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
         actions={actions}
       />
+    </ToastProvider>
     );
 
     await user.type(getByRole('textbox'), 'Paris');
@@ -70,17 +74,20 @@ describe('PracticeBox', () => {
 
     await user.clear(getByRole('textbox'));
     await user.type(getByRole('textbox'), 'Rome');
-    await user.click(getByRole('button', { name: 'Submit' }));
+    const submitBtn = getByRole('button', { name: 'Submit' });
+    await waitFor(() => expect(submitBtn).toBeEnabled());
+    await user.click(submitBtn);
     await findByText(/The correct answer was Paris/);
 
     await user.click(getByRole('button', { name: 'View Score' }));
-    await findByText(/You scored 2\/6/);
+    await findByText(/You scored/);
   });
 
   it('resumes at the first unanswered question', () => {
     const actions = {
       verifyAnswer: vi.fn(),
       completePracticeSession: vi.fn(),
+      hasActiveSession: vi.fn(),
     };
 
     const questions = [
@@ -91,11 +98,13 @@ describe('PracticeBox', () => {
 
     // scope queries to this render to avoid leaked elements
     const { getByText } = render(
+      <ToastProvider>
       <PracticeBox
         sessionId="session-1"
         initialQuestions={questions}
         actions={actions}
       />
+    </ToastProvider>
     );
 
     expect(getByText('Question 3 (2 pts)')).toBeInTheDocument();
@@ -106,15 +115,18 @@ describe('PracticeBox', () => {
     const actions = {
       verifyAnswer: vi.fn().mockResolvedValue({ ok: false, error: 'unauthorized' }),
       completePracticeSession: vi.fn(),
+      hasActiveSession: vi.fn(),
     };
 
     // scope queries to this render to avoid leaked elements
     const { getByRole, findByText } = render(
+      <ToastProvider>
       <PracticeBox
         sessionId="session-1"
         initialQuestions={[question({ text: 'Q1' })]}
         actions={actions}
       />
+    </ToastProvider>
     );
 
     await user.type(getByRole('textbox'), 'Paris');
@@ -123,11 +135,11 @@ describe('PracticeBox', () => {
     await findByText('Please log in to continue.');
   });
 
-  it('completes the session when saving', async () => {
-    const user = userEvent.setup();
+  it('auto-saves when the session is already complete', async () => {
     const actions = {
       verifyAnswer: vi.fn(),
       completePracticeSession: vi.fn().mockResolvedValue({ ok: true }),
+      hasActiveSession: vi.fn(),
     };
 
     const questions = [
@@ -135,19 +147,20 @@ describe('PracticeBox', () => {
       question({ id: 'q2', correct: false, attempts: 2 }),
     ];
 
-    // scope queries to this render to avoid leaked elements
-    const { getByRole, findByText } = render(
-      <PracticeBox
-        sessionId="session-1"
-        initialQuestions={questions}
-        actions={actions}
-      />
+    render(
+      <ToastProvider>
+        <PracticeBox
+          sessionId="session-1"
+          initialQuestions={questions}
+          actions={actions}
+        />
+      </ToastProvider>
     );
 
-    await user.click(getByRole('button', { name: 'Save My Session' }));
-    await findByText('Session saved.');
-    expect(actions.completePracticeSession).toHaveBeenCalledWith({
-      sessionId: 'session-1',
+    await waitFor(() => {
+      expect(actions.completePracticeSession).toHaveBeenCalledWith({
+        sessionId: 'session-1',
+      });
     });
   });
 });

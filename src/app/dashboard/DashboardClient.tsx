@@ -42,13 +42,13 @@ export default function DashboardClient({ username, stats, activity, achievement
       {stats && <DashboardStats {...stats} />}
 
       <div className="button-group">
-        <MenuButton label="Profile" className="btn-profile" onClick={() => router.push(`/profile/${username}`)} />
-        <MenuButton label="Friends" className="btn-settings" onClick={() => router.push('/friends')} />
-        <MenuButton label="Practice" className="btn-practice" onClick={() => router.push('/practice')} />
-        <MenuButton label="Multiplayer" className="btn-multiplayer" onClick={() => router.push('/duel')} />
-        <MenuButton label="Leaderboard" className="btn-leaderboard" onClick={() => router.push('/leaderboard')} />
-        <MenuButton label="Settings" className="btn-settings" onClick={() => router.push('/settings')} />
-        <MenuButton label="Logout" className="btn-logout" onClick={handleLogout} />
+        <MenuButton label="Profile" className="retro-button btn-profile" onClick={() => router.push('/profile')} />
+        <MenuButton label="Practice" className="retro-button btn-practice" onClick={() => router.push('/practice')} />
+        <MenuButton label="Friends" className="retro-button btn-multiplayer" onClick={() => router.push('/friends')} />
+        <MenuButton label="Multiplayer" className="retro-button btn-multiplayer" disabled onClick={() => alert('Coming soon!')} />
+        <MenuButton label="Leaderboard" className="retro-button btn-leaderboard" onClick={() => router.push('/leaderboard')} />
+        <MenuButton label="Settings" className="retro-button btn-settings" onClick={() => router.push('/settings')} />
+        <MenuButton label="Logout" className="retro-button btn-logout" onClick={handleLogout} />
       </div>
 
       {achievements && (
