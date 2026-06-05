@@ -81,52 +81,27 @@ export async function getFriendRequests(): Promise<FriendRequest[]> {
 
 // search function for users
 export async function searchUsers(query: string): Promise<PublicProfile[]> {
-  const normalizedQuery = query.toLowerCase().trim();
-  if (!normalizedQuery) {
-    return [];
-  }
-  return testUsers.filter((user) =>
-    user.username.toLowerCase().includes(normalizedQuery)
-  );
+  if (!query.trim()) return [];
+  const res = await fetch(`/api/friends/search?q=${encodeURIComponent(query)}`);
+  if (!res.ok) return [];
+  const users = await res.json();
+  return users.map((u: { id: string; username: string }) => ({
+    id: u.id,
+    username: u.username,
+    level: 0,
+  }));
 }
 
-export async function sendFriendRequest(username: string): Promise<FriendRequest> {
-  const user = testUsers.find((user) => user.username === username);
-  if (!user) {
-    throw new Error ("User not found.");
+export async function sendFriendRequest(username: string): Promise<void> {
+  const res = await fetch('/api/friends/request', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
+  });
+  if (!res.ok) {
+    const { error } = await res.json();
+    throw new Error(error ?? 'Failed to send friend request');
   }
-
-  const newRequest: FriendRequest = {
-    id: `request-${testRequests.length + 1}`,
-    fromUser: {
-      id: "pleasepleaseplease",
-      username: "HopefulFriend242",
-      avatarUrl: "/default_friend.png",
-      level: 100,
-      bio: "please can i be your friend" 
-    },
-    toUser: user,
-    status: "pending",
-    createdAt: new Date().toISOString(),
-  };
-
-  testRequests.push(newRequest);
-  return newRequest;
-
-  // const response = await fetch("/api/friends/requests", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({ userId }),
-  // });
-
-  // if (!response.ok) {
-  //   throw new Error("Failed to send friend request :[");
-  // }
-
-  // const data = await response.json();
-  // return data.request;
 }
 
 export async function acceptFriendRequest(requestId: string): Promise<Friend> {
