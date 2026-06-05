@@ -1,107 +1,98 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import MatchHistoryList from "@/features/profile/components/MatchHistory";
+import EditProfile from "@/features/profile/components/EditProfile";
+import SettingsPanel from "@/features/profile/components/SettingsPanel";
+import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
 import { testUserProfiles } from "@/features/profile/testData";
 import type { PastMatch } from "@/features/profile/types";
-import BackButton from '@/components/interface/BackButton';
-import "../Profile.css";
-import FriendRequestButton from '@/features/friends/FriendRequestButton';
 
-interface PublicProfilePageProps {
-  params: Promise<{ username: string }>;
-}
+export default function ProfileUsernamePage() {
+  const params  = useParams<{ username: string }>();
+  const username = params.username;
 
-export default function PublicProfilePage({ params }: PublicProfilePageProps) {
-  const { username } = use(params);
-  const router = useRouter();
+  const foundProfile = testUserProfiles.find((u) => u.username === username);
 
-  const foundProfile = testUserProfiles.find((p) => p.username === username);
-  const [profile] = useState(foundProfile);
+  const [profile,     setProfile]     = useState(foundProfile);
   const [realMatches, setRealMatches] = useState<PastMatch[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
-  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch('/api/auth/me')
-        .then(res => res.json())
-        .then(data => setCurrentUsername(data.username))
-        .catch(() => {});
-    }, []);
-
+  // Fetch real match history from the database
   useEffect(() => {
     fetch(`/api/profile/${username}/matches`)
       .then((res) => res.json())
-      .then((data: PastMatch[]) => {
-        if (Array.isArray(data)) setRealMatches(data);
-        })
+      .then((data: PastMatch[]) => setRealMatches(data))
       .catch(console.error)
       .finally(() => setLoadingMatches(false));
   }, [username]);
 
-  if (!foundProfile) {
+  if (!profile) {
+    return (
+      <main className="p-6 text-white">
+        <p>User not found.</p>
+      </main>
+    );
+  }
+
+  const fontSizeClasses = {
+    small:  "text-sm",
+    medium: "text-base",
+    large:  "text-lg",
+  };
+
+  const matchesToShow = loadingMatches ? profile.matchHistory : realMatches;
+
   return (
-    <main className="p-6 text-white">
+    <main className={`space-y-6 ${fontSizeClasses[profile.settings.fontSize]}`}>
       <div className="mx-auto max-w-4xl space-y-6">
-        <h1 className="text-2xl font-bold">{username}</h1>
-        {currentUsername === username ? (
-            <button className="profile-button" onClick={() => router.push('/settings')}>
-                Edit Profile
-            </button>
-        ) : currentUsername && (
-            <FriendRequestButton
-                username={username}
-                status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
-            />
+        <ProfileHeader profile={profile} />
+
+        <ProfileStats stats={profile.stats} />
+
+        {profile.settings.showMatchHistory && (
+          <MatchHistoryList matches={matchesToShow} />
         )}
-        {loadingMatches
-          ? <p>Loading match history...</p>
-          : realMatches.length === 0
-            ? <p>No matches played yet.</p>
-            : <MatchHistoryList matches={realMatches} />}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-          <BackButton />
-        </div>
-      </div>
-    </main>
-  );
-}
 
-  const fontSizeClasses = { small: "text-sm", medium: "text-base", large: "text-lg" };
-  const matchesToShow = loadingMatches ? (profile?.matchHistory ?? []) : realMatches;
+        <EditProfile
+          profile={profile}
+          onSave={(updatedProfile) => setProfile(updatedProfile)}
+        />
 
-  return (
-    <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
-      <div className="profile-topbar">
-        <h1 className="profile-title">PROFILE</h1>
-      </div>
-      <div className="profile-layout">
-        <div className="profile-left-column">
-          <ProfileHeader profile={profile} isOwnProfile={currentUsername === profile.username} />
-          <section className="profile-section">
-            <h2>Achievements</h2>
-            <p>INSERT ACHIEVEMENTS HERE</p>
-          </section>
-          <section className="profile-section">
-            <h2>Friends</h2>
-            <p>INSERT FRIEND LIST HERE</p>
-          </section>
-        </div>
-        <div className="profile-right-column">
-          <div className="profile-level-box">
-            {profile.username} has completed {profile.level} levels!
-          </div>
-          <ProfileStats stats={profile.stats} />
-          {profile.settings.showMatchHistory && (
-            <MatchHistoryList matches={matchesToShow} />
-          )}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-            <BackButton />
-          </div>
-        </div>
+        <SettingsPanel
+          settings={profile.settings}
+          onChange={(updatedSettings) =>
+            setProfile({ ...profile, settings: updatedSettings })
+          }
+        />
+
+        <FontSizeSelector
+          fontSize={profile.settings.fontSize}
+          onChange={(newFontSize) =>
+            setProfile({
+              ...profile,
+              settings: { ...profile.settings, fontSize: newFontSize },
+            })
+          }
+        />
+
+        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+          <h2 className="text-xl font-bold">Achievements</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
+            INSERT ACHIEVEMENTS HERE
+          </p>
+        </section>
+
+        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+          <h2 className="text-xl font-bold">Friends</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
+            INSERT FRIEND LIST HERE
+          </p>
+        </section>
       </div>
     </main>
   );
