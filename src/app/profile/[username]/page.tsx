@@ -8,6 +8,7 @@ import { testUserProfiles } from "@/features/profile/testData";
 import type { PastMatch } from "@/features/profile/types";
 import BackButton from '@/components/interface/BackButton';
 import "../Profile.css";
+import FriendRequestButton from '@/features/friends/FriendRequestButton';
 
 interface PublicProfilePageProps {
   params: Promise<{ username: string }>;
@@ -32,21 +33,25 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
   }, [username]);
 
   if (!foundProfile) {
-    return (
-        <main className="p-6 text-white">
-            <div className="mx-auto max-w-4xl space-y-6">
-                <h1 className="text-2xl font-bold">{username}</h1>
-                {loadingMatches
-                    ? <p>Loading match history...</p>
-                    : realMatches.length === 0
-                        ? <p>No matches played yet.</p>
-                        : <MatchHistoryList matches={realMatches} />}
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-                    <BackButton />
-                </div>
-            </div>
-        </main>
-    );
+  return (
+    <main className="p-6 text-white">
+      <div className="mx-auto max-w-4xl space-y-6">
+        <h1 className="text-2xl font-bold">{username}</h1>
+        <FriendRequestButton
+          username={username}
+          status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
+        />
+        {loadingMatches
+          ? <p>Loading match history...</p>
+          : realMatches.length === 0
+            ? <p>No matches played yet.</p>
+            : <MatchHistoryList matches={realMatches} />}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+          <BackButton />
+        </div>
+      </div>
+    </main>
+  );
 }
 
   const fontSizeClasses = { small: "text-sm", medium: "text-base", large: "text-lg" };
