@@ -1,137 +1,251 @@
-# Project description:
+# Cool Math Game
 
-High-school level math education game for students. For the basic version of our app, we just have single-player practice sessions, while for the future, we look to host real-time multiplayer matches. There will also be a hidden storyline feature for dedicated players.
+A high-school level math education web application built with Next.js 16 App Router, Prisma ORM, PostgreSQL, and Tailwind CSS. Players complete single-player practice sessions across math topics, earn XP, unlock achievement badges, and track progress through a personal dashboard and profile page.
 
-## Possible Frameworks to use:
-- Client: React
-- Server: Node.js and Express
-- Database: PostgreSQL （Relational DBMS makes tracking friend relationships easier.)
+## Tech Stack
 
----
-## Basic components: Signup and login, Main page, Practice page. 
-- Practice page presents the user with one question at a time, five or so questions total per session. Once the player types their answer into the field and submits, they get feedback and the chance to move on to the next question. 
-- The main page displays their progress and their friends' progress.
+- **Framework**. Next.js 16 with App Router and Server Actions
+- **Frontend**. React 19, Tailwind CSS 4, KaTeX for math rendering
+- **Backend**. Next.js Server Actions and API Routes, JWT cookie sessions
+- **Database**. PostgreSQL via Prisma ORM (local Docker or Supabase)
+- **Testing**. Vitest for unit and component tests, Playwright for end-to-end tests
 
-## Design Points:
-- Before we start coding, agree on the exact properties of the JSON objects.
-	- HTTP payloads: #TODO:
-        - AccountSignUp
-        - AccountLogin
-        - MathQuestion
-        - MathResponse
-        - MathFeedback
-	- Database entities: 
-		- User (core identity data: ID, username, hashed password and lifetime score), 
-		- Friendship (user_id_1, user_id_2, status: pending or accepted)
-		- PracticeSession (user_id, session_id, score, timestamp, status: active or done)
-		- AnswerAttempt (user_id, session_id, question_id, attemptedAnswer, feedback)
-		- [Later] StoryProgress (user_id, unlocked_chapter, ...)
-We should agree on these in order to avoid costly changes down the road.
+## Prerequisites
 
-- Decoupled design inside the server: Game Logic and Transport Layer should be separate. Game logic are pure JS functions and includes things like `validateAnswer()`, `calculateScore()` and `retrieveNextQuestion()`. Transport Layer involves an object that receives HTTP requests, passes them to the Game Logic and sends HTTP responses back. The Transport Layer for Phase 1 will simply be done in Express, but from Phase 2 onwards, we will also need a WebSocket Transport Layer to keep open a two-way connection for real-time PvP matches.
+- Node.js and npm
+- Docker Desktop (for local PostgreSQL)
+- A Supabase account (optional, for shared cloud database)
 
-- How should React remember things across different pages? Eg. User information from the login page to the main page to the practice page. We can use the React Context API.
+## Environment Setup
 
-## Accompanying UML Diagrams:
-- Decoupled Server Structure:
-```mermaid
-flowchart TD
-    Client["Client Application\n(React)"]
-    
-    subgraph Backend["Backend Server (Node.js)"]
-        direction TB
-        Transport["Transport Layer\n(Express HTTP Router)"]
-        Logic["Game Logic Module\n(Pure JS/TS)"]
-    end
-    
-    DB[("Data Access Layer\n(PostgreSQL)")]
-    
-    Client <-->|"HTTP Requests / Responses\n(e.g., POST /submit-answer)"| Transport
-    Transport <-->|"Function Calls & JS Objects\n(e.g., validateAnswer())"| Logic
-    Logic <-->|"SQL Queries & Data\n(via pg or ORM)"| DB
+1. Copy `.env.example` to `.env.local`
+2. Fill in the required variables
+   - `DATABASE_URL` for Prisma queries
+   - `DIRECT_URL` for migrations and seeding
+   - `JWT_SECRET` for signing session tokens
 
-    %% Styling to visually separate the layers
-    style Client fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
-    style Transport fill:#f39c12,stroke:#333,stroke-width:2px,color:#fff
-    style Logic fill:#2ecc71,stroke:#333,stroke-width:2px,color:#fff
-    style DB fill:#3498db,stroke:#333,stroke-width:2px,color:#fff
+The `.env.local` file can hold both local and Supabase connection strings. Comment out the block you are not using.
+
+## Running with Local PostgreSQL
+
+For local development and testing without hitting a live cloud database.
+
+1. Start the local database
+   ```bash
+   bash scripts/start-local-db.sh
+   ```
+   This starts a PostgreSQL 16 container via Docker Compose and pushes the Prisma schema.
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Generate the Prisma client
+   ```bash
+   npx prisma generate
+   ```
+
+4. Seed the database with questions and achievements
+   ```bash
+   npx tsx prisma/seed/run.ts
+   ```
+
+5. Start the development server
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000` in your browser.
+
+6. Stop the local database when finished
+   ```bash
+   bash scripts/stop-local-db.sh
+   ```
+
+### Viewing the database
+
+To browse tables with a visual GUI, run Prisma Studio.
+```bash
+export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/coolmathgame?schema=public"
+export DIRECT_URL="postgresql://postgres:postgres@localhost:5432/coolmathgame?schema=public"
+npx prisma studio
 ```
-- Answering a question:
+Open `http://localhost:5555`.
+
+## Running with Supabase
+
+For shared development or production-like testing.
+
+1. In `.env.local`, uncomment the Supabase connection strings and comment out the local ones.
+
+2. Apply migrations manually via the Supabase SQL Editor. The free-tier Supabase pooler does not support PostgreSQL advisory locks, so `npx prisma migrate deploy` will time out. Generate migrations locally against your Docker database, then copy the generated SQL into the Supabase SQL Editor and run it.
+
+3. Export the Supabase URLs and seed the database.
+   ```bash
+   export DATABASE_URL="your-supabase-pooler-url"
+   export DIRECT_URL="your-supabase-direct-url"
+   npx tsx prisma/seed/run.ts
+   ```
+
+4. Start the development server.
+   ```bash
+   npm run dev
+   ```
+
+For full deployment instructions with Vercel CLI, see `DEV.md`.
+
+## Testing
+
+Run the unit and component test suite with Vitest.
+```bash
+npm test
+```
+
+Run end-to-end tests with Playwright. The dev server must be running first.
+```bash
+npm run test:e2e
+```
+
+## UML Diagrams
+
+### Auth Login (Sequence Diagram)
+
 ```mermaid
 sequenceDiagram
-    participant C as Client (React)
-    participant T as Transport Layer (Express)
-    participant G as Game Logic (JS)
-    participant D as Database (PostgreSQL)
+    participant U as User
+    participant LP as LoginPage
+    participant AR as APIRoute
+    participant AD as AuthDBAccess
+    participant P as PrismaClient
+    participant DB as PostgreSQL
 
-    C->>T: POST /api/answer {session_id, question_id, answer}
-    T->>G: processAnswer(session_id, question_id, answer)
-    G->>G: Evaluate attempted answer
-    
-    alt Answer is Correct
-        G->>D: INSERT into AnswerAttempt & UPDATE PracticeSession score
-        D-->>G: Confirm write success
-        G-->>T: Return {success: true, isCorrect: true, newScore: 10}
-        T-->>C: HTTP 200 OK (JSON Payload)
-        C->>C: Update UI (Show success, render next question)
-    else Answer is Incorrect
-        G->>D: INSERT into AnswerAttempt (Track mistake)
-        D-->>G: Confirm write success
-        G-->>T: Return {success: true, isCorrect: false, feedback: "Check your signs!"}
-        T-->>C: HTTP 200 OK (JSON Payload)
-        C->>C: Update UI (Show feedback, allow retry)
-    end
+    U->>LP: Enter email and password
+    LP->>AR: POST /api/auth/login
+    AR->>AD: findUserByEmail
+    AD->>P: user.findUnique
+    P->>DB: SELECT query
+    DB-->>P: User row
+    P-->>AD: User object
+    AD-->>AR: User object
+    AR->>AR: bcrypt.compare
+    AR->>AR: signToken
+    AR->>AR: setSessionCookie
+    AR-->>LP: HTTP 200 OK
+    LP-->>U: Redirect to dashboard
 ```
 
-- ERD for Database Entities
+### User Profile (Entity Relation Diagram)
+
 ```mermaid
 erDiagram
     USER {
-        int user_id PK
+        string id PK
         string username
-        string avatar
-        string hashed_password
-        int lifetime_score
+        string email
+        string password
+        int elo
+        datetime createdAt
+        datetime updatedAt
     }
 
-    PRACTICE_SESSION {
-        int session_id PK
-        int user_id FK
+    TOPIC {
+        string id PK
+        string name
+        string description
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    USERTOPIC {
+        string id PK
+        string userId FK
+        string topicId FK
+        int xp
+        int level
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    PRACTICESESSION {
+        string id PK
+        string userId FK
+        string topicId FK
+        boolean completed
         int score
-        datetime timestamp
-        string status
+        int timeLimit
+        datetime createdAt
+        datetime updatedAt
     }
 
-    ANSWER_ATTEMPT {
-        int attempt_id PK
-        int session_id FK
-        int user_id FK
-        int question_id
-        string attempted_answer
-        string feedback
+    ACHIEVEMENT {
+        string id PK
+        string slug UK
+        string name
+        string description
+        string color
+        string iconName
+        datetime createdAt
     }
 
-    %% Relationships
-    USER ||--o{ PRACTICE_SESSION : "has"
-    USER ||--o{ ANSWER_ATTEMPT : "makes (denormalized for speed)"
-    PRACTICE_SESSION ||--o{ ANSWER_ATTEMPT : "contains"
+    USERACHIEVEMENT {
+        string id PK
+        string userId FK
+        string achievementId FK
+        datetime earnedAt
+    }
+
+    USER ||--o{ USERTOPIC : "tracks progress in"
+    TOPIC ||--o{ USERTOPIC : "measured by"
+    USER ||--o{ PRACTICESESSION : "completes"
+    TOPIC ||--o{ PRACTICESESSION : "contains questions for"
+    USER ||--o{ USERACHIEVEMENT : "earns"
+    ACHIEVEMENT ||--o{ USERACHIEVEMENT : "awarded to"
 ```
 
----
-## App Architecture:
-- Client: Handles the user interface, renders the math questions, captures input, and displays the progress dashboard. It should NEVER hold the answers to the questions; it should only send the user's input to the server.
-- Server: It acts as the source of truth, handling user authentication, verifying submitted answers, calculating progress and manages friend connections.
-- Database: To track account logins across devices, identifying friends, tracking player milestones and elo rankings for matchmaking.
+### Practice Feature (Sequence Diagram)
 
-## Three layers of testing:
-- Unit Testing (Jest or Vitest): Test backend functions in isolation, eg. verifying that 1/2, 0.5, and 2/4 are all valid answers to a question.
-- Component Testing (React Testing Library): Frontend testing. Eg. when the "Submit" button is clicked, the loading spinner appears, and the feedback message renders correctly based on the server's response.
-- End-to-End Testing (Cypress or Playwright): Automated simulation of a user. Programmatically open a browser, log in, add a friend, complete a 5-question practice session, and verify that the progress bar updated on the main page.
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant PS as PracticeSetup
+    participant SA as Server Actions
+    participant QA as QuestionDBAccess
+    participant PA as PracticeDBAccess
+    participant PB as PracticeBox
+    participant PL as practiceLogic
+    participant XL as XPLeveling
+    participant AE as AchievementEngine
 
----
+    U->>PS: Select topic and count
+    PS->>SA: bootstrapPracticeSession
+    SA->>QA: findQuestions
+    QA-->>SA: Question list
+    SA->>PA: createSession
+    PA-->>SA: Session record
+    SA-->>PS: Session ID and questions
+    PS-->>U: Render PracticeBox
+    U->>PB: Submit answer
+    PB->>SA: verifyAnswer
+    SA->>PA: updateSessionQuestion
+    PA-->>SA: Updated attempts
+    SA-->>PB: Correct or incorrect
+    PB-->>U: Show feedback
+    U->>PB: Finish session
+    PB->>SA: completePracticeSession
+    SA->>PL: getEarnedPoints
+    PL-->>SA: Score total
+    SA->>XL: getLevel
+    XL-->>SA: Level info
+    SA->>AE: checkAndAwardAchievements
+    AE-->>SA: New badges
+    SA-->>PB: XP earned and achievements
+    PB-->>U: Show summary and toasts
+```
 
-## End-to-end testing ideas:
-- Client: React app on a local development server (at http://localhost:5173).
-- Server: Express app runs via Node.js in terminal (at http://localhost:5000).
-- Database: PostgreSQL runs securely in the background (on port 5432).
+## Contributors
 
+- Carter handled authentication and database schema
+- Max built the profile page
+- Aryan managed question seeding and retrieval
+- Calvin handled deployment as repository owner
+- Practice mode, XP and leveling system, achievements, shared UI library, and infrastructure documentation
