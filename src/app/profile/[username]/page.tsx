@@ -22,7 +22,6 @@ export default function ProfileUsernamePage() {
   const [realMatches, setRealMatches] = useState<PastMatch[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
 
-  // Fetch real match history from the database
   useEffect(() => {
     fetch(`/api/profile/${username}/matches`)
       .then((res) => res.json())
