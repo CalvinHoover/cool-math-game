@@ -24,6 +24,11 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      DATABASE_URL: process.env.DATABASE_URL!,
+      DIRECT_URL: process.env.DIRECT_URL!,
+      JWT_SECRET: process.env.JWT_SECRET!,
+    },
   },
   globalSetup: require.resolve('./tests/e2e/global-setup.ts'),
   globalTeardown: require.resolve('./tests/e2e/global-teardown.ts'),
