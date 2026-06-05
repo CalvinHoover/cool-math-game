@@ -81,13 +81,15 @@ export async function getFriendRequests(): Promise<FriendRequest[]> {
 
 // search function for users
 export async function searchUsers(query: string): Promise<PublicProfile[]> {
-  const normalizedQuery = query.toLowerCase().trim();
-  if (!normalizedQuery) {
-    return [];
-  }
-  return testUsers.filter((user) =>
-    user.username.toLowerCase().includes(normalizedQuery)
-  );
+  if (!query.trim()) return [];
+  const res = await fetch(`/api/friends/search?q=${encodeURIComponent(query)}`);
+  if (!res.ok) return [];
+  const users = await res.json();
+  return users.map((u: { id: string; username: string }) => ({
+    id: u.id,
+    username: u.username,
+    level: 0,
+  }));
 }
 
 export async function sendFriendRequest(username: string): Promise<void> {
