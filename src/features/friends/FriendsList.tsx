@@ -6,7 +6,11 @@ import {getFriends} from "./api";
 import type { Friend } from "./types";
 import FriendCard from "./FriendCard";
 
-export default function FriendsList() {
+type FriendsListProps = {
+    showTitle?: boolean;
+};
+
+export default function FriendsList({ showTitle = true }: FriendsListProps) {
     const [friends, setFriends] = useState<Friend[]>([]);
     useEffect(() => {
         async function loadFriends() {
@@ -18,7 +22,7 @@ export default function FriendsList() {
 
     return (
         <div>
-            <h1> Friends </h1>
+            {showTitle && <h1> Friends </h1>}
             {friends.map((friend) => (
                 <FriendCard
                     key={friend.profile.username}
