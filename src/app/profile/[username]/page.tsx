@@ -15,6 +15,7 @@ import FriendsList from "@/features/friends/FriendsList";
 import BackButton from '@/components/interface/BackButton';
 import { testUserProfiles } from "@/features/profile/testData";
 import type { PastMatch } from "@/features/profile/types";
+import "@/app/friends/Friends.css";
 import "../Profile.css";
 
 export default function ProfileUsernamePage() {

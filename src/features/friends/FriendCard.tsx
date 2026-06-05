@@ -12,15 +12,17 @@ interface FriendCardProps {
 export default function FriendCard({ friend }: FriendCardProps) {
     return (
       <div className="friends-card">
-        {friend.profile.avatarUrl ? (
-          <img
-            src={friend.profile.avatarUrl}
-            alt={`${friend.profile.username}'s avatar`}
-            className="friends-avatar"
-          />
-        ) : (
-          <div className="friends-avatar-placeholder">?</div>
-        )}
+        <div className="friends-avatar-frame">
+          {friend.profile.avatarUrl ? (
+            <img
+              src={friend.profile.avatarUrl}
+              alt={`${friend.profile.username}'s avatar`}
+              className="friends-avatar"
+            />
+          ) : (
+            <div className="friends-avatar-placeholder">?</div>
+          )}
+        </div>
   
         <div>
           <h3>@{friend.profile.username}</h3>

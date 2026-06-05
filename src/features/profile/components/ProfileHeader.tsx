@@ -42,16 +42,18 @@ export default function ProfileHeader({
 
   return (
     <section className="profile-section">
-      <div className="profile-left-column">
-        {profile.avatarUrl ? (
-          <img
-            src={profile.avatarUrl}
-            alt={`${profile.username}'s avatar`}
-            className="profile-avatar-large"
-          />
-        ) : (
-          <div className="profile-avatar-placeholder-large">?</div>
-        )}
+      <div className="profile-header-content">
+        <div className="profile-avatar-frame">
+          {profile.avatarUrl ? (
+            <img
+              src={profile.avatarUrl}
+              alt={`${profile.username}'s avatar`}
+              className="profile-avatar-large"
+            />
+          ) : (
+            <div className="profile-avatar-placeholder-large">?</div>
+          )}
+        </div>
 
         <h2 className="profile-username">@{profile.username}</h2>
 
