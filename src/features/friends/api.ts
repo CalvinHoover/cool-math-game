@@ -90,43 +90,16 @@ export async function searchUsers(query: string): Promise<PublicProfile[]> {
   );
 }
 
-export async function sendFriendRequest(username: string): Promise<FriendRequest> {
-  const user = testUsers.find((user) => user.username === username);
-  if (!user) {
-    throw new Error ("User not found.");
+export async function sendFriendRequest(username: string): Promise<void> {
+  const res = await fetch('/api/friends/request', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
+  });
+  if (!res.ok) {
+    const { error } = await res.json();
+    throw new Error(error ?? 'Failed to send friend request');
   }
-
-  const newRequest: FriendRequest = {
-    id: `request-${testRequests.length + 1}`,
-    fromUser: {
-      id: "pleasepleaseplease",
-      username: "HopefulFriend242",
-      avatarUrl: "/default_friend.png",
-      level: 100,
-      bio: "please can i be your friend" 
-    },
-    toUser: user,
-    status: "pending",
-    createdAt: new Date().toISOString(),
-  };
-
-  testRequests.push(newRequest);
-  return newRequest;
-
-  // const response = await fetch("/api/friends/requests", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({ userId }),
-  // });
-
-  // if (!response.ok) {
-  //   throw new Error("Failed to send friend request :[");
-  // }
-
-  // const data = await response.json();
-  // return data.request;
 }
 
 export async function acceptFriendRequest(requestId: string): Promise<Friend> {
