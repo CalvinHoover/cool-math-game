@@ -62,6 +62,10 @@
   background-color: #00CC00;
 }
 
+.btn-friends {
+  background-color: cyan; 
+}
+
 .btn-multiplayer {
   background-color: #FF00FF; 
   color: #FFFFFF;
