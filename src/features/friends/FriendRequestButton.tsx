@@ -1,6 +1,5 @@
 // toggle button for friend requesting!
 "use client";
-
 import { useState } from "react";
 import { FriendStatus } from "./types";
 import { sendFriendRequest } from "./api";
@@ -17,8 +16,13 @@ export default function FriendRequestButton({ status, username }: FriendRequestB
     try {
       await sendFriendRequest(username);
       setCurrentStatus({ isFriend: false, incomingRequest: false, outgoingRequest: true });
-    } catch {
-      alert('Could not send friend request.');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : '';
+      if (msg === 'Request already sent') {
+        setCurrentStatus({ isFriend: false, incomingRequest: false, outgoingRequest: true });
+      } else {
+        alert('Could not send friend request.');
+      }
     }
   }
 
@@ -30,6 +34,5 @@ export default function FriendRequestButton({ status, username }: FriendRequestB
     </div>
   );
   if (currentStatus.outgoingRequest) return <button className="friends-button">Request Sent!</button>;
-
   return <button className="friends-button profile-button" onClick={handleAddFriend}>Add Friend</button>;
 }
