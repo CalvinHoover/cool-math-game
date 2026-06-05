@@ -18,6 +18,7 @@
 
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import { testPublicProfiles, testUserProfiles } from "@/features/profile/testData";
@@ -30,6 +31,8 @@ import { M_PLUS_1 } from "next/font/google";
 import EditProfile from "@/features/profile/components/EditProfile";
 import SettingsPanel from "@/features/profile/components/SettingsPanel"
 import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
+import FriendsList from "@/features/friends/FriendsList";
+import "@/app/friends/Friends.css";
 
 const testStats = {
   level: 5,
@@ -74,6 +77,7 @@ const testMatchHistory = [
 
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [profile, setProfile] = useState(testUserProfiles[0]); // using goober1 for now
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
@@ -148,7 +152,15 @@ export default function ProfilePage() {
   
           <section className="profile-section">
             <h2>Friends</h2>
-            <p>INSERT FRIEND LIST HERE</p>
+            <FriendsList showTitle={false} />
+            <div className="profile-button-row">
+              <button
+                className="profile-button"
+                onClick={() => router.push("/friends")}
+              >
+                View Friends Page
+              </button>
+            </div>
           </section>
         </div>
   

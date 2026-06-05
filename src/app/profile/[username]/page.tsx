@@ -11,8 +11,11 @@ import EditProfile from "@/features/profile/components/EditProfile";
 import SettingsPanel from "@/features/profile/components/SettingsPanel";
 import FontSizeSelector from "@/features/profile/components/FontSizeSelector";
 import FriendRequestButton from "@/features/friends/FriendRequestButton";
+import FriendsList from "@/features/friends/FriendsList";
+import BackButton from '@/components/interface/BackButton';
 import { testUserProfiles } from "@/features/profile/testData";
 import type { PastMatch } from "@/features/profile/types";
+import "../Profile.css";
 
 export default function ProfileUsernamePage() {
   const params   = useParams<{ username: string }>();
@@ -21,15 +24,14 @@ export default function ProfileUsernamePage() {
 
   const foundProfile = testUserProfiles.find((u) => u.username === username);
 
-  const [profile,          setProfile]          = useState(foundProfile);
-  const [realMatches,      setRealMatches]      = useState<PastMatch[]>([]);
-  const [loadingMatches,   setLoadingMatches]   = useState(true);
-  const [currentUsername,  setCurrentUsername]  = useState<string | null>(null);
-  const [isEditing,        setIsEditing]        = useState(false);
+  const [profile,         setProfile]         = useState(foundProfile);
+  const [realMatches,     setRealMatches]     = useState<PastMatch[]>([]);
+  const [loadingMatches,  setLoadingMatches]  = useState(true);
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+  const [isEditing,       setIsEditing]       = useState(false);
 
   const isOwnProfile = currentUsername === username;
 
-  // Fetch logged-in user
   useEffect(() => {
     fetch('/api/auth/me')
       .then(res => res.json())
@@ -37,17 +39,15 @@ export default function ProfileUsernamePage() {
       .catch(() => {});
   }, []);
 
-  // Fetch real match history
   useEffect(() => {
     fetch(`/api/profile/${username}/matches`)
-      .then((res) => res.json())
-      .then((data: PastMatch[]) => {
-        if (Array.isArray(data)) setRealMatches(data);
-      })
+      .then(res => res.json())
+      .then((data: PastMatch[]) => { if (Array.isArray(data)) setRealMatches(data); })
       .catch(console.error)
       .finally(() => setLoadingMatches(false));
   }, [username]);
 
+  // ── Not in test data — real user fallback ──────────────────────────────────
   if (!profile) {
     return (
       <main className="p-6 text-white">
@@ -92,65 +92,74 @@ export default function ProfileUsernamePage() {
             ? <p>No matches played yet.</p>
             : <MatchHistoryList matches={realMatches} />}
 
-        <button onClick={() => router.push('/dashboard')} className="profile-button" style={{ marginTop: '2rem' }}>
-          Back to Menu
-        </button>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+          <BackButton />
+        </div>
       </main>
     );
   }
 
+  // ── Test data profile — full retro layout ──────────────────────────────────
   const fontSizeClasses = { small: "text-sm", medium: "text-base", large: "text-lg" };
-  const matchesToShow = loadingMatches ? profile.matchHistory : realMatches;
+  const matchesToShow   = loadingMatches ? profile.matchHistory : realMatches;
 
   return (
-    <main className={`space-y-6 ${fontSizeClasses[profile.settings.fontSize]}`}>
-      <div className="mx-auto max-w-4xl space-y-6">
-        <ProfileHeader
+    <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
+      <div className="profile-topbar">
+        <h1 className="profile-title">PROFILE</h1>
+      </div>
+
+      <div className="profile-layout">
+        <div className="profile-left-column">
+          <ProfileHeader
             profile={profile}
             isOwnProfile={isOwnProfile}
             onEditProfile={() => setIsEditing(true)}
-        />
-        
-        {isEditing && isOwnProfile && (
+          />
+
+          {isEditing && isOwnProfile && (
             <EditProfile
-                profile={profile}
-                onSave={(updatedProfile) => { setProfile(updatedProfile); setIsEditing(false); }}
-                onCancel={() => setIsEditing(false)}
+              profile={profile}
+              onSave={(updated) => { setProfile(updated); setIsEditing(false); }}
+              onCancel={() => setIsEditing(false)}
             />
-        )}
+          )}
 
-        <ProfileStats stats={profile.stats} />
+          {!isOwnProfile && currentUsername && (
+            <FriendRequestButton
+              username={username}
+              status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
+            />
+          )}
 
-        {profile.settings.showMatchHistory && (
-          <MatchHistoryList matches={matchesToShow} />
-        )}
+          <section className="profile-section">
+            <h2>Achievements</h2>
+            <p>INSERT ACHIEVEMENTS HERE</p>
+          </section>
 
-        <SettingsPanel
-          settings={profile.settings}
-          onChange={(updatedSettings) =>
-            setProfile({ ...profile, settings: updatedSettings })
-          }
-        />
+          <section className="profile-section">
+            <h2>Friends</h2>
+            <FriendsList />
+            <div className="profile-button-row">
+              <button className="profile-button" onClick={() => router.push('/friends')}>
+                View Friends Page
+              </button>
+            </div>
+          </section>
+        </div>
 
-        <FontSizeSelector
-          fontSize={profile.settings.fontSize}
-          onChange={(newFontSize) =>
-            setProfile({
-              ...profile,
-              settings: { ...profile.settings, fontSize: newFontSize },
-            })
-          }
-        />
-
-        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="text-xl font-bold">Achievements</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">INSERT ACHIEVEMENTS HERE</p>
-        </section>
-
-        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="text-xl font-bold">Friends</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">INSERT FRIEND LIST HERE</p>
-        </section>
+        <div className="profile-right-column">
+          <div className="profile-level-box">
+            {profile.username} has completed {profile.level} levels!
+          </div>
+          <ProfileStats stats={profile.stats} />
+          {profile.settings.showMatchHistory && (
+            <MatchHistoryList matches={matchesToShow} />
+          )}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+            <BackButton />
+          </div>
+        </div>
       </div>
     </main>
   );

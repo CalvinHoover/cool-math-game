@@ -1,7 +1,7 @@
 // this is where we test our pretend-profile data!!!
 // first we import the test profile data we created
 import test from "node:test";
-import { testPublicProfiles, testUserProfiles, searchProfileByUsername } from "./testData.js";
+import { testPublicProfiles, testUserProfiles, searchProfileByUsername } from "./testData";
 // and then we also import the general profile interfaces we created
 import type { PublicProfile, UserProfile, UserSettings } from "./types";
 
