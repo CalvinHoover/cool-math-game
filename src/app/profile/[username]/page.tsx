@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import MatchHistoryList from "@/features/profile/components/MatchHistory";
@@ -16,11 +17,20 @@ interface PublicProfilePageProps {
 
 export default function PublicProfilePage({ params }: PublicProfilePageProps) {
   const { username } = use(params);
+  const router = useRouter();
 
   const foundProfile = testUserProfiles.find((p) => p.username === username);
   const [profile] = useState(foundProfile);
   const [realMatches, setRealMatches] = useState<PastMatch[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+        .then(res => res.json())
+        .then(data => setCurrentUsername(data.username))
+        .catch(() => {});
+    }, []);
 
   useEffect(() => {
     fetch(`/api/profile/${username}/matches`)
@@ -37,10 +47,16 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
     <main className="p-6 text-white">
       <div className="mx-auto max-w-4xl space-y-6">
         <h1 className="text-2xl font-bold">{username}</h1>
-        <FriendRequestButton
-          username={username}
-          status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
-        />
+        {currentUsername === username ? (
+            <button className="profile-button" onClick={() => router.push('/settings')}>
+                Edit Profile
+            </button>
+        ) : currentUsername && (
+            <FriendRequestButton
+                username={username}
+                status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
+            />
+        )}
         {loadingMatches
           ? <p>Loading match history...</p>
           : realMatches.length === 0
@@ -64,7 +80,7 @@ export default function PublicProfilePage({ params }: PublicProfilePageProps) {
       </div>
       <div className="profile-layout">
         <div className="profile-left-column">
-          <ProfileHeader profile={profile} isOwnProfile={false} />
+          <ProfileHeader profile={profile} isOwnProfile={currentUsername === profile.username} />
           <section className="profile-section">
             <h2>Achievements</h2>
             <p>INSERT ACHIEVEMENTS HERE</p>
