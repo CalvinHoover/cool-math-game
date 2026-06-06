@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useDuelSync } from '../useDuelSync';
+import { useBotOpponent } from '../useBotOpponent';
 import './Duels.css';
 import './QuestionOverlay.css';
 import './Toolbar.css';
@@ -16,9 +17,10 @@ interface DuelBoardProps {
   matchId?:   string; 
   playerName: string;
   opponentName: string;
+  botElo: number;
 }
 
-export default function DuelBoard({ onGameOver, matchId, playerName, opponentName }: DuelBoardProps) {
+export default function DuelBoard({ onGameOver, matchId, playerName, opponentName, botElo }: DuelBoardProps) {
   const [selectedTopic,      setSelectedTopic]      = useState<string>(allTopics[0]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(allDifficulties[0]);
 
@@ -28,10 +30,19 @@ export default function DuelBoard({ onGameOver, matchId, playerName, opponentNam
     resolveQuestionResponse,
     resolveAttackPurchase,
     resolveAttackHit,
+    deleteAttack,
     remoteWinner,
     postEvent,
     isMultiplayer,
   } = useDuelSync(matchId);
+
+  useBotOpponent({
+    botElo,
+    gameState,
+    resolveAttackPurchase,
+    deflectAttack: deleteAttack,
+    enabled: !isMultiplayer,
+  });
 
   useEffect(() => {
     if (gameState.player.hp <= 0) {

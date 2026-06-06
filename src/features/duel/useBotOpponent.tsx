@@ -28,19 +28,22 @@ function pickRandom<T>(arr: T[]): T {
 }
 
 interface UseBotOpponentArgs {
+  enabled: boolean;
   botElo: number;
   gameState: GameState;
   resolveAttackPurchase: (buyer: 'player' | 'opponent', clickHeight: number, selectedDifficulty: number, selectedTopic: string) => void;
   deflectAttack: (attackId: number) => void;
 }
 
-export function useBotOpponent({ botElo, gameState, resolveAttackPurchase, deflectAttack }: UseBotOpponentArgs) {
+export function useBotOpponent({ enabled, botElo, gameState, resolveAttackPurchase, deflectAttack }: UseBotOpponentArgs) {
   const behavior = getBotBehavior(botElo);
   const gameStateRef = useRef(gameState);
   gameStateRef.current = gameState;
 
   // Bot spawns attacks on a randomized interval
   useEffect(() => {
+    if (!enabled) return;
+
     function scheduleNextAttack() {
       const delay = randomBetween(behavior.minAttackMs, behavior.maxAttackMs);
       return setTimeout(() => {
@@ -58,10 +61,12 @@ export function useBotOpponent({ botElo, gameState, resolveAttackPurchase, defle
 
     const timeoutRef = { current: scheduleNextAttack() };
     return () => clearTimeout(timeoutRef.current);
-  }, [botElo]);
+  }, [botElo, enabled]);
 
   // Bot periodically tries to deflect player attacks
   useEffect(() => {
+    if (!enabled) return;
+
     const interval = setInterval(() => {
       const state = gameStateRef.current;
       if (state.player.hp <= 0 || state.opponent.hp <= 0) return;
@@ -75,5 +80,5 @@ export function useBotOpponent({ botElo, gameState, resolveAttackPurchase, defle
     }, behavior.deflectCheckMs);
 
     return () => clearInterval(interval);
-  }, [botElo]);
+  }, [botElo, enabled]);
 }

@@ -182,6 +182,7 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
         matchId={matchIdRef.current || undefined} 
         playerName={username} 
         opponentName={opponentName} 
+        botElo={botElo}
       />
     );
   }

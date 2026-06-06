@@ -139,6 +139,7 @@ export const useDuelSync = (matchId?: string) => {
     resolveQuestionResponse,
     resolveAttackPurchase,
     resolveAttackHit,
+    deleteAttack:          game.deleteAttack,
     remoteWinner,
     postEvent,
     isMultiplayer,
