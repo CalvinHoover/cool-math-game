@@ -23,6 +23,8 @@ A high-school level math education web application built with Next.js 16 App Rou
    - `DATABASE_URL` for Prisma queries
    - `DIRECT_URL` for migrations and seeding
    - `JWT_SECRET` for signing session tokens
+   - `JWT_SECRET` for signing session tokens
+   - `RESEND_API_KEY` for sending emails
 
 The `.env.local` file can hold both local and Supabase connection strings. Comment out the block you are not using.
 
