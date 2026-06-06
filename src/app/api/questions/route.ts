@@ -5,13 +5,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const topicParam      = searchParams.get('topic');
   const difficultyParam = searchParams.get('difficulty');
 
-  const where: Parameters<typeof prisma.question.findMany>[0]['where'] = {};
+  const where: Prisma.QuestionWhereInput = {};
 
   if (topicParam) {
     where.topic = { name: { equals: topicParam, mode: 'insensitive' } };
