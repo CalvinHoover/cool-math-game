@@ -39,6 +39,31 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
     } catch { }
   }, []);
 
+  // Catch the user closing the tab or reloading
+  useEffect(() => {
+    const handleUnload = () => {
+      const matchId = matchIdRef.current;
+      
+      if (matchId) {
+        if (!matchedRef.current) {
+          // They closed the tab while searching
+          navigator.sendBeacon('/api/duel/dequeue'); // Send a beacon to the dequeue route
+        } else {
+          //  They closed the tab while in am match
+          // Send a 'game_over' event directly to the match channel.
+          const payload = JSON.stringify({ type: 'game_over', payload: {} });
+          
+          // sendBeacon requires a Blob if you want to send JSON data
+          const blob = new Blob([payload], { type: 'application/json' });
+          navigator.sendBeacon(`/api/duel/${matchId}/event`, blob);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, []);
+
   useEffect(() => {
     if (phase !== 'searching') return;
 
