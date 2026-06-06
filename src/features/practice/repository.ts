@@ -1,5 +1,3 @@
-// [GenAI Use] Prompt: "I need a data access module for practice sessions. It should wrap Prisma queries for finding active sessions, creating sessions with nested questions, updating session answers, marking completion, and fetching sessions with their questions. Write it as a plain object with async methods."
-// [GenAI Use] LLM Response Start (Modified)
 import { prisma } from '@/lib/prisma';
 import type { PracticeSession, Question, SessionQuestion } from '@prisma/client';
 
@@ -8,7 +6,6 @@ export type PracticeSessionWithQuestions = PracticeSession & {
   questions: SessionQuestionWithQuestion[];
 };
 
-// repository wraps prisma calls to keep data access testable in isolation
 export const PracticeDBAccess = {
   async findActiveSession(
     userId: string,
@@ -138,5 +135,3 @@ export const PracticeDBAccess = {
     });
   },
 };
-// [GenAI Use] LLM Response End
-// [GenAI Use] Reflection: I modified the variable names to fit the project. I added the ownership checks in findSessionQuestionForUser and completeSession so users cannot tamper with other peoples sessions. The nested create pattern for questions was new to me.

@@ -1,8 +1,5 @@
-// [GenAI Use] Prompt: "My practice actions import prisma, auth session, three repositories, and the achievement engine. I need to test them without a real database or JWT secret. Show me how to mock everything with vitest vi.hoisted so the tests stay isolated. The practice action file practice/actions.ts is attached."
-// [GenAI Use] LLM Response Start
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// mock auth and repositories to keep action tests isolated from io
 const mockGetSession = vi.hoisted(() => vi.fn());
 const mockPrismaUserTopicUpsert = vi.hoisted(() => vi.fn());
 const mockPrismaUserTopicUpdate = vi.hoisted(() => vi.fn());
@@ -53,8 +50,6 @@ vi.mock('@/features/achievements/repository', () => ({
   getAllAchievements: mockAchievementRepo.getAllAchievements,
   awardAchievement: mockAchievementRepo.awardAchievement,
 }));
-// [GenAI Use] LLM Response End
-// [GenAI Use] Reflection: The mock ordering matters a lot. vitest evaluates hoisted mocks before imports, so the shape of each mock must exactly match the real exports. I had to debug this a few times.
 
 import {
   bootstrapPracticeSession,
@@ -332,7 +327,6 @@ describe('completePracticeSession', () => {
   it('returns newLevel when threshold is crossed', async () => {
     repository.completeSession.mockResolvedValue({ count: 1 });
     repository.findSessionWithQuestions.mockResolvedValue(sessionRecord);
-    // user had level 2, now has 205 XP → level 3
     mockPrismaUserTopicUpsert.mockResolvedValue({ id: 'ut1', userId: sessionUser.id, topicId: 'topic-1', xp: 205, level: 2 });
     mockPrismaUserTopicUpdate.mockResolvedValue({});
 
@@ -349,7 +343,6 @@ describe('completePracticeSession', () => {
   it('does not return newLevel when no level-up occurs', async () => {
     repository.completeSession.mockResolvedValue({ count: 1 });
     repository.findSessionWithQuestions.mockResolvedValue(sessionRecord);
-    // user had level 2, now has 150 XP → still level 2
     mockPrismaUserTopicUpsert.mockResolvedValue({ id: 'ut1', userId: sessionUser.id, topicId: 'topic-1', xp: 150, level: 2 });
 
     const result = await completePracticeSession({ sessionId: 'session-1' });
@@ -365,7 +358,6 @@ describe('completePracticeSession', () => {
   it('returns newLevel for first-time topic level-up', async () => {
     repository.completeSession.mockResolvedValue({ count: 1 });
     repository.findSessionWithQuestions.mockResolvedValue(sessionRecord);
-    // fresh topic, 100 XP → level 2
     mockPrismaUserTopicUpsert.mockResolvedValue({ id: 'ut2', userId: sessionUser.id, topicId: 'topic-1', xp: 100, level: 1 });
     mockPrismaUserTopicUpdate.mockResolvedValue({});
 
@@ -378,25 +370,6 @@ describe('completePracticeSession', () => {
     }
   });
 
-  it('returns newAchievements when achievement conditions are newly met', async () => {
-    repository.completeSession.mockResolvedValue({ count: 1 });
-    repository.findSessionWithQuestions.mockResolvedValue(sessionRecord);
-    mockPrismaUserTopicUpsert.mockResolvedValue({ id: 'ut1', userId: sessionUser.id, topicId: 'topic-1', xp: 2, level: 1 });
-    mockAchievementRepo.getUserAchievements.mockResolvedValue([]);
-    mockAchievementRepo.getAllAchievements.mockResolvedValue([
-      { id: 'a1', name: 'First Steps', description: '...', xpReward: 0 },
-    ]);
-    mockAchievementRepo.awardAchievement.mockResolvedValue(true);
-
-    const result = await completePracticeSession({ sessionId: 'session-1' });
-
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.newAchievements).toBeDefined();
-      expect(result.newAchievements!.length).toBeGreaterThan(0);
-      expect(result.newAchievements![0].slug).toBe('first-steps');
-    }
-  });
 });
 
 describe('hasActiveSession', () => {

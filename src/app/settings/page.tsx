@@ -53,7 +53,6 @@ export default function Settings() {
         />
       </div>
 
-      {/* 2FA Security Section */}
       <div style={{
         marginTop: '40px',
         border: '4px outset #444',

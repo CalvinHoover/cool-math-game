@@ -1,14 +1,42 @@
-The following files contain AI usage (code and/or planning). Please see individual files for details.
+The following files contain AI usage. Please see individual files for details.
 
 - src/features/achievements/engine.ts
 - src/features/achievements/definitions.ts
+- src/features/achievements/components/AchievementCard.tsx
+- src/features/achievements/components/AchievementGallery.tsx
 - tests/achievements/engine.test.ts
 - src/features/practice/repository.ts
 - src/features/practice/actions.ts
-- tests/practiceActions.test.ts
 - src/features/questions/repository.ts
 - src/features/xp/leveling.ts
 - src/features/dashboard/actions.ts
+- src/features/friends/api.ts
+- src/features/friends/FriendsList.tsx
+- src/features/friends/FriendSearch.tsx
+- src/features/auth/session.ts
 - src/components/providers/ThemeProvider.tsx
 - src/components/providers/ToastProvider.tsx
 - src/lib/utils.ts
+- src/lib/email.ts
+- src/app/api/auth/forgot-password/route.ts
+- src/app/api/auth/reset-password/route.ts
+- src/app/api/auth/2fa/verify/route.ts
+- src/app/api/auth/2fa/status/route.ts
+- src/app/api/auth/2fa/toggle/route.ts
+- src/app/api/friends/route.ts
+- src/app/api/friends/requests/route.ts
+- src/app/api/friends/requests/[id]/accept/route.ts
+- src/app/api/friends/requests/[id]/deny/route.ts
+- src/app/dashboard/DashboardClient.tsx
+- src/app/dashboard/RecentActivity.tsx
+- src/app/friends/page.tsx
+- src/app/practice/PracticeBox.tsx
+- src/app/practice/PracticeSetup.tsx
+- src/app/practice/PracticeSummary.tsx
+- src/app/practice/page.tsx
+- src/app/forgot-password/page.tsx
+- src/app/reset-password/page.tsx
+- src/app/verify-code/page.tsx
+- src/app/settings/page.tsx
+- tests/auth.test.ts
+- tests/practiceActions.test.ts

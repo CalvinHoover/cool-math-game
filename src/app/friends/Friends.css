@@ -3,23 +3,27 @@
     background-color: #000000;
     color: #ffffff;
     font-family: "Comic Sans MS", "Trebuchet MS", cursive;
-    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 32px;
   }
-  
+
   .friends-inner {
-    max-width: 900px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 680px;
     display: flex;
     flex-direction: column;
     gap: 24px;
   }
-  
+
   .friends-title {
-    font-size: 3rem;
+    font-size: 3.5rem;
     color: #ffff00;
     text-shadow: 4px 4px 0px #ff0000;
     text-decoration: underline;
     text-align: center;
+    margin-bottom: 8px;
   }
   
   .friends-section {

@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.EMAIL_FROM ?? 'World of Math <onboarding@resend.dev>';
+const FROM = process.env.EMAIL_FROM ?? 'Cool Math Game <onboarding@resend.dev>';
 
 export async function sendVerificationCode(
   to: string,
@@ -10,8 +10,8 @@ export async function sendVerificationCode(
 ) {
   const subject =
     type === 'password_reset'
-      ? 'Reset your World of Math password'
-      : 'Your World of Math login code';
+      ? 'Reset your Cool Math Game password'
+      : 'Your Cool Math Game login code';
 
   const body =
     type === 'password_reset'

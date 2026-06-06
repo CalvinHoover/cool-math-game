@@ -1,6 +1,5 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { ActivityItem } from '@/features/dashboard/actions';
 
 interface RecentActivityProps {
@@ -9,44 +8,49 @@ interface RecentActivityProps {
 
 export default function RecentActivity({ items }: RecentActivityProps) {
   return (
-    <Card className="mt-8">
-      <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {items.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            No activity yet. Start a practice session!
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {items.map((item) => (
-              <li
-                key={item.id}
-                className="flex items-center justify-between rounded-lg border p-3 dark:border-gray-700"
-              >
-                <div>
-                  <p className="font-medium">{item.topic}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(item.completedAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    item.scorePercent >= 80
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : item.scorePercent >= 50
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                  }`}
-                >
-                  {item.scorePercent}%
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+    <div style={{
+      border: '4px outset #CCCCCC',
+      background: '#111111',
+      padding: '16px 20px',
+      width: '100%',
+      fontFamily: 'Courier New, monospace',
+    }}>
+      <p style={{ color: '#00FFFF', textTransform: 'uppercase', fontSize: '0.85rem', marginBottom: '12px', fontWeight: 'bold' }}>
+        Recent Activity
+      </p>
+      {items.length === 0 ? (
+        <p style={{ color: '#888888', fontSize: '0.85rem' }}>
+          No activity yet. Start a practice session!
+        </p>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {items.map((item) => (
+            <li key={item.id} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottom: '1px solid #333333',
+              paddingBottom: '6px',
+            }}>
+              <div>
+                <p style={{ color: '#FFFFFF', fontSize: '0.9rem', margin: 0 }}>{item.topic}</p>
+                <p style={{ color: '#666666', fontSize: '0.75rem', margin: 0 }}>
+                  {new Date(item.completedAt).toLocaleDateString()}
+                </p>
+              </div>
+              <span style={{
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                padding: '2px 8px',
+                border: '2px outset #CCCCCC',
+                color: item.scorePercent >= 80 ? '#00FF00' : item.scorePercent >= 50 ? '#FFFF00' : '#FF4444',
+              }}>
+                {item.scorePercent}%
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

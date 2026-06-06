@@ -1,5 +1,3 @@
-// [GenAI Use] Prompt: "I need a global toast notification system in React. It should expose a toast function and a dismiss function via context. Toasts auto dismiss after a timeout and stack at the bottom right. Write it with useState, useCallback, and a fixed position container."
-// [GenAI Use] LLM Response Start
 'use client';
 
 import { createContext, useCallback, useContext, useState } from 'react';
@@ -59,5 +57,3 @@ export const useToast = () => {
   }
   return context;
 };
-// [GenAI Use] LLM Response End
-// [GenAI Use] Reflection: The ID generation using Date.now and Math.random is simple but good enough for UI toasts. I considered UUID but it felt like overkill here. The fixed position div renders outside the normal flow so it floats above page content.

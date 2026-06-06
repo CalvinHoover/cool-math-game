@@ -1,5 +1,3 @@
-// [GenAI Use] Prompt: "I need tests for my achievement engine. The engine must not import prisma. Show me how to mock the repository layer with vitest using vi.hoisted, and write tests for each unlock condition plus a test that checks for duplicate awarding. I have provided the file achievements/engine.ts for your reference. [file attached]"
-// [GenAI Use] LLM Response Start
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockGetUserAchievements = vi.hoisted(() => vi.fn());
@@ -153,5 +151,3 @@ describe('getAchievementStatus', () => {
     expect(result[1].earnedAt).toBeUndefined();
   });
 });
-// [GenAI Use] LLM Response End
-// [GenAI Use] Reflection: The meta test was my idea. It searches the engine source string to catch accidental Prisma imports, which is a nice safety net I added manually.

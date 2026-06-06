@@ -13,7 +13,6 @@ export function signToken(user: SessionUser): string {
 export function verifyToken(token: string): SessionUser | null {
   try {
     const payload = jwt.verify(token, SECRET) as Record<string, unknown>;
-    // Block pending 2FA tokens from bypassing login
     if (payload.scope === "pending_2fa") return null;
     return payload as unknown as SessionUser;
   } catch {

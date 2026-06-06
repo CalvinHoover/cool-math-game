@@ -34,7 +34,7 @@ export default function VerifyCodePage() {
 
   return (
     <div className="app-container">
-      <h1 className="main-title">World of Math</h1>
+      <h1 className="main-title">Cool Math Game</h1>
       <p className="sub-title">VERIFY LOGIN</p>
       <p style={{ color: '#00FFFF', fontFamily: 'Courier New', marginBottom: '20px', textAlign: 'center', fontSize: '0.9rem' }}>
         A 6-digit code was sent to your email.

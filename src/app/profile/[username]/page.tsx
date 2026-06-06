@@ -131,13 +131,6 @@ export default function ProfileUsernamePage() {
             />
           )}
 
-          {/*
-          <section className="profile-section">
-            <h2>Achievements</h2>
-            <p>INSERT ACHIEVEMENTS HERE</p>
-          </section>
-          */}
-
           <section className="profile-section">
             <h2>Friends</h2>
             <FriendsList />

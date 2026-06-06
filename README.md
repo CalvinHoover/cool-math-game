@@ -1,6 +1,6 @@
 # Cool Math Game
 
-A high-school level math education web application built with Next.js 16 App Router, Prisma ORM, PostgreSQL, and Tailwind CSS. Players complete single-player practice sessions across math topics, earn XP, unlock achievement badges, and track progress through a personal dashboard and profile page.
+A high-school level math education web application built with Next.js 16 App Router, Prisma ORM, PostgreSQL, and Tailwind CSS. Players complete single-player practice sessions across math topics, earn XP, level up, challenge opponents in real-time math duels, and track progress through a personal dashboard and profile page.
 
 ## Tech Stack
 
@@ -18,13 +18,14 @@ A high-school level math education web application built with Next.js 16 App Rou
 
 ## Environment Setup
 
-1. Copy `.env.example` to `.env.local`
+1. Copy `.env.example` to `.env`
 2. Fill in the required variables
    - `DATABASE_URL` for Prisma queries
    - `DIRECT_URL` for migrations and seeding
    - `JWT_SECRET` for signing session tokens
+   - `RESEND_API_KEY` for 2FA and reset flow.
 
-The `.env.local` file can hold both local and Supabase connection strings. Comment out the block you are not using.
+The `.env` file can hold both local and Supabase connection strings. Comment out the block you are not using.
 
 ## Running with Local PostgreSQL
 
@@ -46,9 +47,9 @@ For local development and testing without hitting a live cloud database.
    npx prisma generate
    ```
 
-4. Seed the database with questions and achievements
+4. Seed the database with questions
    ```bash
-   npx tsx prisma/seed/run.ts
+   npx tsx prisma/seed.ts
    ```
 
 5. Start the development server
@@ -84,7 +85,7 @@ For shared development or production-like testing.
    ```bash
    export DATABASE_URL="your-supabase-pooler-url"
    export DIRECT_URL="your-supabase-direct-url"
-   npx tsx prisma/seed/run.ts
+   npx tsx prisma/seed.ts
    ```
 
 4. Start the development server.
@@ -177,29 +178,10 @@ erDiagram
         datetime updatedAt
     }
 
-    ACHIEVEMENT {
-        string id PK
-        string slug UK
-        string name
-        string description
-        string color
-        string iconName
-        datetime createdAt
-    }
-
-    USERACHIEVEMENT {
-        string id PK
-        string userId FK
-        string achievementId FK
-        datetime earnedAt
-    }
-
     USER ||--o{ USERTOPIC : "tracks progress in"
     TOPIC ||--o{ USERTOPIC : "measured by"
     USER ||--o{ PRACTICESESSION : "completes"
     TOPIC ||--o{ PRACTICESESSION : "contains questions for"
-    USER ||--o{ USERACHIEVEMENT : "earns"
-    ACHIEVEMENT ||--o{ USERACHIEVEMENT : "awarded to"
 ```
 
 ### Practice Feature (Sequence Diagram)
@@ -214,7 +196,6 @@ sequenceDiagram
     participant PB as PracticeBox
     participant PL as practiceLogic
     participant XL as XPLeveling
-    participant AE as AchievementEngine
 
     U->>PS: Select topic and count
     PS->>SA: bootstrapPracticeSession
@@ -236,9 +217,7 @@ sequenceDiagram
     PL-->>SA: Score total
     SA->>XL: getLevel
     XL-->>SA: Level info
-    SA->>AE: checkAndAwardAchievements
-    AE-->>SA: New badges
-    SA-->>PB: XP earned and achievements
+    SA-->>PB: XP earned and new level
     PB-->>U: Show summary and toasts
 ```
 
@@ -248,4 +227,4 @@ sequenceDiagram
 - Max built the profile page
 - Aryan managed question seeding and retrieval
 - Calvin handled deployment as repository owner
-- Practice mode, XP and leveling system, achievements, shared UI library, and infrastructure documentation
+- Practice mode, XP and leveling system, math duel multiplayer, shared UI library, and infrastructure documentation

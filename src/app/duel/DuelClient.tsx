@@ -18,7 +18,7 @@ function generateBotElo(playerElo: number): number {
   return Math.max(500, playerElo + offset);
 }
 
-const SEARCH_SECONDS = 10; 
+const SEARCH_SECONDS = 10;
 
 export default function DuelClient({ playerElo, username }: { playerElo: number, username: string }) {
   const router    = useRouter();
@@ -39,21 +39,14 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
     } catch { }
   }, []);
 
-  // Catch the user closing the tab or reloading
   useEffect(() => {
     const handleUnload = () => {
       const matchId = matchIdRef.current;
-      
       if (matchId) {
         if (!matchedRef.current) {
-          // They closed the tab while searching
-          navigator.sendBeacon('/api/duel/dequeue'); // Send a beacon to the dequeue route
+          navigator.sendBeacon('/api/duel/dequeue');
         } else {
-          //  They closed the tab while in am match
-          // Send a 'game_over' event directly to the match channel.
           const payload = JSON.stringify({ type: 'game_over', payload: {} });
-          
-          // sendBeacon requires a Blob if you want to send JSON data
           const blob = new Blob([payload], { type: 'application/json' });
           navigator.sendBeacon(`/api/duel/${matchId}/event`, blob);
         }
@@ -71,13 +64,10 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
     matchedRef.current = false;
     setOpponentName('Bot');
 
-    // 1. Initial matchmake attempt
     fetch('/api/duel/matchmake', { method: 'POST' })
       .then(res => res.json())
       .then((data) => {
         matchIdRef.current = data.matchId;
-
-        // Player 2 joined an existing match instantly
         if (data.role === 'player2') {
           matchedRef.current = true;
           setOpponentName(data.opponentName);
@@ -86,7 +76,6 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
       })
       .catch(() => {});
 
-    // 2. Polling if we are Player 1 waiting for Player 2
     const tick = setInterval(async () => {
       if (matchedRef.current) { clearInterval(tick); return; }
 
@@ -111,7 +100,7 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
             clearInterval(tick);
             setPhase('playing');
           }
-        } catch { /* keep polling */ }
+        } catch { }
       }
     }, 1000);
 
@@ -123,7 +112,6 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
     };
   }, [phase, leaveQueue]);
 
-  // Helper for when the timer hits 0
   function startBotGame() {
     leaveQueue();
     matchIdRef.current = null;
@@ -141,7 +129,7 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
         body:    JSON.stringify({ botElo, playerWon: result === 'player' }),
       });
       if (res.ok) setEloResult(await res.json());
-    } catch { /* ELO update failed silently */ }
+    } catch { }
   }
 
   function beginSearch() {
@@ -155,8 +143,6 @@ export default function DuelClient({ playerElo, username }: { playerElo: number,
     setEloResult(null);
     beginSearch();
   }
-
-  // ── Render ────────────────────────────────────────────────────────────────
 
   if (phase === 'searching') {
     return (

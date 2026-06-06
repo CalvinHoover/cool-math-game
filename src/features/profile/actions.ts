@@ -3,8 +3,6 @@
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/features/auth/session';
 import { getGlobalLevel, getLevel } from '@/features/xp/leveling';
-import { getAchievementStatus, type AchievementStatus } from '@/features/achievements/engine';
-
 export interface TopicProgressItem {
   topicName: string;
   xp: number;
@@ -22,7 +20,6 @@ export interface ProfileData {
   nextLevelXp: number;
   practiceSessionsCompleted: number;
   topics: TopicProgressItem[];
-  achievements: AchievementStatus[];
 }
 
 export async function getProfileData(): Promise<
@@ -66,8 +63,6 @@ export async function getProfileData(): Promise<
     };
   });
 
-  const achievements = await getAchievementStatus(session.id);
-
   return {
     ok: true,
     data: {
@@ -79,7 +74,6 @@ export async function getProfileData(): Promise<
       nextLevelXp: globalLevelInfo.nextLevelXp,
       practiceSessionsCompleted: sessionsCompleted,
       topics,
-      achievements,
     },
   };
 }

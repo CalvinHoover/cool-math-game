@@ -7,7 +7,14 @@ interface AchievementGridProps {
 
 export function AchievementGrid({ achievements }: AchievementGridProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div style={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '16px',
+      justifyContent: 'center',
+      width: '100%',
+      maxWidth: '800px',
+    }}>
       {achievements.map((a) => (
         <AchievementCard
           key={a.slug}

@@ -1,8 +1,8 @@
 import PracticeBox from './PracticeBox';
 import PracticeSetup from './PracticeSetup';
-import { Navbar } from '@/components/layout/Navbar';
 import { getSession } from '@/features/auth/session';
 import { bootstrapPracticeSession } from '@/features/practice/actions';
+import '../dashboard/Dashboard.css';
 
 type SearchParams = {
   topicId?: string | string[];
@@ -27,13 +27,10 @@ export default async function PracticePage({
 
   if (!topicId) {
     return (
-      <>
-        <Navbar username={session?.username ?? 'Guest'} />
-        <main className="p-8 max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
-          <PracticeSetup />
-        </main>
-      </>
+      <div className="app-container" style={{ justifyContent: 'flex-start', paddingTop: '48px' }}>
+        <h1 className="main-title">Practice</h1>
+        <PracticeSetup />
+      </div>
     );
   }
 
@@ -54,27 +51,22 @@ export default async function PracticePage({
   if (!result.ok) {
     const message = ERROR_MESSAGES[result.error] ?? 'Unable to start practice session.';
     return (
-      <>
-        <Navbar username={session?.username ?? 'Guest'} />
-        <main className="p-8 max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
-          <p className="text-red-600">{message}</p>
-        </main>
-      </>
+      <div className="app-container" style={{ justifyContent: 'flex-start', paddingTop: '48px' }}>
+        <h1 className="main-title">Practice</h1>
+        <p style={{ color: '#FF4444', fontFamily: 'Courier New', fontSize: '1rem' }}>{message}</p>
+        <a href="/practice" style={{ color: '#00FFFF', fontFamily: 'Courier New', marginTop: '16px' }}>← Back to topic select</a>
+      </div>
     );
   }
 
   return (
-    <>
-      <Navbar username={session?.username ?? 'Guest'} />
-      <main className="p-8 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Practice Session</h1>
-        <PracticeBox
-          sessionId={result.sessionId}
-          initialQuestions={result.questions}
-          timeLimit={result.timeLimit}
-        />
-      </main>
-    </>
+    <div className="app-container" style={{ justifyContent: 'flex-start', paddingTop: '48px' }}>
+      <h1 className="main-title">Practice</h1>
+      <PracticeBox
+        sessionId={result.sessionId}
+        initialQuestions={result.questions}
+        timeLimit={result.timeLimit}
+      />
+    </div>
   );
 }

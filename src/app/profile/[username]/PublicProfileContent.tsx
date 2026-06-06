@@ -56,19 +56,6 @@ export default function PublicProfileContent({ profile }: PublicProfileContentPr
           }
         />
 
-        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="text-xl font-bold">Achievements</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT ACHIEVEMENTS HERE
-          </p>
-        </section>
-
-        <section className="border bg-white p-7 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="text-xl font-bold">Friends</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            INSERT FRIEND LIST HERE
-          </p>
-        </section>
       </div>
     </main>
   );

@@ -10,7 +10,6 @@ const protectedRoutes = [
   '/practice',
   '/friends',
   '/settings',
-  '/achievements',
 ];
 
 export async function middleware(request: NextRequest) {
@@ -43,6 +42,5 @@ export const config = {
     '/practice/:path*',
     '/friends/:path*',
     '/settings/:path*',
-    '/achievements/:path*',
   ],
 };

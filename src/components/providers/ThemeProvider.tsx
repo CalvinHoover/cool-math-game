@@ -1,5 +1,3 @@
-// [GenAI Use] Prompt: "I need a React context provider for dark mode. It should read localStorage after mount to avoid hydration mismatches, support system preference detection, and apply a class to the HTML element. Write it with useState and useEffect."
-// [GenAI Use] LLM Response Start
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -30,8 +28,6 @@ export function ThemeProvider({
   useEffect(() => {
     const stored = window.localStorage.getItem(storageKey) as Theme | null;
     if (stored) {
-      // Reading localStorage after mount avoids SSR hydration mismatch
-      // eslint-disable-next-line
       setThemeState(stored);
     }
   }, [storageKey]);
@@ -76,5 +72,3 @@ export const useTheme = () => {
   }
   return context;
 };
-// [GenAI Use] LLM Response End
-// [GenAI Use] Reflection: The SSR hydration issue was subtle. Reading localStorage in useEffect instead of during render prevents the server and client from rendering different HTML. I added a comment explaining this.

@@ -60,7 +60,6 @@ export default function DuelBoard({ onGameOver, matchId, playerName, opponentNam
   return (
     <div className="duel-container">
 
-      {/* HP / coins display */}
       <div className="status-bar">
         <div className="player-status">
           <h2>{playerName}</h2>
@@ -73,7 +72,6 @@ export default function DuelBoard({ onGameOver, matchId, playerName, opponentNam
         </div>
       </div>
 
-      {/* Arena — click to launch an attack */}
       <div
         className="duel-arena"
         onClick={(e) => {
@@ -105,7 +103,6 @@ export default function DuelBoard({ onGameOver, matchId, playerName, opponentNam
         </div>
       </div>
 
-      {/* Question overlay */}
       {gameState.activeQuestion && (
         <QuestionWindow
           questionToRender={gameState.activeQuestion}
@@ -116,7 +113,6 @@ export default function DuelBoard({ onGameOver, matchId, playerName, opponentNam
         />
       )}
 
-      {/* Toolbar */}
       <div className="toolbar">
         <div className="toolbar-buttons">
 

@@ -1,10 +1,7 @@
-// import FriendsTester from "@/features/friends/FriendsTester";
-
-import "./Friends.css"
-
-import FriendsList from "@/features/friends/FriendsList";
-import FriendSearch from "@/features/friends/FriendSearch";
-import PastOpponents from "@/features/friends/PastOpponents";
+import Link from 'next/link';
+import FriendSearch from '@/features/friends/FriendSearch';
+import FriendsList from '@/features/friends/FriendsList';
+import './Friends.css';
 
 export default function FriendsPage() {
   return (
@@ -20,9 +17,11 @@ export default function FriendsPage() {
           <FriendsList />
         </section>
 
-        <section className="friends-section">
-          <PastOpponents />
-        </section>
+        <Link href="/dashboard">
+          <button className="friends-button" style={{ background: '#666666', marginTop: '8px' }}>
+            ← Back to Menu
+          </button>
+        </Link>
       </div>
     </div>
   );

@@ -22,7 +22,6 @@ describe('JWT session tokens', () => {
 
   it('rejects a tampered token', () => {
     const token = jwt.sign({ id: '123' }, SECRET, { expiresIn: '7d' });
-    // flip the last 5 characters of the signature
     const tampered = token.slice(0, -5) + 'AAAAA';
     expect(() => jwt.verify(tampered, SECRET)).toThrow();
   });
@@ -34,15 +33,12 @@ describe('JWT session tokens', () => {
   });
 
   it('SECURITY — pending_2fa token is blocked from acting as a real session', () => {
-    // this replicates the exact check inside verifyToken() in session.ts
     const pendingToken = jwt.sign(
       { userId: 'attacker-id', scope: 'pending_2fa' },
       SECRET,
       { expiresIn: '5m' }
     );
     const payload = jwt.verify(pendingToken, SECRET) as Record<string, unknown>;
-
-    // verifyToken returns null when it sees scope === 'pending_2fa'
     const sessionUser = payload.scope === 'pending_2fa' ? null : payload;
     expect(sessionUser).toBeNull();
   });
@@ -64,7 +60,6 @@ describe('JWT session tokens', () => {
       { expiresIn: '5m' }
     );
     const payload = jwt.verify(pendingToken, SECRET) as Record<string, unknown>;
-//session has to follow the flow and have id
     expect(payload.id).toBeUndefined();
     expect(payload.userId).toBe('user-123');
     expect(payload.scope).toBe('pending_2fa');
@@ -121,8 +116,6 @@ describe('Verification code generation', () => {
   });
 });
 
-// bcrypt password hashing
-
 describe('Password hashing with bcrypt', () => {
   it('a correct password verifies against its hash', async () => {
     const hash = await bcrypt.hash('mypassword123', 8);
@@ -154,7 +147,6 @@ describe('Password hashing with bcrypt', () => {
   });
 });
 
-//code expiring
 describe('Verification code expiry', () => {
   it('a code with a past expiresAt is expired', () => {
     const expiresAt = new Date(Date.now() - 1000); // 1 second ago

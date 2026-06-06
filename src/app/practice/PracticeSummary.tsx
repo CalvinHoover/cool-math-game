@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { MathText } from '@/components/math/MathText';
-import { Badge } from '@/components/ui/Badge';
 import type { PracticeQuestion } from '@/features/practice/practiceLogic';
 
 type PracticeSummaryProps = {
@@ -11,7 +10,6 @@ type PracticeSummaryProps = {
   questions: PracticeQuestion[];
   xpEarned?: number;
   newLevel?: number;
-  newAchievements?: { slug: string; name: string; color: string }[];
 };
 
 export default function PracticeSummary({
@@ -20,73 +18,90 @@ export default function PracticeSummary({
   questions,
   xpEarned,
   newLevel,
-  newAchievements,
 }: PracticeSummaryProps) {
   const percentage = totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0;
 
   return (
-    <div className="border p-6 rounded shadow">
-      <h2 className="text-2xl font-bold text-green-600 mb-2">
-        Session Complete!
-      </h2>
-      <p className="text-lg mb-4">
-        You scored <strong>{score}</strong> / {totalPoints} ({percentage}%)
+    <div style={{
+      border: '4px outset #CCCCCC',
+      background: '#111111',
+      padding: '28px 32px',
+      width: '100%',
+      maxWidth: '600px',
+    }}>
+      <p style={{ fontFamily: 'Courier New', color: '#00FF00', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '8px' }}>
+        SESSION COMPLETE!
+      </p>
+      <p style={{ fontFamily: 'Courier New', color: '#FFFF00', fontSize: '1.1rem', marginBottom: '20px' }}>
+        Score: {score} / {totalPoints} ({percentage}%)
       </p>
 
       {typeof newLevel === 'number' && (
-        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded mb-4 text-center">
-          <Badge variant="warning">Level Up!</Badge>
-          <p className="mt-2 text-yellow-900 font-bold text-lg">
-            You are now Level {newLevel}
+        <div style={{ border: '4px outset #FFFF00', background: '#222200', padding: '12px 16px', marginBottom: '16px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'Courier New', color: '#FFFF00', fontWeight: 'bold', fontSize: '1.1rem' }}>
+            ★ LEVEL UP! You are now Level {newLevel} ★
           </p>
         </div>
       )}
 
-      {newAchievements && newAchievements.length > 0 && (
-        <div className="space-y-2 mb-4">
-          {newAchievements.map((a) => (
-            <div
-              key={a.slug}
-              className={`${a.color} text-white p-3 rounded text-center font-semibold`}
-            >
-              New Achievement Unlocked: {a.name}
-            </div>
-          ))}
-        </div>
+{typeof xpEarned === 'number' && xpEarned > 0 && (
+        <p style={{ fontFamily: 'Courier New', color: '#00FFFF', fontSize: '1rem', marginBottom: '20px' }}>
+          +{xpEarned} XP earned!
+        </p>
       )}
 
-      {typeof xpEarned === 'number' && xpEarned > 0 && (
-        <div className="bg-blue-50 border border-blue-200 p-3 rounded mb-4">
-          <p className="text-blue-800 font-medium">
-            +{xpEarned} XP earned!
-          </p>
-        </div>
-      )}
-
-      <div className="mb-4">
-        <h3 className="font-semibold mb-2">Breakdown</h3>
-        <ul className="space-y-2">
-          {questions.map((q, idx) => (
-            <li key={q.id} className="flex items-center justify-between border-b pb-1">
-              <span className="text-sm truncate max-w-[60%]">
-                <MathText text={`Q${idx + 1}: ${q.text}`} />
-              </span>
-              <span className="text-sm">
-                {q.correct
-                  ? `+${q.attempts <= 1 ? q.points : q.points / 2} pts`
-                  : `0 pts (${q.attempts} attempt${q.attempts !== 1 ? 's' : ''})`}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <div style={{ marginBottom: '24px' }}>
+        <p style={{ fontFamily: 'Courier New', color: '#00FFFF', textTransform: 'uppercase', fontSize: '0.85rem', marginBottom: '10px' }}>
+          Breakdown
+        </p>
+        {questions.map((q, idx) => (
+          <div key={q.id} style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontFamily: 'Courier New',
+            fontSize: '0.85rem',
+            borderBottom: '1px solid #333333',
+            padding: '6px 0',
+            color: q.correct ? '#00FF00' : '#FF4444',
+          }}>
+            <span style={{ maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              Q{idx + 1}: <MathText text={q.text} />
+            </span>
+            <span>
+              {q.correct
+                ? `+${q.attempts <= 1 ? q.points : q.points / 2} pts`
+                : `0 pts`}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <div className="flex gap-3">
-        <a
-          href="/practice"
-          className="bg-green-600 text-white px-4 py-2 rounded inline-block text-center"
-        >
+      <div style={{ display: 'flex', gap: '12px' }}>
+        <a href="/practice" style={{
+          padding: '10px 20px',
+          fontFamily: 'Courier New',
+          fontWeight: 'bold',
+          fontSize: '1rem',
+          border: '4px outset #CCCCCC',
+          background: '#00FF00',
+          color: '#000000',
+          textDecoration: 'none',
+          textTransform: 'uppercase',
+        }}>
           Play Again
+        </a>
+        <a href="/dashboard" style={{
+          padding: '10px 20px',
+          fontFamily: 'Courier New',
+          fontWeight: 'bold',
+          fontSize: '1rem',
+          border: '4px outset #CCCCCC',
+          background: '#C0C0C0',
+          color: '#000000',
+          textDecoration: 'none',
+          textTransform: 'uppercase',
+        }}>
+          ← Menu
         </a>
       </div>
     </div>

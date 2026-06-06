@@ -11,6 +11,7 @@ import {
   getNextQuestionIndex,
   type PracticeQuestion,
 } from '@/features/practice/practiceLogic';
+
 interface PracticeBoxProps {
   sessionId: string;
   initialQuestions: PracticeQuestion[];
@@ -26,18 +27,38 @@ const ERROR_MESSAGES: Record<string, string> = {
   'max-attempts': 'No attempts remain for this question.',
 };
 
+const inputStyle: React.CSSProperties = {
+  padding: '10px 12px',
+  fontFamily: 'Courier New, monospace',
+  fontSize: '1rem',
+  background: '#FFFFFF',
+  color: '#000000',
+  border: '4px inset #CCCCCC',
+  flex: 1,
+};
+
+const btnStyle = (color: string, textColor = '#000000'): React.CSSProperties => ({
+  padding: '10px 20px',
+  fontFamily: 'Courier New, monospace',
+  fontWeight: 'bold',
+  fontSize: '1rem',
+  border: '4px outset #CCCCCC',
+  cursor: 'pointer',
+  background: color,
+  color: textColor,
+  textTransform: 'uppercase',
+  flexShrink: 0,
+});
+
 export default function PracticeBox({
   sessionId,
   initialQuestions,
   timeLimit,
   actions,
 }: PracticeBoxProps) {
-  // allow injected actions for tests while keeping default production wiring
   const actionClient = actions ?? defaultActions;
   const initialState = deriveInitialState(initialQuestions);
-  const [questions, setQuestions] = useState<PracticeQuestion[]>(
-    () => initialQuestions
-  );
+  const [questions, setQuestions] = useState<PracticeQuestion[]>(() => initialQuestions);
   const [currentIndex, setCurrentIndex] = useState(initialState.currentIndex);
   const [score, setScore] = useState(initialState.score);
   const [attempt, setAttempt] = useState(initialState.attempt);
@@ -48,41 +69,26 @@ export default function PracticeBox({
   const [isSaved, setIsSaved] = useState(false);
   const [xpEarned, setXpEarned] = useState<number | undefined>(undefined);
   const [newLevel, setNewLevel] = useState<number | undefined>(undefined);
-  const [newAchievements, setNewAchievements] = useState<
-    { slug: string; name: string; color: string }[] | undefined
-  >(undefined);
-  const [secondsLeft, setSecondsLeft] = useState<number | undefined>(
-    timeLimit
-  );
+  const [secondsLeft, setSecondsLeft] = useState<number | undefined>(timeLimit);
   const { toast } = useToast();
 
   const currentQuestion = questions[currentIndex];
   const isGameOver = currentIndex >= questions.length;
-  const totalPoints = questions.reduce((total, question) => total + question.points, 0);
+  const totalPoints = questions.reduce((total, q) => total + q.points, 0);
 
   const handleTimedExpiry = React.useCallback(() => {
     if (!currentQuestion) return;
     setQuestions((prev) => {
       const next = [...prev];
-      next[currentIndex] = {
-        ...next[currentIndex],
-        attempts: 2,
-        correct: false,
-      };
+      next[currentIndex] = { ...next[currentIndex], attempts: 2, correct: false };
       return next;
     });
     const answerText = currentQuestion.answer
       ? `The correct answer was ${currentQuestion.answer}.`
-      : "The correct answer was not available.";
-    const explanationText = currentQuestion.explanation
-      ? ` ${currentQuestion.explanation}`
-      : '';
-    setFeedback({
-      message: `Time's up! ${answerText}${explanationText}`,
-      correct: false,
-    });
+      : 'The correct answer was not available.';
+    const explanationText = currentQuestion.explanation ? ` ${currentQuestion.explanation}` : '';
+    setFeedback({ message: `Time's up! ${answerText}${explanationText}`, correct: false });
     setAttempt(3);
-    // Auto-advance after giving the user time to read the explanation
     setTimeout(() => {
       setCurrentIndex((prevIndex) => {
         const nextIndex = getNextQuestionIndex(questions, prevIndex + 1);
@@ -95,61 +101,33 @@ export default function PracticeBox({
   }, [currentQuestion, currentIndex, questions]);
 
   const handleGameOver = React.useCallback(async () => {
-    // bail out if a save is already in flight or the session was already persisted
     if (isSaving || isSaved) return;
     setIsSaving(true);
-
     const result = await actionClient.completePracticeSession({ sessionId });
-
     if (!result.ok) {
       setIsSaved(false);
     } else {
       setIsSaved(true);
       setXpEarned(result.xpEarned);
       setNewLevel(result.newLevel);
-      setNewAchievements(result.newAchievements);
-      toast({
-        title: `+${result.xpEarned} XP`,
-        variant: 'xp',
-      });
+      toast({ title: `+${result.xpEarned} XP`, variant: 'xp' });
       if (result.newLevel) {
-        toast({
-          title: 'Level Up!',
-          description: `You are now Level ${result.newLevel}`,
-          variant: 'success',
-        });
-      }
-      if (result.newAchievements) {
-        for (const achievement of result.newAchievements) {
-          toast({
-            title: 'Achievement Unlocked!',
-            description: achievement.name,
-            variant: 'success',
-          });
-        }
+        toast({ title: 'Level Up!', description: `You are now Level ${result.newLevel}`, variant: 'success' });
       }
     }
     setIsSaving(false);
   }, [actionClient, sessionId, toast, isSaving, isSaved]);
 
-  // Auto-save when the session ends
   useEffect(() => {
-    if (isGameOver && !isSaving && !isSaved) {
-      handleGameOver();
-    }
+    if (isGameOver && !isSaving && !isSaved) handleGameOver();
   }, [isGameOver, isSaving, isSaved, handleGameOver]);
 
   useEffect(() => {
     if (!timeLimit || isGameOver || feedback !== null) return;
-    startTransition(() => {
-      setSecondsLeft(timeLimit);
-    });
+    startTransition(() => setSecondsLeft(timeLimit));
     const id = setInterval(() => {
       setSecondsLeft((prev) => {
-        if (prev === undefined || prev <= 1) {
-          clearInterval(id);
-          return 0;
-        }
+        if (prev === undefined || prev <= 1) { clearInterval(id); return 0; }
         return prev - 1;
       });
     }, 1000);
@@ -158,57 +136,34 @@ export default function PracticeBox({
 
   useEffect(() => {
     if (secondsLeft === 0 && !isGameOver && currentQuestion && feedback === null) {
-      startTransition(() => {
-        handleTimedExpiry();
-      });
+      startTransition(() => handleTimedExpiry());
     }
   }, [secondsLeft, isGameOver, currentQuestion, handleTimedExpiry, feedback]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!currentQuestion || isSubmitting) {
-      return;
-    }
-
+    if (!currentQuestion || isSubmitting) return;
     setIsSubmitting(true);
     setFeedback({ message: 'Checking...' });
 
-    const result = await actionClient.verifyAnswer({
-      sessionId,
-      questionId: currentQuestion.id,
-      userAnswer,
-    });
+    const result = await actionClient.verifyAnswer({ sessionId, questionId: currentQuestion.id, userAnswer });
 
     if (!result.ok) {
-      setFeedback({
-        message: ERROR_MESSAGES[result.error] ?? 'Unable to check your answer.',
-        correct: false,
-      });
+      setFeedback({ message: ERROR_MESSAGES[result.error] ?? 'Unable to check your answer.', correct: false });
       setIsSubmitting(false);
       return;
     }
 
     setQuestions((prev) => {
       const next = [...prev];
-      next[currentIndex] = {
-        ...next[currentIndex],
-        attempts: result.attempts,
-        correct: result.correct,
-      };
+      next[currentIndex] = { ...next[currentIndex], attempts: result.attempts, correct: result.correct };
       return next;
     });
 
     if (result.correct) {
-      const pointsEarned =
-        result.attempts === 1 ? currentQuestion.points : currentQuestion.points / 2;
-      const explanationText = result.explanation ? ` ${result.explanation}` : '';
-
+      const pointsEarned = result.attempts === 1 ? currentQuestion.points : currentQuestion.points / 2;
       setScore((prev) => prev + pointsEarned);
-      setFeedback({
-        message: `Correct!${explanationText} You earned ${pointsEarned} points.`,
-        correct: true,
-      });
+      setFeedback({ message: `Correct! ${result.explanation ?? ''} +${pointsEarned} pts`.trim(), correct: true });
       setUserAnswer('');
     } else {
       if (result.attempts === 1) {
@@ -218,15 +173,8 @@ export default function PracticeBox({
         setIsSubmitting(false);
         return;
       } else {
-        const answerText = result.answer
-          ? `The correct answer was ${result.answer}.`
-          : 'The correct answer was not available.';
-        const explanationText = result.explanation ? ` ${result.explanation}` : '';
-
-        setFeedback({
-          message: `Incorrect. ${answerText}${explanationText}`,
-          correct: false,
-        });
+        const answerText = result.answer ? `The correct answer was ${result.answer}.` : '';
+        setFeedback({ message: `Incorrect. ${answerText} ${result.explanation ?? ''}`.trim(), correct: false });
         setAttempt(3);
       }
     }
@@ -235,12 +183,11 @@ export default function PracticeBox({
 
   const nextQuestion = () => {
     const nextIndex = getNextQuestionIndex(questions, currentIndex + 1);
-
     setCurrentIndex(nextIndex);
     setAttempt(getAttemptForQuestion(questions[nextIndex]));
     setUserAnswer('');
     setFeedback(null);
-  };  
+  };
 
   if (isGameOver) {
     return (
@@ -250,50 +197,72 @@ export default function PracticeBox({
         questions={questions}
         xpEarned={xpEarned}
         newLevel={newLevel}
-        newAchievements={newAchievements}
       />
     );
   }
 
   if (!currentQuestion) {
-    return <p className="text-red-600">Unable to load the current question.</p>;
+    return <p style={{ color: '#FF4444', fontFamily: 'Courier New' }}>Unable to load the current question.</p>;
   }
 
   return (
-    <div className="border p-6 rounded shadow">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg">Question {currentIndex + 1} ({currentQuestion.points} pts)</h2>
+    <div style={{
+      border: '4px outset #CCCCCC',
+      background: '#111111',
+      padding: '28px 32px',
+      width: '100%',
+      maxWidth: '600px',
+    }}>
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <span style={{ fontFamily: 'Courier New', color: '#00FFFF', fontSize: '0.9rem', textTransform: 'uppercase' }}>
+          Question {currentIndex + 1} of {questions.length} &nbsp;·&nbsp; {currentQuestion.points} pts
+        </span>
         {typeof secondsLeft === 'number' && (
-          <span className={`text-sm font-mono font-bold px-2 py-1 rounded dark:bg-gray-800 dark:text-white ${
-            secondsLeft <= 5 ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200' : 'bg-gray-100'
-          }`}>
+          <span style={{
+            fontFamily: 'Courier New',
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            color: secondsLeft <= 5 ? '#FF4444' : '#FFFF00',
+            border: '2px outset #CCCCCC',
+            padding: '2px 10px',
+          }}>
             {secondsLeft}s
           </span>
         )}
       </div>
-      <p className="text-xl mb-4"><MathText text={currentQuestion.text} /></p>
-      
-      {!feedback?.correct && attempt <= 2 ? (
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input 
-            type="text" 
+
+<p style={{ fontFamily: 'Courier New', fontSize: '1.1rem', color: '#FFFFFF', marginBottom: '20px', lineHeight: 1.6 }}>
+        <MathText text={currentQuestion.text} />
+      </p>
+
+{!feedback?.correct && attempt <= 2 ? (
+        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px' }}>
+          <input
+            type="text"
             value={userAnswer}
             onChange={(e) => setUserAnswer(e.target.value)}
-            className="border p-2 flex-grow"
+            style={inputStyle}
+            placeholder="Your answer..."
             required
           />
-          <button type="submit" disabled={isSubmitting} className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-wait">
-            Submit
+          <button type="submit" disabled={isSubmitting} style={btnStyle('#0000FF', '#FFFFFF')}>
+            {isSubmitting ? '...' : 'Submit'}
           </button>
         </form>
       ) : (
-        <button onClick={nextQuestion} className="bg-green-600 text-white px-4 py-2 rounded mt-2">
-          {currentIndex === initialQuestions.length - 1 ? 'View Score' : 'Next Question'}
+        <button onClick={nextQuestion} style={btnStyle('#00FF00')}>
+          {currentIndex === initialQuestions.length - 1 ? 'View Score →' : 'Next Question →'}
         </button>
       )}
 
-      {feedback && (
-        <p className={`mt-4 ${feedback.correct ? 'text-green-600' : 'text-red-600'}`}>
+{feedback && (
+        <p style={{
+          marginTop: '16px',
+          fontFamily: 'Courier New',
+          fontSize: '0.95rem',
+          color: feedback.correct ? '#00FF00' : '#FF4444',
+          lineHeight: 1.5,
+        }}>
           {feedback.message}
         </p>
       )}

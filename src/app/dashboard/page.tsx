@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/features/auth/session';
-import { getDashboardStats, getRecentActivity, getAchievementSummary } from '@/features/dashboard/actions';
+import { getDashboardStats, getRecentActivity } from '@/features/dashboard/actions';
 import DashboardClient from './DashboardClient';
 
 export default async function DashboardPage() {
@@ -9,18 +9,20 @@ export default async function DashboardPage() {
 
   const statsResult = await getDashboardStats();
   const activityResult = await getRecentActivity();
-  const achievementResult = await getAchievementSummary();
 
-  const stats = statsResult.ok ? statsResult : null;
+  const stats = statsResult.ok ? {
+    totalXp: statsResult.totalXp,
+    globalLevel: statsResult.globalLevel,
+    practiceSessionsCompleted: statsResult.practiceSessionsCompleted,
+    topicsStarted: statsResult.topicsStarted,
+  } : null;
   const activity = activityResult.ok ? activityResult.items : [];
-  const achievements = achievementResult.ok ? achievementResult : null;
 
   return (
     <DashboardClient
       username={session.username}
       stats={stats}
       activity={activity}
-      achievements={achievements}
     />
   );
 }
