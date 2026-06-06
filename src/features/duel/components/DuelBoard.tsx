@@ -70,7 +70,6 @@ export default function DuelBoard({ onGameOver, matchId, playerName, opponentNam
         <div className="opponent-status">
           <h2>{opponentName}</h2>
           <p>HP: {gameState.opponent.hp}</p>
-          <p>Coins: {gameState.opponent.coins}</p>
         </div>
       </div>
 
