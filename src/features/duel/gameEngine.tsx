@@ -1,3 +1,5 @@
+// Helper functions for the duel game
+
 import { allSampleQuestions, DIFFICULTY_COLORS, DIFFICULTY_LABELS, QUESTION_PRICES, TOPIC_COLORS } from './constants';
 import { Question } from './types';
 import { generateArithmeticQuestion } from '@/lib/arithmeticGenerator';
@@ -15,6 +17,7 @@ export const opponentOf = (actor: 'player' | 'opponent'): 'player' | 'opponent' 
 export { generateArithmeticQuestion };
 
 // ─── Question generation ──────────────────────────────────────────────────────
+// Search hard-coded sample questions for a question
 export const generateQuestion = (difficulty?: number, topic?: string): Question => {
   let viable = allSampleQuestions;
   if (difficulty !== undefined) viable = viable.filter(q => q.difficulty === difficulty);
@@ -23,6 +26,8 @@ export const generateQuestion = (difficulty?: number, topic?: string): Question 
   return viable[Math.floor(Math.random() * viable.length)];
 };
 
+
+// Search database for a question
 export const fetchQuestion = async (difficulty?: number, topic?: string): Promise<Question> => {
   if (topic === 'arithmetic') {
     return generateArithmeticQuestion(difficulty ?? 0);

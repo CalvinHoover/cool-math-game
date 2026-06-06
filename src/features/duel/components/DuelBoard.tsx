@@ -1,3 +1,5 @@
+// Main react component for the duel game
+
 'use client';
 
 import { useEffect, useState } from 'react';

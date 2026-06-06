@@ -43,7 +43,6 @@ export const TOPIC_COLORS: Record<string, string> = {
 /* ==========================================================================
    PLACEHOLDER QUESTIONS
    ========================================================================== */
-// Eventually we will call from the database.
 
 export const easyArithmeticQuestion: Question = {
   text: 'What is 12 + 10?',

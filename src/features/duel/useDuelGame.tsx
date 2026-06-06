@@ -1,3 +1,5 @@
+// React hook for connecting the UI of the duel game to the gameplay logic.
+
 import { useState, useCallback } from 'react';
 import { PlayerState, QuestionWithSource, ActiveAttack } from './types';
 import { canAffordAttack, checkAnswer, fetchQuestion, opponentOf } from './gameEngine';
@@ -18,6 +20,7 @@ export const useDuelGame = () => {
     activeQuestion:  null,
   });
 
+  // Adds an ActiveAttack object to the game
   const spawnAttack = useCallback((newAttack: ActiveAttack) => {
     setGameState(prev => ({
       ...prev,
@@ -25,6 +28,7 @@ export const useDuelGame = () => {
     }));
   }, []);
 
+  // Delete the attack with the specified ID
   const deleteAttack = useCallback((attackID: number) => {
     setGameState(prev => {
       const remaining = prev.incomingAttacks.filter(a => a.id !== attackID);
@@ -36,10 +40,13 @@ export const useDuelGame = () => {
     });
   }, []);
 
+  // Sets the active question (the one for which the question is displayed to the player)
   const setActiveQuestion = useCallback((question: QuestionWithSource | null) => {
     setGameState(prev => ({ ...prev, activeQuestion: question }));
   }, []);
 
+  // Adds amountToAdd hp to the target. The param amountToAdd can be positive or negative.
+  // Clamps HP loss to 0 so negative HP never occurs.
   const addHP = useCallback((amountToAdd: number, target: 'player' | 'opponent') => {
     setGameState(prev => ({
       ...prev,
@@ -47,6 +54,8 @@ export const useDuelGame = () => {
     }));
   }, []);
 
+  // Adds amountToAdd coins to the target. The param amountToAdd can be positive or negative.
+  // Negative coins are allowed by this function.
   const addCoins = useCallback((amountToAdd: number, target: 'player' | 'opponent') => {
     setGameState(prev => ({
       ...prev,
@@ -54,11 +63,14 @@ export const useDuelGame = () => {
     }));
   }, []);
 
+  // Resolves an attack hitting the edge of the screen. The attack is deleted and damage is dealt to the target.
   const resolveAttackHit = useCallback((attack: ActiveAttack) => {
     addHP(-ATTACK_DAMAGE, opponentOf(attack.owner));
     deleteAttack(attack.id);
   }, [addHP, deleteAttack]);
 
+  // Resolves the response to an attack question. On a correct answer the attack is deleted/
+  // On an incorrect answer, the attack automatically hits.
   const resolveAttackResponse = useCallback((attack: ActiveAttack, answer: string) => {
     if (checkAnswer(attack.question, answer)) {
       deleteAttack(attack.id);
@@ -67,6 +79,8 @@ export const useDuelGame = () => {
     }
   }, [deleteAttack, resolveAttackHit]);
 
+  // Resolves the response to an income question. On a correct answer, money is earned and a new question is generated.
+  // On an incorrect answer, the question is "vetoed" and that space is locked for a period of time.
   const resolveIncomeQuestionResponse = useCallback((
     questionToResolve: QuestionWithSource,
     answerInputted: string
@@ -81,6 +95,7 @@ export const useDuelGame = () => {
     }
   }, [addCoins, setActiveQuestion]);
 
+  // Resolves a question response according to its source (an attack or an income question).
   const resolveQuestionResponse = useCallback((
     questionToResolve: QuestionWithSource,
     answerInputted: string
@@ -97,6 +112,8 @@ export const useDuelGame = () => {
     }
   }, [gameState.incomingAttacks, resolveAttackResponse, resolveIncomeQuestionResponse]);
 
+  // Resolves the purchase of an attack. Checks if the buyer has enough money and sends an alert if not.
+  // Otherwise, adds the attack to the board and removes the appropriate number of coins.
   const resolveAttackPurchase = useCallback(async (
     buyer: 'player' | 'opponent',
     clickHeight: number,

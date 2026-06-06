@@ -1,3 +1,5 @@
+// Controls behavior of the bot opponent for the duel game
+
 import { useEffect, useRef } from 'react';
 import { GameState } from './useDuelGame';
 import { allTopics } from './constants';
