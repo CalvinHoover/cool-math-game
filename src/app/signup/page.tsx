@@ -46,7 +46,7 @@ export default function SignupPage() {
 
   return (
     <div className="app-container">
-      <h1 className="main-title">World of Math</h1>
+      <h1 className="main-title">Cool Math Game</h1>
       <p className="sub-title">SIGN UP</p>
 
       <form className="signup-form" onSubmit={handleSubmit}>

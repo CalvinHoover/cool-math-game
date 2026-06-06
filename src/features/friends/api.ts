@@ -61,7 +61,9 @@ let testPastOpponents: PastOpponent[] = [
   }
 ]
 export async function getFriends(): Promise<Friend[]> {
-  return testFriends;
+  const res = await fetch('/api/friends');
+  if (!res.ok) return testFriends;
+  return res.json();
 }
 
 // export async function getFriendStatus(userId: string): Promise<FriendStatus> {
@@ -76,7 +78,9 @@ export async function getFriends(): Promise<Friend[]> {
 // }
 
 export async function getFriendRequests(): Promise<FriendRequest[]> {
-  return testRequests.filter((request) => request.status === "pending");
+  const res = await fetch('/api/friends/requests');
+  if (!res.ok) return testRequests.filter((r) => r.status === "pending");
+  return res.json();
 }
 
 // search function for users
@@ -105,23 +109,6 @@ export async function sendFriendRequest(username: string): Promise<void> {
 }
 
 export async function acceptFriendRequest(requestId: string): Promise<Friend> {
-  const request = testRequests.find((request) => request.id === requestId);
-  if (!request) {
-    throw new Error("Friend request not found.")
-  }
-  request.status = "accepted";
-  const newFriend: Friend = {
-    profile: request.fromUser,
-    status: {
-      isFriend: true,
-      incomingRequest: false,
-      outgoingRequest: false,
-    },
-  };
-
-  testFriends.push(newFriend);
-  return newFriend;
-
   // const response = await fetch(`/api/friends/requests/${requestId}/accept`, {
   //   method: "POST",
   // });
@@ -132,16 +119,13 @@ export async function acceptFriendRequest(requestId: string): Promise<Friend> {
 
   // const data = await response.json();
   // return data.request;
+
+  const res = await fetch(`/api/friends/requests/${requestId}/accept`, { method: 'POST' });
+  if (!res.ok) throw new Error('Failed to accept friend request :[');
+  return res.json();
 }
 
 export async function denyFriendRequest(requestId: string): Promise<FriendRequest> {
-  const request = testRequests.find((request) => request.id === requestId);
-  if (!request) {
-    throw new Error("Friend request not found.");
-  }
-  request.status = "denied";
-  return request;
-
 //   const response = await fetch(`/api/friends/requests/${requestId}/deny`, {
 //     method: "POST",
 //   });
@@ -162,6 +146,10 @@ export async function denyFriendRequest(requestId: string): Promise<FriendReques
 //   if (!response.ok) {
 //     throw new Error("Failed to remove friend :[");
 //   }
+
+  const res = await fetch(`/api/friends/requests/${requestId}/deny`, { method: 'POST' });
+  if (!res.ok) throw new Error('Failed to deny friend request :[');
+  return res.json();
 }
 
 export async function getPastOpponents(): Promise<PastOpponent[]> {

@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "World of Math",
+  title: "Cool Math Game",
   description: "Practice math and level up!",
 };
 

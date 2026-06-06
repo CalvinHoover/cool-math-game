@@ -52,6 +52,7 @@ export default function ProfileContent({ realData }: ProfileContentProps) {
   return (
     <main className={`profile-container ${fontSizeClasses[profile.settings.fontSize]}`}>
       <div className="profile-topbar">
+        <button className="profile-button" onClick={() => router.push('/dashboard')} style={{ marginBottom: '8px' }}>← Back to Menu</button>
         <h1 className="profile-title">PROFILE</h1>
       </div>
 

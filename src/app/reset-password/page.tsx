@@ -40,7 +40,7 @@ function ResetPasswordForm() {
   if (done) {
     return (
       <div className="app-container">
-        <h1 className="main-title">World of Math</h1>
+        <h1 className="main-title">Cool Math Game</h1>
         <p className="sub-title">ALL DONE!</p>
         <p style={{ color: '#00FF00', fontFamily: 'Courier New' }}>
           Password reset. Logging you in!
@@ -51,7 +51,7 @@ function ResetPasswordForm() {
 
   return (
     <div className="app-container">
-      <h1 className="main-title">World of Math</h1>
+      <h1 className="main-title">Cool Math Game</h1>
       <p className="sub-title">RESET PASSWORD</p>
 
       <form className="login-form" onSubmit={handleSubmit}>

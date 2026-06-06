@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="app-container">
-        <h1 className="main-title">World of Math</h1>
+        <h1 className="main-title">Cool Math Game</h1>
         <p className="sub-title">CHECK YOUR EMAIL</p>
         <p style={{ color: '#00FF00', fontFamily: 'Courier New', marginBottom: '24px', textAlign: 'center' }}>
           If that email has an account, a 6-digit code was sent to it.
@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="app-container">
-      <h1 className="main-title">World of Math</h1>
+      <h1 className="main-title">Cool Math Game</h1>
       <p className="sub-title">FORGOT PASSWORD</p>
 
       <form className="login-form" onSubmit={handleSubmit}>

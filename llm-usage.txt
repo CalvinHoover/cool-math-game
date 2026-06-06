@@ -12,3 +12,22 @@ The following files contain AI usage (code and/or planning). Please see individu
 - src/components/providers/ThemeProvider.tsx
 - src/components/providers/ToastProvider.tsx
 - src/lib/utils.ts
+- src/lib/email.ts
+- src/app/api/friends/route.ts
+- src/app/api/friends/requests/route.ts
+- src/app/api/friends/requests/[id]/accept/route.ts
+- src/app/api/friends/requests/[id]/deny/route.ts
+- src/features/friends/FriendsList.tsx
+- src/features/friends/FriendSearch.tsx
+- src/features/friends/api.ts
+- src/app/dashboard/DashboardClient.tsx
+- src/app/dashboard/page.tsx
+- src/app/dashboard/AchievementSummary.tsx
+- src/app/dashboard/DashboardStats.tsx
+- src/app/achievements/page.tsx
+- src/app/practice/page.tsx
+- src/app/profile/page.tsx
+- src/app/profile/[username]/page.tsx
+
+note: all of the these fiels were not directly touched with ai agents.
+all of the contributions were taken as suggestions, and used like you might in pair programming while the other person is giving suggestions.

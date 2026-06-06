@@ -24,7 +24,7 @@ export function Navbar({ username }: NavbarProps) {
             className="cursor-pointer text-lg font-bold text-blue-600 dark:text-blue-400"
             onClick={() => router.push('/dashboard')}
           >
-            World of Math
+            Cool Math Game
           </span>
           <div className="hidden gap-4 sm:flex">
             <NavLink href="/dashboard" label="Dashboard" />

@@ -1,6 +1,6 @@
 # Cool Math Game
 
-A high-school level math education web application built with Next.js 16 App Router, Prisma ORM, PostgreSQL, and Tailwind CSS. Players complete single-player practice sessions across math topics, earn XP, unlock achievement badges, and track progress through a personal dashboard and profile page.
+A high-school level math education web application built with Next.js 16 App Router, Prisma ORM, PostgreSQL, and Tailwind CSS. Players complete single-player practice sessions across math topics, earn XP, level up, and track progress through a personal dashboard and profile page.
 
 ## Tech Stack
 
@@ -214,7 +214,6 @@ sequenceDiagram
     participant PB as PracticeBox
     participant PL as practiceLogic
     participant XL as XPLeveling
-    participant AE as AchievementEngine
 
     U->>PS: Select topic and count
     PS->>SA: bootstrapPracticeSession
@@ -236,9 +235,7 @@ sequenceDiagram
     PL-->>SA: Score total
     SA->>XL: getLevel
     XL-->>SA: Level info
-    SA->>AE: checkAndAwardAchievements
-    AE-->>SA: New badges
-    SA-->>PB: XP earned and achievements
+    SA-->>PB: XP earned and new level
     PB-->>U: Show summary and toasts
 ```
 
@@ -248,4 +245,4 @@ sequenceDiagram
 - Max built the profile page
 - Aryan managed question seeding and retrieval
 - Calvin handled deployment as repository owner
-- Practice mode, XP and leveling system, achievements, shared UI library, and infrastructure documentation
+- Practice mode, XP and leveling system, math duel multiplayer, shared UI library, and infrastructure documentation

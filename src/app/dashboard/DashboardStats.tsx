@@ -66,17 +66,6 @@ export default function DashboardStats({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            Current Streak
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <span className="text-2xl font-bold">--</span>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Coming soon</p>
-        </CardContent>
-      </Card>
     </div>
   );
 }

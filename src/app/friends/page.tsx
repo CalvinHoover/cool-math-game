@@ -1,15 +1,14 @@
-// import FriendsTester from "@/features/friends/FriendsTester";
-
 import "./Friends.css"
 
 import FriendsList from "@/features/friends/FriendsList";
 import FriendSearch from "@/features/friends/FriendSearch";
-import PastOpponents from "@/features/friends/PastOpponents";
+import BackButton from "@/components/interface/BackButton";
 
 export default function FriendsPage() {
   return (
     <div className="friends-container">
       <div className="friends-inner">
+        <BackButton />
         <h1 className="friends-title">Friends</h1>
 
         <section className="friends-section">
@@ -17,11 +16,7 @@ export default function FriendsPage() {
         </section>
 
         <section className="friends-section">
-          <FriendsList />
-        </section>
-
-        <section className="friends-section">
-          <PastOpponents />
+          <FriendsList showTitle={false} />
         </section>
       </div>
     </div>

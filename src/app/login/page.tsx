@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <div className="app-container">
-      <h1 className="main-title">World of Math</h1>
+      <h1 className="main-title">Cool Math Game</h1>
       <p className="sub-title">LOGIN</p>
 
       <form className="login-form" onSubmit={handleSubmit}>

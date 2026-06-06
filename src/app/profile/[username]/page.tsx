@@ -50,50 +50,52 @@ export default function ProfileUsernamePage() {
 
   if (!profile) {
     return (
-      <main className="p-6 text-white">
-        <h1 className="text-2xl font-bold mb-4">{username}</h1>
-
-        {isOwnProfile ? (
-          <>
-            <button className="profile-button" onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </button>
-            {isEditing && (
-              <EditProfile
-                profile={{
-                  id: '', username, bio: '', email: '', level: 0,
-                  createdAt: '', updatedAt: '',
-                  stats: { level: 0, xp: 0, gamesCompleted: 0, recentWins: [] },
-                  settings: { emailNotifications: false, publicProfile: true, showMatchHistory: true, fontSize: 'medium' },
-                  matchHistory: [],
-                }}
-                onSave={async (updated) => {
-                  await fetch('/api/profile', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: updated.username, bio: updated.bio }),
-                  });
-                  setIsEditing(false);
-                }}
-                onCancel={() => setIsEditing(false)}
-              />
-            )}
-          </>
-        ) : currentUsername && (
-          <FriendRequestButton
-            username={username}
-            status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
-          />
-        )}
-
-        {loadingMatches
-          ? <p>Loading match history...</p>
-          : realMatches.length === 0
-            ? <p>No matches played yet.</p>
-            : <MatchHistoryList matches={realMatches} />}
-
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+      <main className="profile-container">
+        <div className="profile-topbar">
           <BackButton />
+          <h1 className="profile-title">@{username}</h1>
+        </div>
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {isOwnProfile ? (
+            <>
+              <button className="profile-button" onClick={() => setIsEditing(true)}>
+                Edit Profile
+              </button>
+              {isEditing && (
+                <EditProfile
+                  profile={{
+                    id: '', username, bio: '', email: '', level: 0,
+                    createdAt: '', updatedAt: '',
+                    stats: { level: 0, xp: 0, gamesCompleted: 0, recentWins: [] },
+                    settings: { emailNotifications: false, publicProfile: true, showMatchHistory: true, fontSize: 'medium' },
+                    matchHistory: [],
+                  }}
+                  onSave={async (updated) => {
+                    await fetch('/api/profile', {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ username: updated.username, bio: updated.bio }),
+                    });
+                    setIsEditing(false);
+                  }}
+                  onCancel={() => setIsEditing(false)}
+                />
+              )}
+            </>
+          ) : currentUsername && (
+            <FriendRequestButton
+              username={username}
+              status={{ isFriend: false, incomingRequest: false, outgoingRequest: false }}
+            />
+          )}
+
+          <section className="profile-section">
+            {loadingMatches
+              ? <p>Loading match history...</p>
+              : realMatches.length === 0
+                ? <p>No matches played yet.</p>
+                : <MatchHistoryList matches={realMatches} />}
+          </section>
         </div>
       </main>
     );
