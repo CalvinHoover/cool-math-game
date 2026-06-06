@@ -1,6 +1,7 @@
 // src/app/api/duel/[matchId]/status/route.ts
 // GET /api/duel/[matchId]/status
 // Returns the current match status. Player1 polls this while waiting for an opponent.
+// Returns { status: string, opponentName?: string | null }
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/features/auth/session';
@@ -23,9 +24,18 @@ export async function GET(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
+  // If the match is active, figure out who the opponent is and grab their name
+  let opponentName = null;
+  if (match.status === 'active') {
+    const opponentId = user.id === match.player1Id ? match.player2Id : match.player1Id;
+    if (opponentId) {
+      const opponent = await prisma.user.findUnique({ where: { id: opponentId } });
+      opponentName = opponent?.username;
+    }
+  }
+
   return NextResponse.json({
     status:    match.status,
-    player1Id: match.player1Id,
-    player2Id: match.player2Id,
+    opponentName
   });
 }

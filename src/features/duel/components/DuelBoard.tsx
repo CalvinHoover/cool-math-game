@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useDuelSync } from '../useDuelSync';
+import { useBotOpponent } from '../useBotOpponent';
 import './Duels.css';
 import './QuestionOverlay.css';
 import './Toolbar.css';
@@ -14,9 +15,12 @@ import { allDifficulties, allTopics } from '../constants';
 interface DuelBoardProps {
   onGameOver: (winner: 'player' | 'opponent') => void;
   matchId?:   string; 
+  playerName: string;
+  opponentName: string;
+  botElo: number;
 }
 
-export default function DuelBoard({ onGameOver, matchId }: DuelBoardProps) {
+export default function DuelBoard({ onGameOver, matchId, playerName, opponentName, botElo }: DuelBoardProps) {
   const [selectedTopic,      setSelectedTopic]      = useState<string>(allTopics[0]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(allDifficulties[0]);
 
@@ -26,10 +30,19 @@ export default function DuelBoard({ onGameOver, matchId }: DuelBoardProps) {
     resolveQuestionResponse,
     resolveAttackPurchase,
     resolveAttackHit,
+    deleteAttack,
     remoteWinner,
     postEvent,
     isMultiplayer,
   } = useDuelSync(matchId);
+
+  useBotOpponent({
+    botElo,
+    gameState,
+    resolveAttackPurchase,
+    deflectAttack: deleteAttack,
+    enabled: !isMultiplayer,
+  });
 
   useEffect(() => {
     if (gameState.player.hp <= 0) {
@@ -50,14 +63,13 @@ export default function DuelBoard({ onGameOver, matchId }: DuelBoardProps) {
       {/* HP / coins display */}
       <div className="status-bar">
         <div className="player-status">
-          <h2>Player</h2>
+          <h2>{playerName}</h2>
           <p>HP: {gameState.player.hp}</p>
           <p>Coins: {gameState.player.coins}</p>
         </div>
         <div className="opponent-status">
-          <h2>Opponent</h2>
+          <h2>{opponentName}</h2>
           <p>HP: {gameState.opponent.hp}</p>
-          <p>Coins: {gameState.opponent.coins}</p>
         </div>
       </div>
 

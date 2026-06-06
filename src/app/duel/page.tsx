@@ -15,5 +15,5 @@ export default async function DuelPage() {
     // DB unavailable — default ELO, game still works
   }
 
-  return <DuelClient playerElo={elo} />;
+  return <DuelClient playerElo={elo} username={session.username}/>;
 }

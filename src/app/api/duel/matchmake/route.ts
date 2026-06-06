@@ -1,7 +1,7 @@
 // src/app/api/duel/matchmake/route.ts
 // POST /api/duel/matchmake
 // Finds an open waiting match and joins it, or creates a new one.
-// Returns { matchId, role: 'player1' | 'player2' }
+// Returns { matchId, role: 'player1' } or { matchId, role: 'player2', opponentName: string }
 
 import { NextResponse } from 'next/server';
 import { getSession } from '@/features/auth/session';
@@ -26,10 +26,18 @@ export async function POST() {
       where: { id: waiting.id },
       data:  { player2Id: user.id, status: 'active' },
     });
-    return NextResponse.json({ matchId: waiting.id, role: 'player2' });
+    
+    const opponent = await prisma.user.findUnique({ where: { id: waiting.player1Id } });
+    
+    return NextResponse.json({ 
+      matchId: waiting.id, 
+      role: 'player2',
+      opponentName: opponent?.username || 'Opponent'
+    });
   }
 
   // No open match — create one and wait for an opponent
+
   const match = await prisma.match.create({
     data: { player1Id: user.id, status: 'waiting' },
   });

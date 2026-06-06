@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { MenuButton } from '../../components/interface/MenuButton';
 import DuelBoard from '../../features/duel/components/DuelBoard';
@@ -20,7 +20,7 @@ function generateBotElo(playerElo: number): number {
 
 const SEARCH_SECONDS = 10; 
 
-export default function DuelClient({ playerElo }: { playerElo: number }) {
+export default function DuelClient({ playerElo, username }: { playerElo: number, username: string }) {
   const router    = useRouter();
   const [phase,      setPhase]      = useState<Phase>('menu');
   const [countdown,  setCountdown]  = useState(SEARCH_SECONDS);
@@ -28,35 +28,72 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
   const [winner,     setWinner]     = useState<'player' | 'opponent' | null>(null);
   const [eloResult,  setEloResult]  = useState<EloResult | null>(null);
 
+  const [opponentName, setOpponentName] = useState<string>('Bot');
+
   const matchIdRef  = useRef<string | null>(null);
   const matchedRef  = useRef(false);
+
+  const leaveQueue = useCallback(async () => {
+    try {
+      await fetch('/api/duel/dequeue', { method: 'POST' }); 
+    } catch { }
+  }, []);
+
+  // Catch the user closing the tab or reloading
+  useEffect(() => {
+    const handleUnload = () => {
+      const matchId = matchIdRef.current;
+      
+      if (matchId) {
+        if (!matchedRef.current) {
+          // They closed the tab while searching
+          navigator.sendBeacon('/api/duel/dequeue'); // Send a beacon to the dequeue route
+        } else {
+          //  They closed the tab while in am match
+          // Send a 'game_over' event directly to the match channel.
+          const payload = JSON.stringify({ type: 'game_over', payload: {} });
+          
+          // sendBeacon requires a Blob if you want to send JSON data
+          const blob = new Blob([payload], { type: 'application/json' });
+          navigator.sendBeacon(`/api/duel/${matchId}/event`, blob);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, []);
 
   useEffect(() => {
     if (phase !== 'searching') return;
 
     setCountdown(SEARCH_SECONDS);
     matchedRef.current = false;
+    setOpponentName('Bot');
 
+    // 1. Initial matchmake attempt
     fetch('/api/duel/matchmake', { method: 'POST' })
       .then(res => res.json())
-      .then(({ matchId, role }: { matchId: string; role: 'player1' | 'player2' }) => {
-        matchIdRef.current = matchId;
+      .then((data) => {
+        matchIdRef.current = data.matchId;
 
-        if (role === 'player2') {
+        // Player 2 joined an existing match instantly
+        if (data.role === 'player2') {
           matchedRef.current = true;
-          router.push(`/duel/${matchId}`);
+          setOpponentName(data.opponentName);
+          setPhase('playing');
         }
       })
-      .catch(() => {
-      });
+      .catch(() => {});
 
+    // 2. Polling if we are Player 1 waiting for Player 2
     const tick = setInterval(async () => {
       if (matchedRef.current) { clearInterval(tick); return; }
 
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(tick);
-          startBotGame();
+          startBotGame(); 
           return 0;
         }
         return prev - 1;
@@ -65,21 +102,31 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
       const matchId = matchIdRef.current;
       if (matchId) {
         try {
-          const res    = await fetch(`/api/duel/${matchId}/status`);
-          const { status } = await res.json();
-          if (status === 'active' && !matchedRef.current) {
+          const res = await fetch(`/api/duel/${matchId}/status`);
+          const data = await res.json();
+          
+          if (data.status === 'active' && !matchedRef.current) {
             matchedRef.current = true;
+            setOpponentName(data.opponentName); 
             clearInterval(tick);
-            router.push(`/duel/${matchId}`);
+            setPhase('playing');
           }
         } catch { /* keep polling */ }
       }
     }, 1000);
 
-    return () => clearInterval(tick);
-  }, [phase]);
+    return () => {
+      clearInterval(tick);
+      if (!matchedRef.current) {
+        leaveQueue();
+      }
+    };
+  }, [phase, leaveQueue]);
 
+  // Helper for when the timer hits 0
   function startBotGame() {
+    leaveQueue();
+    matchIdRef.current = null;
     setPhase('playing');
   }
 
@@ -129,7 +176,15 @@ export default function DuelClient({ playerElo }: { playerElo: number }) {
   }
 
   if (phase === 'playing') {
-    return <DuelBoard onGameOver={handleGameOver} />;
+    return (
+      <DuelBoard 
+        onGameOver={handleGameOver} 
+        matchId={matchIdRef.current || undefined} 
+        playerName={username} 
+        opponentName={opponentName} 
+        botElo={botElo}
+      />
+    );
   }
 
   if (phase === 'finished' && winner) {

@@ -44,8 +44,8 @@ export default function DashboardClient({ username, stats, activity, achievement
       <div className="button-group">
         <MenuButton label="Profile" className="retro-button btn-profile" onClick={() => router.push('/profile')} />
         <MenuButton label="Practice" className="retro-button btn-practice" onClick={() => router.push('/practice')} />
-        <MenuButton label="Friends" className="retro-button btn-multiplayer" onClick={() => router.push('/friends')} />
-        <MenuButton label="Multiplayer" className="retro-button btn-multiplayer" disabled onClick={() => alert('Coming soon!')} />
+        <MenuButton label="Friends" className="retro-button btn-friends" onClick={() => router.push('/friends')} />
+        <MenuButton label="Multiplayer" className="retro-button btn-multiplayer" onClick={() => router.push('/duel')} />
         <MenuButton label="Leaderboard" className="retro-button btn-leaderboard" onClick={() => router.push('/leaderboard')} />
         <MenuButton label="Settings" className="retro-button btn-settings" onClick={() => router.push('/settings')} />
         <MenuButton label="Logout" className="retro-button btn-logout" onClick={handleLogout} />
