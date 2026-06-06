@@ -25,6 +25,10 @@ export async function POST(req: NextRequest) {
   if (!match) return NextResponse.json({ error: "Match not found" }, { status: 404 });
   if (match.status === "completed") return NextResponse.json({ error: "Match already resolved" }, { status: 409 });
 
+  if (!match.player1 || !match.player2 || !match.player2Id) {
+    return NextResponse.json({ error: "Match does not have a valid opponent configuration" }, { status: 400 });
+  }
+
   const p1won = winnerId === match.player1Id;
   const p1 = calculateElo(match.player1.elo, match.player2.elo, p1won ? 1 : 0);
   const p2 = calculateElo(match.player2.elo, match.player1.elo, p1won ? 0 : 1);

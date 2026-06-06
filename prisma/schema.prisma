@@ -105,6 +105,13 @@ model Match {
   events        DuelEvent[]
 }
 
+model MatchQueue {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  elo       Int
+  joinedAt DateTime @default(now())
+}
+
 // One row per in-game action that needs to be seen by the other player.
 // The poll endpoint returns rows newer than the client's last-seen timestamp,
 // filtered to exclude the sender so events aren't echoed back.
